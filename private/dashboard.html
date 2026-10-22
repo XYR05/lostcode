@@ -2,265 +2,279 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>CoreDump 2.0</title>
-  <link rel="stylesheet" href="/dashboard-styles.css?v=14" />
-  <!-- You can include your scoreboard stylesheet if needed -->
-  <link rel="stylesheet" href="styles-scoreboard.css" />
-  <style>
-    /* HUD Decorative Elements */
-    .hud-decoration {
-      position: fixed;
-      font-variant-numeric: tabular-nums;
-      color: var(--primary);
-      font-size: 0.85rem;
-      letter-spacing: 2px;
-      z-index: 10000;
-      pointer-events: none;
-      opacity: 0.7;
-    }
-    .hud-decoration.top-left { top: 80px; left: 20px; }
-    .hud-decoration.top-right { top: 80px; right: 20px; }
-    
-    .hud-footer {
-      position: fixed;
-      bottom: 0; left: 0; width: 100%;
-      height: 30px;
-      background: rgba(10, 14, 20, 0.95);
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 2rem;
-      font-variant-numeric: tabular-nums;
-      color: var(--primary);
-      font-size: 0.8rem;
-      letter-spacing: 2px;
-      z-index: 9998;
-      pointer-events: none;
-    }
-    
-    #dashboard-content .subtitle {
-      font-variant-numeric: tabular-nums;
-      color: var(--primary);
-      letter-spacing: 4px;
-      margin-top: -1rem;
-      margin-bottom: 2rem;
-    }
-    
-    /* Chart legend styles (restored from original inline) */
-    #chart-legend {
-      display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 1.5rem;
-    }
-    .legend-item {
-      display: flex; align-items: center; gap: 1rem; font-size: 0.9rem; font-variant-numeric: tabular-nums;
-    }
-    .legend-color {
-      width: 12px; height: 12px; border-radius: 0; box-shadow: 0 0 5px currentColor;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lost Code // CoreDump 2.0</title>
+  <link rel="stylesheet" href="/dashboard-styles.css?v=20" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-  <!-- HUD Decorators -->
-  <div class="hud-corner hud-tl">SECTOR 7G</div>
-  <div class="hud-corner hud-tr">LAT 28.6139° N<br>LON 77.2090° E</div>
-  <div class="hud-corner hud-bl">SYS: SECURE CONNECTION<br>VER: 1.07.3</div>
-  <div class="hud-corner hud-br">GRID<br>X-07</div>
-  
-  <div class="hud-bracket bracket-tl"></div>
-  <div class="hud-bracket bracket-tr"></div>
-  <div class="hud-bracket bracket-bl"></div>
-  <div class="hud-bracket bracket-br"></div>
 
-  <!-- 8. Header -->
+  <!-- ====================================================== -->
+  <!-- 1. TOP NAVIGATION BAR                                  -->
+  <!-- ====================================================== -->
   <nav class="header">
-    <div class="nav-brand">CoreDump 2.0</div>
-    <button class="mobile-menu-toggle">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    <div class="nav-brand-container" onclick="showSection('dashboard-content'); return false;">
+      <div class="brand-emblem">
+        <img src="/lost_code_logo.png" alt="Lost Code Logo" onerror="this.style.display='none'; document.getElementById('svgBrandLogo').style.display='block';" />
+        <svg id="svgBrandLogo" style="display:none; width:36px; height:36px; color:var(--gold-primary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2C6.48 2 2 6.48 2 12c0 3.85 2.18 7.2 5.4 8.9L7 22l3.5-1.5 1.5 1.5 1.5-1.5L17 22l-.4-1.1C19.82 19.2 22 15.85 22 12c0-5.52-4.48-10-10-10z"></path>
+          <circle cx="9" cy="11" r="2"></circle>
+          <circle cx="15" cy="11" r="2"></circle>
+          <path d="M10 16h4"></path>
+        </svg>
+      </div>
+      <div class="brand-titles">
+        <div class="brand-title">LOST CODE</div>
+        <div class="brand-subtitle">COREDUMP 2.0</div>
+      </div>
+    </div>
+
+    <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
     </button>
+
     <div class="nav-center">
       <a href="#" class="nav-link active" onclick="showSection('dashboard-content'); return false;">Dashboard</a>
       <a href="#" class="nav-link" onclick="showSection('users-section'); return false;">Users</a>
       <a href="#" class="nav-link" onclick="showSection('teams-section'); return false;">Teams</a>
       <a href="#" class="nav-link" onclick="showSection('scoreboard-section'); return false;">Leaderboard</a>
       <a href="#" class="nav-link" onclick="showSection('challenges-section'); return false;">Challenges</a>
-      <a href="#" class="nav-link" onclick="showSection('admin-section'); return false;" id="adminNavLi" style="display:none;">ADMIN PORTAL</a>
+      <a href="#" class="nav-link" onclick="showSection('admin-section'); return false;" id="adminNavLi" style="display:none;">Admin Portal</a>
     </div>
-    <div class="nav-right" style="display: flex; gap: 2rem; align-items: center;">
-      <a href="#" class="nav-link" onclick="showSection('team-section'); return false;" id="teamPageLink">MY TEAM</a>
-      <a href="#" class="nav-link" onclick="showSection('profile-section'); return false;">PROFILE</a>
-      <a href="/logout" class="nav-link" style="color: var(--text-muted);">LOGOUT</a>
+
+    <div class="nav-right">
+      <div class="nav-right-divider"></div>
+      <a href="#" class="nav-link" onclick="showSection('team-section'); return false;" id="teamPageLink">My Team</a>
+      <a href="#" class="nav-link" onclick="showSection('profile-section'); return false;">Profile</a>
+      <a href="/logout" class="nav-link" style="color: var(--text-secondary);">Logout</a>
     </div>
   </nav>
 
-  <!-- DASHBOARD CONTENT (Hero + Grid) -->
-  <section id="dashboard-content" class="info-section" style="display: block; padding-top: 30px;">
-    
+  <!-- ====================================================== -->
+  <!-- 2. DASHBOARD HERO SECTION                              -->
+  <!-- ====================================================== -->
+  <section id="dashboard-content" class="info-section" style="display: block; padding-top: 40px;">
     <div style="text-align: center;">
-      <h1 class="main-title">CYBER OPERATIONS</h1>
-      <p class="subtitle">CAPTURE THE FLAG // <span class="active-operation">ACTIVE OPERATION</span></p>
+      <h1 class="main-title">LOST CODE</h1>
+      <p class="subtitle">TREASURE HUNT // <span class="active-operation">EXPEDITION ACTIVE</span></p>
     </div>
 
     <div class="stats-row">
       <div class="stat-card">
-        <div class="stat-value">24</div>
+        <div class="stat-value" id="totalChallengesCount">12</div>
         <div class="stat-label">CHALLENGES</div>
       </div>
-      <div class="stat-card divider">
-        <div class="stat-value">1,240</div>
-        <div class="stat-label">OPERATORS</div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalOperatorsCount">0</div>
+        <div class="stat-label">BUCCANEERS</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">18,450</div>
-        <div class="stat-label">POINTS</div>
+        <div class="stat-value" id="totalPointsCount">5,250</div>
+        <div class="stat-label">TOTAL BOUNTY</div>
       </div>
-    </div>  </section>
+    </div>
+  </section>
 
-
-  <!-- CHALLENGES SECTION -->
+  <!-- ====================================================== -->
+  <!-- 3. CHALLENGES SECTION (TWO-COLUMN PIRATE GRID)         -->
+  <!-- ====================================================== -->
   <section id="challenges-section" class="info-section" style="display: none; padding-top: 30px;">
     <div class="layout-grid">
       
-      <!-- LEFT PANEL -->
-      <div class="glass-panel" style="padding: 30px 40px;">
-        <h3 class="subtitle" style="color: var(--accent); margin-bottom: 30px;">CHALLENGES</h3>
+      <!-- LEFT PANEL: CHALLENGES LIST -->
+      <div class="challenges-panel">
+        <div class="panel-header">
+          <svg class="panel-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14.5 17.5L3 6V3h3l11.5 11.5"></path>
+            <path d="M13 19l6-6"></path>
+            <path d="M16 16l4 4"></path>
+            <path d="M19 21l2-2"></path>
+            <path d="M9.5 17.5L21 6V3h-3L6.5 14.5"></path>
+            <path d="M11 19l-6-6"></path>
+            <path d="M8 16l-4 4"></path>
+            <path d="M5 21l-2-2"></path>
+          </svg>
+          <h3 class="panel-title">CHALLENGES</h3>
+        </div>
+
         <div class="tabs-container" id="challengeTabs">
           <div class="category active" data-diff="EASY">EASY</div>
           <div class="category" data-diff="MEDIUM">MEDIUM</div>
           <div class="category" data-diff="HARD">HARD</div>
           <div class="category" data-diff="BONUS" style="display: none;" id="bonusFilterTab">BONUS</div>
         </div>
+
         <div class="challenges-list" id="challengeCategoriesContainer">
-          <!-- JS will populate here -->
+          <!-- JS populates challenge cards here -->
         </div>
       </div>
 
-      <!-- RIGHT PANEL (MODAL) -->
+      <!-- RIGHT PANEL: CHALLENGE DETAILS MODAL / PANEL -->
       <div class="challenge-details" id="challengeModal" style="display: none;">
-        <button class="close-btn" onclick="document.getElementById('challengeModal').style.display='none'">&times;</button>
+        <button class="close-btn" onclick="document.getElementById('challengeModal').style.display='none'" aria-label="Close details">&times;</button>
         
         <div class="detail-header">
           <div class="detail-header-title">
-            <span class="c-dot"></span>
-            <span id="modalTitle" style="text-transform: uppercase;">RSA STARTER</span>
+            <span id="modalCategoryIcon"></span>
+            <span id="modalTitle" style="text-transform: uppercase;">FORENSICS</span>
           </div>
           <div class="detail-header-subtitle">
-            CTF // <span id="modalDiff">EASY</span> // <span id="modalPoints">200</span> POINTS
+            CTF // <span id="modalDiff">EASY</span> // <span id="modalPoints">100</span> POINTS
           </div>
         </div>
 
+        <!-- Captain's Brief -->
         <div class="detail-section">
           <div class="detail-section-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            INTELLIGENCE
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+              <line x1="4" y1="22" x2="4" y2="15"></line>
+            </svg>
+            CAPTAIN'S BRIEF
           </div>
           <div class="detail-text" id="challengeDescription">
-            I found an interesting RSA implementation. Can you break it and retrieve the flag?
+            A file that doesn't look quite right has been left behind...
           </div>
         </div>
 
+        <!-- Quartermaster's Hint (Unlockable with Escalating Penalty) -->
         <div class="detail-section" id="hintSection">
           <div class="detail-section-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-            HINT
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+            </svg>
+            QUARTERMASTER'S HINT
           </div>
-          <div class="detail-text" id="challengeHint"></div>
+          <div id="challengeHintContent">
+            <!-- Dynamic hint (unlocked or locked) -->
+          </div>
         </div>
 
+        <!-- Salvaged Files (Downloadable Attachments) -->
         <div class="detail-section" id="resourceContainer" style="display: none;">
           <div class="detail-section-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-            ATTACHMENTS
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="6" width="18" height="15" rx="2"></rect>
+              <path d="M3 11h18"></path>
+              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            SALVAGED FILES
           </div>
           <div class="attachment-row">
             <div class="att-name">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
-              <span id="attachmentName">crypto.zip</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              <span id="attachmentName">Forensics.zip</span>
             </div>
             <div class="att-meta">
-              3.4 KB
-              <a id="downloadResourceBtn" href="#" download>
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span id="attachmentSize">3.4 KB</span>
+              <a id="downloadResourceBtn" class="att-download-btn" href="#" download title="Download File">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
               </a>
             </div>
           </div>
         </div>
 
+        <!-- Flag Submission -->
         <div class="detail-section" style="margin-bottom: 0;">
-          <label class="input-label">FLAG SUBMISSION</label>
-          <input type="text" id="flagInput" class="flag-input" placeholder="CTF{________________________________}">
-          <button id="submitFlagBtn" class="submit-button">[ SUBMIT FLAG ]</button>
+          <div class="detail-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+              <line x1="4" y1="22" x2="4" y2="15"></line>
+            </svg>
+            SUBMIT FLAG
+          </div>
+          <input type="text" id="flagInput" class="flag-input" placeholder="CTF{___________________________}" autocomplete="off" />
+          <button id="submitFlagBtn" class="submit-button">SUBMIT FLAG</button>
           <p id="flagResult" style="margin-top: 15px; font-family: 'JetBrains Mono', monospace; font-size: 13px;"></p>
         </div>
       </div>
     </div>
   </section>
 
-
-<!-- USERS SECTION -->
+  <!-- ====================================================== -->
+  <!-- 4. USERS SECTION                                       -->
+  <!-- ====================================================== -->
   <section id="users-section" class="info-section" style="display: none;">
-    <h2>Users</h2>
+    <h2>Buccaneers</h2>
     <div class="users-search">
-      <label for="userSearchInput">Search Users:</label>
-      <input type="text" id="userSearchInput" placeholder="Enter username" />
+      <input type="text" id="userSearchInput" placeholder="Search by pirate name..." />
       <button id="userSearchBtn">Search</button>
     </div>
     <div id="usersList"></div>
     <div id="usersPagination"></div>
   </section>
 
-  <!-- TEAMS LISTING SECTION -->
+  <!-- ====================================================== -->
+  <!-- 5. TEAMS SECTION                                       -->
+  <!-- ====================================================== -->
   <section id="teams-section" class="info-section" style="display: none;">
-    <h2>Teams</h2>
+    <h2>Crews</h2>
     <div class="teams-search">
-      <label for="teamSearchInput">Search Teams:</label>
-      <input type="text" id="teamSearchInput" placeholder="Enter team name" />
+      <input type="text" id="teamSearchInput" placeholder="Search by crew name..." />
       <button id="teamSearchBtn">Search</button>
     </div>
     <div id="teamsList"></div>
     <div id="teamsPagination"></div>
   </section>
 
-  <!-- MY TEAM SECTION -->
+  <!-- ====================================================== -->
+  <!-- 6. MY TEAM SECTION                                     -->
+  <!-- ====================================================== -->
   <section id="team-section" class="info-section" style="display: none;">
     <section id="myTeamSection" style="text-align: left;">
-      <h2>My Team</h2>
+      <h2>My Crew</h2>
       <div id="myTeamInfo"></div>
       <br>
       <div id="noTeamActions" style="display: none; margin-bottom: 2rem;">
-        <button id="showJoinForm">Join Team</button>
-        <button id="showCreateForm">Create Team</button>
+        <button id="showJoinForm" style="margin-right: 10px;">Join Crew</button>
+        <button id="showCreateForm">Create Crew</button>
       </div>
     </section>
+
     <!-- Join Team Form -->
     <section id="joinTeamSection" style="display: none; margin-top: 2rem; text-align: left;">
-      <h3>Join a Team</h3>
-      <input type="text" id="joinTeamName" placeholder="Team Name" />
-      <input type="password" id="joinTeamPassword" placeholder="Team Password" />
+      <h3 style="font-family: 'Cinzel', serif; color: var(--gold-primary); margin-bottom: 1rem;">Join a Crew</h3>
+      <input type="text" id="joinTeamName" placeholder="Crew Name" />
+      <input type="password" id="joinTeamPassword" placeholder="Crew Password" />
       <button id="submitJoinTeam">Join</button>
       <button id="cancelJoinTeam">Cancel</button>
-      <div id="joinTeamMessage"></div>
+      <div id="joinTeamMessage" style="margin-top: 10px; color: var(--gold-primary);"></div>
     </section>
+
     <!-- Create Team Form -->
     <section id="createTeamSection" style="display: none; margin-top: 2rem; text-align: left;">
-      <h3>Create a Team</h3>
-      <input type="text" id="createTeamName" placeholder="Team Name" />
-      <input type="password" id="createTeamPassword" placeholder="Team Password" />
+      <h3 style="font-family: 'Cinzel', serif; color: var(--gold-primary); margin-bottom: 1rem;">Create a Crew</h3>
+      <input type="text" id="createTeamName" placeholder="Crew Name" />
+      <input type="password" id="createTeamPassword" placeholder="Crew Password" />
       <button id="submitCreateTeam">Create</button>
       <button id="cancelCreateTeam">Cancel</button>
-      <div id="createTeamMessage"></div>
+      <div id="createTeamMessage" style="margin-top: 10px; color: var(--gold-primary);"></div>
     </section>
   </section>
 
-  <!-- SCOREBOARD SECTION -->
+  <!-- ====================================================== -->
+  <!-- 7. SCOREBOARD / LEADERBOARD SECTION                    -->
+  <!-- ====================================================== -->
   <section id="scoreboard-section" class="info-section" style="display: none;">
-    <div id="teamScoreDisplay">Your Team Score: N/A</div>
+    <div id="teamScoreDisplay">Your Crew Score: N/A</div>
 
     <div class="card">
       <div class="card-header">
-        <h2>Team Rankings</h2>
-        <div class="tabs" style="margin-bottom: 2rem; margin-top: 1rem;">
+        <h2>Crew Rankings</h2>
+        <div class="tabs" style="margin-bottom: 1rem; margin-top: 1rem;">
           <button class="tab-btn active" data-tab="score-graph">Score Graph</button>
           <button class="tab-btn" data-tab="standings">Current Standings</button>
         </div>
@@ -272,9 +286,9 @@
           </div>
         </div>
         <div class="tab-content" id="standings">
-          <div class="standings-search" style="margin-bottom: 1rem; display: flex; gap: 1rem;">
-            <input type="text" id="standingsSearchInput" placeholder="Search standings..." style="flex:1; padding:0.5rem; border-radius: 0; padding-left: 1rem; padding-right: 1rem; border:1px solid var(--border); background:transparent; color:var(--text);">
-            <button id="standingsSearchBtn" style="padding:0.5rem 1rem; border:none; background:var(--primary); color:var(--background); border-radius: 0; padding-left: 1rem; padding-right: 1rem; cursor:pointer; box-shadow:none;">Search</button>
+          <div class="standings-search">
+            <input type="text" id="standingsSearchInput" placeholder="Search standings..." />
+            <button id="standingsSearchBtn">Search</button>
           </div>
           <div class="standings-list" id="standingsList"></div>
         </div>
@@ -282,137 +296,164 @@
     </div>
   </section>
 
-  
-
-
-
-  
-  <!-- ADMIN SECTION -->
+  <!-- ====================================================== -->
+  <!-- 8. ADMIN PORTAL SECTION                                -->
+  <!-- ====================================================== -->
   <section id="admin-section" class="info-section" style="display: none;">
-    <h2 style="margin-bottom: 0.5rem;">Admin Portal</h2>
-    <p style="color: var(--text-muted); margin-bottom: 2rem;">Manage challenges below. Adding a new challenge with an existing category name will update it.</p>
+    <h2 style="margin-bottom: 0.5rem;">Captain's Quarters (Admin Portal)</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">Manage challenges below. Adding a challenge with an existing category name will update it.</p>
     
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-      <h3 style="margin: 0;">Existing Challenges</h3>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+      <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary);">Active Challenges</h3>
       
-<div style="display: flex; gap: 1rem; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-  <button id="toggleBonusFormBtn" style="padding:0.75rem 1.25rem; border:1px solid var(--accent); background:var(--accent-soft); color:var(--accent); border-radius: 0; cursor:pointer; font-weight: bold; transition:all 0.2s;" title="Add Bonus Challenge">Bonus</button>
-  <button id="toggleAdminFormBtn" style="padding:0.75rem; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.05); color:var(--text); border-radius: 0; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; width: 44px; height: 44px;" title="Add Challenge">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-  </button>
-  <button id="adminWipeDataBtn" style="padding:0.75rem 2rem; border:1px solid #b7410e; background:transparent; color:#b7410e; border-radius: 0; cursor:pointer; font-weight: bold; transition:all 0.2s; margin-right: 0.5rem;">🗑 Wipe Data</button>
-  <button id="adminStartCtfBtn" style="padding:0.75rem 2rem; border:none; background:var(--text); color:var(--background); border-radius: 0; cursor:pointer; font-weight: bold; transition:all 0.2s;">▶ Start CTF</button>
-</div>
-
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <button id="toggleBonusFormBtn" style="padding:0.75rem 1.25rem; border:1px solid var(--gold-primary); background:rgba(201, 154, 82, 0.15); color:var(--gold-primary); font-family:'Cinzel', serif; font-weight: bold; cursor:pointer;" title="Add Bonus Challenge">Bonus</button>
+        <button id="toggleAdminFormBtn" style="padding:0.75rem; border:1px solid var(--border-subtle); background:rgba(23,17,12,0.8); color:var(--text-primary); cursor:pointer; display:flex; align-items:center; justify-content:center; width: 44px; height: 44px;" title="Add Challenge">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+        <button id="adminWipeDataBtn" style="padding:0.75rem 1.5rem; border:1px solid var(--danger); background:transparent; color:var(--danger); font-family:'Cinzel', serif; font-weight: bold; cursor:pointer;">🗑 Wipe Data</button>
+        <button id="adminStartCtfBtn" style="padding:0.75rem 1.5rem; border:none; background:var(--gold-primary); color:var(--bg-primary); font-family:'Cinzel', serif; font-weight: bold; cursor:pointer;">▶ Start CTF</button>
+      </div>
     </div>
     
+    <!-- Admin Form Card -->
     <div id="adminFormCard" class="card" style="margin-bottom: 2rem; display: none;">
       <div class="card-header" style="text-align: center;">
-        <h3 style="margin: 0;">Challenge Details</h3>
+        <h3 style="margin: 0;">Challenge Configuration</h3>
       </div>
       <div class="card-content" style="padding: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
-        <input type="text" id="adminCatInput" placeholder="Category Name (e.g. Forensics)" style="padding:0.75rem 1.25rem; border-radius: 0; border:1px solid var(--border); background:transparent; color:var(--text); width: 100%; max-width: 500px; text-align: center;">
-        <input type="text" id="adminTextInput" placeholder="Challenge Text" style="padding:0.75rem 1.25rem; border-radius: 0; border:1px solid var(--border); background:transparent; color:var(--text); width: 100%; max-width: 500px; text-align: center;">
-        <input type="text" id="adminFlagInput" placeholder="Flag (will be hashed automatically)" style="padding:0.75rem 1.25rem; border-radius: 0; border:1px solid var(--border); background:transparent; color:var(--text); width: 100%; max-width: 500px; text-align: center;">
-        <select id="adminDiffInput" style="padding:0.75rem 1.25rem; border-radius: 0; border:1px solid var(--accent); background:var(--accent-soft); color:var(--accent); width: 100%; max-width: 500px; text-align: center; cursor: pointer; outline: none; font-weight: bold; color-scheme: dark;">
-          <option value="EASY" style="background: #080b0c; color: var(--accent);">Difficulty: EASY</option>
-          <option value="MEDIUM" style="background: #080b0c; color: var(--accent);">Difficulty: MEDIUM</option>
-          <option value="HARD" style="background: #080b0c; color: var(--accent);">Difficulty: HARD</option>
-          <option value="BONUS" style="background: #080b0c; color: var(--accent);">Difficulty: BONUS</option>
+        <input type="text" id="adminCatInput" placeholder="Category Name (e.g. Forensics)" style="width: 100%; max-width: 500px; text-align: center;">
+        <input type="text" id="adminSubtitleInput" placeholder="Subtitle (e.g. The Forged Manifest)" style="width: 100%; max-width: 500px; text-align: center;">
+        <input type="text" id="adminTextInput" placeholder="Challenge Text / Brief" style="width: 100%; max-width: 500px; text-align: center;">
+        <input type="text" id="adminFlagInput" placeholder="Flag (will be hashed automatically)" style="width: 100%; max-width: 500px; text-align: center;">
+        <select id="adminDiffInput" style="padding:0.75rem 1.25rem; border:1px solid var(--gold-primary); background:var(--panel-bg); color:var(--gold-primary); width: 100%; max-width: 500px; text-align: center; cursor: pointer; outline: none; font-weight: bold; font-family:'Cinzel', serif;">
+          <option value="EASY">Difficulty: EASY</option>
+          <option value="MEDIUM">Difficulty: MEDIUM</option>
+          <option value="HARD">Difficulty: HARD</option>
+          <option value="BONUS">Difficulty: BONUS</option>
         </select>
-        <input type="text" id="adminHintInput" placeholder="Hint (Optional)" style="padding:0.75rem 1.25rem; border-radius: 0; border:1px solid var(--border); background:transparent; color:var(--text); width: 100%; max-width: 500px; text-align: center;">
-        <input type="number" id="adminPointsInput" placeholder="Points (default 500)" style="padding:0.75rem 1.25rem; border-radius: 0; border:1px solid var(--border); background:transparent; color:var(--text); width: 100%; max-width: 500px; text-align: center;">
-        <div style="display:flex; flex-direction:column; align-items:center; gap:0.75rem; width:100%; max-width:500px; border:1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); padding:1.25rem; border-radius: 0;">
-          <label style="font-size:0.9rem; opacity:0.8; font-weight: 500;">Attach Resource File (Optional)</label>
+        <input type="text" id="adminHintInput" placeholder="Hint (Optional)" style="width: 100%; max-width: 500px; text-align: center;">
+        <input type="number" id="adminPointsInput" placeholder="Points (default 500)" style="width: 100%; max-width: 500px; text-align: center;">
+        
+        <div style="display:flex; flex-direction:column; align-items:center; gap:0.75rem; width:100%; max-width:500px; border:1px solid var(--border-subtle); background: rgba(23,17,12,0.6); padding:1.25rem; border-radius: 4px;">
+          <label style="font-size:0.9rem; font-family: 'Cinzel', serif; color: var(--gold-primary);">Attach Resource File (Optional)</label>
           <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
-            <button type="button" style="padding: 0.5rem 1.5rem; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: var(--text); border-radius: 0; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;" onclick="document.getElementById('adminResourceInput').click()">Choose File</button>
-            <span id="fileNameDisplay" style="margin-left: 0.75rem; font-size: 0.85rem; color: var(--text-muted); max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">No file chosen</span>
+            <button type="button" style="padding: 0.5rem 1.5rem; border: 1px solid var(--border-subtle); background: rgba(201,154,82,0.1); color: var(--gold-primary); cursor: pointer; font-size: 0.85rem;" onclick="document.getElementById('adminResourceInput').click()">Choose File</button>
+            <span id="fileNameDisplay" style="margin-left: 0.75rem; font-size: 0.85rem; color: var(--text-secondary); max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">No file chosen</span>
             <input type="file" id="adminResourceInput" style="display: none;" onchange="document.getElementById('fileNameDisplay').textContent = this.files[0] ? this.files[0].name : 'No file chosen'">
           </div>
-          <label style="font-size:0.85rem; display:flex; align-items:center; gap:0.5rem; margin-top:0.25rem; cursor:pointer; color: var(--text-muted);">
-            <input type="checkbox" id="adminRemoveResource" style="accent-color: var(--text); cursor: pointer; width: 16px; height: 16px;"> Remove existing resource
+          <label style="font-size:0.85rem; display:flex; align-items:center; gap:0.5rem; margin-top:0.25rem; cursor:pointer; color: var(--text-secondary);">
+            <input type="checkbox" id="adminRemoveResource" style="accent-color: var(--gold-primary); cursor: pointer; width: 16px; height: 16px;"> Remove existing resource
           </label>
         </div>
-        <button id="adminSubmitBtn" style="padding:0.75rem 2rem; border:none; background:var(--text); color:var(--background); border-radius: 0; cursor:pointer; font-weight: 500;">Save Challenge</button>
+
+        <button id="adminSubmitBtn" style="padding:0.75rem 2.5rem; border:1px solid var(--gold-primary); background:var(--teal-accent); color:var(--text-primary); font-family:'Cinzel', serif; font-weight: bold; cursor:pointer;">Save Challenge</button>
         <p id="adminMsg" style="margin:0;"></p>
       </div>
     </div>
     
-    
     <div id="adminChallengesList" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;"></div>
   </section>
 
-
-  <!-- PROFILE SECTION -->
+  <!-- ====================================================== -->
+  <!-- 9. PROFILE SECTION                                     -->
+  <!-- ====================================================== -->
   <section id="profile-section" class="info-section" style="display: none;">
-    <h2>Profile</h2>
+    <h2>Pirate Profile</h2>
     <div id="profileInfo"></div>
   </section>
 
+  <!-- ====================================================== -->
+  <!-- 10. MODALS                                             -->
+  <!-- ====================================================== -->
 
+  <!-- QUARTERMASTER'S HINT CONFIRMATION MODAL -->
+  <div id="hintConfirmModal" class="modal" style="display: none; z-index: 10001;">
+    <div class="modal-content" style="max-width: 480px; text-align: left;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1rem;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--gold-primary)" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+        </svg>
+        <h3 class="modal-title" style="margin: 0;">Quartermaster's Bargain</h3>
+      </div>
+      <p class="modal-message" id="hintModalPrompt">
+        Are you sure you want to reveal the Quartermaster's secret for this challenge?
+      </p>
+      <div class="modal-cost-alert" id="hintModalAlert">
+        ⚠️ Warning: <strong id="hintModalPenaltyPoints">5</strong> points will be deducted immediately from your crew's treasure!
+        <div style="font-size: 11px; opacity: 0.85; margin-top: 4px;">(Penalty increases with each hint unlocked: -5, -10, -15 pts...)</div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-cancel-btn" onclick="closeHintUnlockModal()">Keep Secrets</button>
+        <button class="modal-confirm-btn" id="confirmUnlockHintBtn" onclick="confirmHintUnlock()">Deduct & Reveal</button>
+      </div>
+    </div>
+  </div>
 
-  
-  <!-- Custom Confirm Modal -->
-  
-  <!-- INTRO MODAL -->
+  <!-- INTRO / RULES MODAL -->
   <div id="introModal" class="modal" style="display: none; z-index: 10000; align-items: center; justify-content: center;">
-    <div class="modal-content" style="max-width: 1000px; width: 90%; padding: 2.5rem; text-align: left; border: 1px solid var(--accent); background: rgba(13, 17, 18, 0.35); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: inset 0 0 20px rgba(200, 214, 75, 0.05), 0 10px 40px rgba(0, 0, 0, 0.9); border-radius: 0;">
-      <h2 style="color: var(--accent); margin-bottom: 1.5rem; font-size: 2rem; border-bottom: 1px solid rgba(200, 214, 75, 0.2); padding-bottom: 1rem;">Welcome to CoreDump 2.0 CTF</h2>
+    <div class="modal-content" style="max-width: 900px; width: 92%; padding: 2.5rem; text-align: left;">
+      <h2 style="font-family: 'Cinzel', serif; color: var(--gold-primary); margin-bottom: 1.5rem; font-size: 2rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 1rem;">Welcome to Lost Code // CoreDump 2.0</h2>
       
       <div style="color: var(--text-primary); font-size: 1rem; line-height: 1.6; margin-bottom: 2rem;">
-        <p style="margin-bottom: 1rem;">Prepare your tools and sharpen your skills. You are now entering the CoreDump 2.0 Cyber Range.</p>
+        <p style="margin-bottom: 1rem;">Prepare your instruments and charts. You are now embarking on the Lost Code Treasure Expedition.</p>
         
-        <div style="display: flex; gap: 2rem; margin-top: 1.5rem;">
-          <div style="flex: 1;">
-            <h3 style="color: var(--accent-bright); font-size: 1.1rem; margin-bottom: 0.5rem;">Flag Format</h3>
-            <p style="margin-bottom: 0.5rem;">All flags must be submitted in the following format:</p>
-            <ul style="list-style: none; padding-left: 1rem; margin-bottom: 1rem; border-left: 2px solid var(--accent-soft);">
-              <li style="margin-bottom: 0.25rem;"><span style="color: var(--accent);">•</span> Must be wrapped in coredump{...}</li>
-              <li style="margin-bottom: 0.25rem;"><span style="color: var(--accent);">•</span> All letters must be <strong>lowercase</strong></li>
-              <li style="margin-bottom: 0.25rem;"><span style="color: var(--accent);">•</span> Words or numbers must be separated by <strong>underscores (_)</strong></li>
+        <div style="display: flex; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 280px;">
+            <h3 style="font-family: 'Cinzel', serif; color: var(--gold-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">Flag Format</h3>
+            <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">All salvaged flags must be submitted in the following format:</p>
+            <ul style="list-style: none; padding-left: 1rem; margin-bottom: 1rem; border-left: 2px solid var(--gold-primary);">
+              <li style="margin-bottom: 0.25rem;"><span style="color: var(--gold-primary);">•</span> Wrapped in <code>coredump{...}</code></li>
+              <li style="margin-bottom: 0.25rem;"><span style="color: var(--gold-primary);">•</span> All letters must be <strong>lowercase</strong></li>
+              <li style="margin-bottom: 0.25rem;"><span style="color: var(--gold-primary);">•</span> Words or numbers must be separated by <strong>underscores (_)</strong></li>
             </ul>
-            <div style="background: rgba(0,0,0,0.3); padding: 0.75rem; border: 1px dashed var(--accent-soft); font-size: 1rem; text-align: center;">
-              Example: <span style="color: var(--accent);">coredump{this_is_a_valid_flag_123}</span>
+            <div style="background: rgba(0,0,0,0.4); padding: 0.75rem; border: 1px dashed var(--border-subtle); font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; text-align: center; color: var(--gold-primary);">
+              coredump{this_is_a_valid_flag_123}
             </div>
           </div>
-          <div style="flex: 1;">
-            <h3 style="color: var(--accent-bright); font-size: 1.1rem; margin-bottom: 0.5rem;">Rules of Engagement</h3>
-            <ul style="list-style: none; padding-left: 1rem; border-left: 2px solid var(--accent-soft);">
-              <li style="margin-bottom: 0.25rem;"><span style="color: var(--accent);">•</span> Do not attack the CTF infrastructure.</li>
-              <li style="margin-bottom: 0.25rem;"><span style="color: var(--accent);">•</span> Do not share flags with other teams.</li>
-              <li style="margin-bottom: 0.25rem;"><span style="color: var(--accent);">•</span> Bruteforcing flags on the platform is strictly prohibited.</li>
+          <div style="flex: 1; min-width: 280px;">
+            <h3 style="font-family: 'Cinzel', serif; color: var(--gold-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">Articles of the Sea (Rules)</h3>
+            <ul style="list-style: none; padding-left: 1rem; border-left: 2px solid var(--gold-primary);">
+              <li style="margin-bottom: 0.5rem;"><span style="color: var(--gold-primary);">•</span> Do not attack the expedition infrastructure.</li>
+              <li style="margin-bottom: 0.5rem;"><span style="color: var(--gold-primary);">•</span> Do not share flags across rival crews.</li>
+              <li style="margin-bottom: 0.5rem;"><span style="color: var(--gold-primary);">•</span> Bruteforcing flags on the platform is forbidden.</li>
+              <li style="margin-bottom: 0.5rem;"><span style="color: var(--gold-primary);">•</span> Quartermaster hints cost points (-5, -10, -15...).</li>
             </ul>
           </div>
         </div>
       </div>
 
-      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; padding: 1rem; background: rgba(200, 214, 75, 0.05); border: 1px solid var(--accent-soft);">
-        <input type="checkbox" id="introAgreement" style="appearance: auto; width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;">
-        <label for="introAgreement" style="font-size: 0.9rem; color: var(--text-primary); cursor: pointer; user-select: none;">I have read all the information and agree to follow the rules of engagement.</label>
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; padding: 1rem; background: rgba(201, 154, 82, 0.08); border: 1px solid var(--border-subtle);">
+        <input type="checkbox" id="introAgreement" style="accent-color: var(--gold-primary); width: 18px; height: 18px; cursor: pointer;">
+        <label for="introAgreement" style="font-size: 0.95rem; color: var(--text-primary); cursor: pointer; user-select: none;">I have read the articles and swear fealty to the competition rules.</label>
       </div>
       
       <div style="display: flex; justify-content: flex-end;">
-        <button id="introContinueBtn" disabled style="padding: 0.75rem 2rem; border: 1px solid var(--glass-border); background: var(--bg-secondary); color: var(--text-muted); border-radius: 0; cursor: not-allowed; font-weight: bold; font-size: 1rem; transition: all 0.2s;">Continue</button>
+        <button id="introContinueBtn" disabled style="padding: 0.75rem 2rem; border: 1px solid var(--border-subtle); background: var(--panel-secondary); color: var(--text-secondary); cursor: not-allowed; font-family:'Cinzel', serif; font-weight: bold; font-size: 0.95rem; transition: all 0.2s;">Board the Ship</button>
       </div>
     </div>
   </div>
+
+  <!-- CUSTOM CONFIRM MODAL -->
   <div id="customConfirmModal" class="modal" style="z-index: 10000; display: none;">
-    <div class="modal-content" style="max-width: 400px; text-align: center; padding: 2rem;">
-      <h3 id="customConfirmTitle" style="margin-bottom: 1rem; font-size: 1.5rem;">Confirm</h3>
-      <p id="customConfirmMessage" style="margin-bottom: 2rem; color: var(--text-muted);"></p>
+    <div class="modal-content" style="max-width: 440px; text-align: center; padding: 2rem;">
+      <h3 id="customConfirmTitle" class="modal-title">Confirm</h3>
+      <p id="customConfirmMessage" class="modal-message"></p>
       <div style="display: flex; gap: 1rem; justify-content: center;">
-        <button id="customConfirmCancelBtn" style="padding: 0.75rem 2rem; border: 1px solid var(--border); background: transparent; color: var(--text); border-radius: 0; cursor: pointer; transition: all 0.2s;">Cancel</button>
-        <button id="customConfirmOkBtn" style="padding: 0.75rem 2rem; border: none; background: var(--text); color: var(--background); border-radius: 0; cursor: pointer; font-weight: 500;">OK</button>
+        <button id="customConfirmCancelBtn" class="modal-cancel-btn">Cancel</button>
+        <button id="customConfirmOkBtn" class="modal-confirm-btn">OK</button>
       </div>
     </div>
   </div>
 
+  <!-- FIXED CTF EXPEDITION TIMER -->
+  <div id="ctfTimerDisplay">--:--:--</div>
 
-
-  
-  <!-- MAIN SCRIPT -->
+  <!-- ====================================================== -->
+  <!-- 11. MAIN JAVASCRIPT LOGIC                              -->
+  <!-- ====================================================== -->
   <script>
-
     function escapeHTML(str) {
       if (typeof str !== 'string') return str;
       return str.replace(/[&<>'"]/g, function(tag) {
@@ -427,47 +468,46 @@
       });
     }
 
+    // Pirate Category Icons Map
+    const categoryIcons = {
+      'Forensics': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>`,
+      'OSINT': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="12" r="5"></circle><circle cx="17" cy="12" r="5"></circle><path d="M12 12h.01"></path><path d="M7 7a5 5 0 0 1 10 0"></path></svg>`,
+      'OSINT 2': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="12" r="5"></circle><circle cx="17" cy="12" r="5"></circle><path d="M12 12h.01"></path><path d="M7 7a5 5 0 0 1 10 0"></path></svg>`,
+      'Steganography': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2v3a4 4 0 0 1-1 3v10a3 3 0 0 0 6 0V8a4 4 0 0 1-1-3V2z"></path><path d="M9 2h6"></path><path d="M10 13h4"></path></svg>`,
+      'Miscellaneous': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path><circle cx="12" cy="12" r="9"></circle></svg>`,
+      'Miscellaneous 2': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v4M12 18v4M2 12h4M18 12h4"></path><circle cx="12" cy="12" r="9"></circle></svg>`,
+      'Cryptography': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="15" rx="2"></rect><path d="M3 11h18"></path><path d="M12 11v3"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`,
+      'Crypto': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="15" rx="2"></rect><path d="M3 11h18"></path><path d="M12 11v3"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`,
+      'Reverse Engineering': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 2 15 9 12 13 9 9 12 2"></polygon><polygon points="12 22 9 15 12 11 15 15 12 22"></polygon></svg>`,
+      'Binary Analysis': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line></svg>`,
+      'Pwn': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line><circle cx="12" cy="12" r="4"></circle></svg>`,
+      'Web Exploitation': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`,
+      'Networking': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="6" height="6" rx="1"></rect><rect x="16" y="2" width="6" height="6" rx="1"></rect><rect x="9" y="16" width="6" height="6" rx="1"></rect><path d="M5 8v3a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"></path><line x1="12" y1="12" x2="12" y2="16"></line></svg>`
+    };
 
-    // Intro Modal Logic
-    document.addEventListener('DOMContentLoaded', () => {
-      if (!sessionStorage.getItem('coreDumpIntroSeen')) {
-        const introModal = document.getElementById('introModal');
-        const introAgreement = document.getElementById('introAgreement');
-        const introContinueBtn = document.getElementById('introContinueBtn');
-        
-        introModal.style.display = 'flex';
-        
-        introAgreement.addEventListener('change', (e) => {
-          if (e.target.checked) {
-            introContinueBtn.disabled = false;
-            introContinueBtn.style.background = 'var(--accent-soft)';
-            introContinueBtn.style.color = 'var(--accent)';
-            introContinueBtn.style.borderColor = 'var(--accent)';
-            introContinueBtn.style.cursor = 'pointer';
-            introContinueBtn.style.boxShadow = '0 0 15px rgba(200, 214, 75, 0.2)';
-          } else {
-            introContinueBtn.disabled = true;
-            introContinueBtn.style.background = 'var(--bg-secondary)';
-            introContinueBtn.style.color = 'var(--text-muted)';
-            introContinueBtn.style.borderColor = 'var(--glass-border)';
-            introContinueBtn.style.cursor = 'not-allowed';
-            introContinueBtn.style.boxShadow = 'none';
-          }
-        });
-        
-        introContinueBtn.addEventListener('click', () => {
-          if (introAgreement.checked) {
-            introModal.style.display = 'none';
-            sessionStorage.setItem('coreDumpIntroSeen', 'true');
-          }
-        });
+    function getCategoryIcon(cat) {
+      return categoryIcons[cat] || `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg>`;
+    }
+
+    // Toast Notifications
+    function showToast(msg) {
+      let toast = document.getElementById('pirateToast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'pirateToast';
+        toast.style.cssText = 'position:fixed; top:90px; right:35px; background:var(--panel-bg); border:1px solid var(--gold-primary); color:var(--text-primary); padding:12px 20px; font-family:"Cinzel",serif; font-size:13px; z-index:10002; box-shadow:0 8px 30px rgba(0,0,0,0.8); border-radius:4px; transition:opacity 0.3s ease; opacity:0; pointer-events:none;';
+        document.body.appendChild(toast);
       }
-    });
+      toast.textContent = msg;
+      toast.style.opacity = '1';
+      setTimeout(() => { toast.style.opacity = '0'; }, 3500);
+    }
 
+    // Section Navigation
     function showSection(sectionId) {
       document.querySelectorAll('.info-section').forEach(sec => sec.style.display = 'none');
       const target = document.getElementById(sectionId);
-      if(target) target.style.display = 'block';
+      if (target) target.style.display = 'block';
       
       document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
       const activeLinks = document.querySelectorAll(`.nav-link[onclick*="${sectionId}"]`);
@@ -476,26 +516,24 @@
       if (sectionId === 'admin-section' && typeof fetchAdminChallenges === 'function') {
         fetchAdminChallenges();
       }
+      if (sectionId === 'challenges-section') {
+        renderChallenges();
+      }
+      document.body.classList.remove('mobile-menu-open');
     }
 
-
+    // Custom Confirm Modal
     let customConfirmCallback = null;
-    
     function showCustomConfirm(title, message, isAlert, callback) {
       document.getElementById('customConfirmTitle').textContent = title;
       document.getElementById('customConfirmMessage').textContent = message;
       document.getElementById('customConfirmModal').style.display = 'flex';
       
       const cancelBtn = document.getElementById('customConfirmCancelBtn');
-      if (isAlert) {
-        cancelBtn.style.display = 'none';
-      } else {
-        cancelBtn.style.display = 'block';
-      }
-      
+      cancelBtn.style.display = isAlert ? 'none' : 'block';
       customConfirmCallback = callback;
     }
-    
+
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('customConfirmCancelBtn').addEventListener('click', () => {
         document.getElementById('customConfirmModal').style.display = 'none';
@@ -507,53 +545,91 @@
       });
     });
 
-    // Dashboard Tab Switching
-    const navLinks = document.querySelectorAll('.nav-links a[data-target]');
-    const sections = document.querySelectorAll('.info-section');
-    navLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const targetId = link.getAttribute('data-target');
-        sections.forEach(sec => sec.style.display = 'none');
-        const targetSection = document.getElementById(targetId);
-        if (targetSection) targetSection.style.display = 'block';
-        if (targetId === 'users-section') fetchUsers();
-        if (targetId === 'profile-section') fetchProfile();
-        if (targetId === 'scoreboard-section') {
-          fetchTeamScores(); fetchTeams(); fetchMyTeam();
-          updateChallengeBoxesFromTeam();
-        }
-        document.body.classList.remove('mobile-menu-open');
-      });
+    // Intro Modal Logic
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!sessionStorage.getItem('lostCodeIntroSeen')) {
+        const introModal = document.getElementById('introModal');
+        const introAgreement = document.getElementById('introAgreement');
+        const introContinueBtn = document.getElementById('introContinueBtn');
+        
+        introModal.style.display = 'flex';
+        introAgreement.addEventListener('change', (e) => {
+          if (e.target.checked) {
+            introContinueBtn.disabled = false;
+            introContinueBtn.style.background = 'var(--gold-primary)';
+            introContinueBtn.style.color = 'var(--bg-primary)';
+            introContinueBtn.style.borderColor = 'var(--gold-primary)';
+            introContinueBtn.style.cursor = 'pointer';
+          } else {
+            introContinueBtn.disabled = true;
+            introContinueBtn.style.background = 'var(--panel-secondary)';
+            introContinueBtn.style.color = 'var(--text-secondary)';
+            introContinueBtn.style.borderColor = 'var(--border-subtle)';
+            introContinueBtn.style.cursor = 'not-allowed';
+          }
+        });
+        
+        introContinueBtn.addEventListener('click', () => {
+          if (introAgreement.checked) {
+            introModal.style.display = 'none';
+            sessionStorage.setItem('lostCodeIntroSeen', 'true');
+          }
+        });
+      }
     });
 
-    // Fetch profile info
-
+    // ======================================================
+    // CHALLENGES LOGIC & HINT UNLOCK SYSTEM
+    // ======================================================
     let currentChallenges = {};
-    
+    let currentCategory = '';
+    let myTeamData = null;
+    let allUsersData = [];
+
     function fetchChallenges() {
       fetch('/api/challenges')
         .then(res => res.json())
         .then(data => {
           currentChallenges = data;
           renderChallenges();
-          updateChallengeBoxesFromTeam();
-        });
+          updateStatsOverview();
+        })
+        .catch(err => console.error('Error fetching challenges:', err));
     }
 
-    
+    function updateStatsOverview() {
+      const keys = Object.keys(currentChallenges);
+      const chCount = document.getElementById('totalChallengesCount');
+      if (chCount) chCount.textContent = keys.length;
+      
+      let totalPts = 0;
+      keys.forEach(k => { totalPts += (currentChallenges[k].points || 0); });
+      const ptEl = document.getElementById('totalPointsCount');
+      if (ptEl) ptEl.textContent = totalPts.toLocaleString();
+    }
+
     function filterChallenges() {
       const activeTab = document.querySelector('#challengeTabs .category.active');
       if (!activeTab) return;
       const targetDiff = activeTab.getAttribute('data-diff');
       
+      let firstVisibleCategory = null;
       document.querySelectorAll('#challengeCategoriesContainer .challenge-card').forEach(card => {
         if (card.getAttribute('data-diff') === targetDiff) {
           card.style.display = 'flex';
+          if (!firstVisibleCategory) firstVisibleCategory = card.getAttribute('data-category');
         } else {
           card.style.display = 'none';
         }
       });
+
+      // On desktop, auto-select first visible card if current selection is not visible
+      if (window.innerWidth > 1080 && firstVisibleCategory) {
+        const currentCard = document.querySelector(`.challenge-card[data-category="${currentCategory}"]`);
+        if (!currentCard || currentCard.style.display === 'none') {
+          selectChallenge(firstVisibleCategory);
+        }
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -574,123 +650,318 @@
       if (catContainer) catContainer.innerHTML = '';
       if (adminList) adminList.innerHTML = '';
       
-      // Fixed ordering
       const orderedCategories = [
-        "Forensics", "Reverse Engineering", "Web Exploitation", "OSINT", 
-        "Crypto", "Steganography", "Binary Analysis", "Miscellaneous"
+        "Forensics", "OSINT", "Steganography", "Miscellaneous", "Miscellaneous 2",
+        "Cryptography", "Web Exploitation", "Networking", "OSINT 2",
+        "Reverse Engineering", "Binary Analysis", "Pwn"
       ];
       
       const allCategories = new Set([...orderedCategories, ...Object.keys(currentChallenges)]);
-      
       let hasBonus = false;
+      let firstCategory = null;
       
       for (const category of allCategories) {
-        if (currentChallenges[category] && currentChallenges[category].difficulty === 'BONUS') {
-          hasBonus = true;
-        }
-
         if (!currentChallenges[category]) continue;
         const info = currentChallenges[category];
+        if (info.difficulty === 'BONUS') hasBonus = true;
+        if (!firstCategory) firstCategory = category;
         
         const pts = info.points || 500;
-        let diff = info.difficulty || 'EASY';
+        const diff = info.difficulty || 'EASY';
+        const subtitle = info.subtitle || `CTF // ${diff} // ${pts} PTS`;
         
         if (catContainer) {
           const div = document.createElement('div');
           div.className = 'challenge-card';
+          if (category === currentCategory) div.classList.add('selected');
           div.setAttribute('data-category', category);
           div.setAttribute('data-points', pts);
           div.setAttribute('data-diff', diff);
           div.innerHTML = `
-          <div class="c-dot"></div>
-          <div class="c-info">
-            <div class="c-title">${escapeHTML(category)}</div>
-            <div class="c-subtitle">CTF // <span>${diff}</span> // ${pts} PTS</div>
-          </div>
-          <div class="c-solves">${info.solves || 0} SOLVES</div>
-          <div class="c-arrow">&gt;</div>
+            <div class="c-icon-wrapper">${getCategoryIcon(category)}</div>
+            <div class="c-info">
+              <div class="c-title">${escapeHTML(category)}</div>
+              <div class="c-subtitle">${escapeHTML(subtitle)}</div>
+            </div>
+            <div class="c-solves">${info.solves || 0} SOLVES</div>
+            <div class="c-arrow">&gt;</div>
           `;
+          div.addEventListener('click', () => {
+            selectChallenge(category);
+          });
           catContainer.appendChild(div);
         }
         
         if (adminList) {
           const div = document.createElement('div');
-          div.style.cssText = 'display:flex; flex-direction:column; justify-content:space-between; padding:1.25rem; background:var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border:1px solid var(--glass-border); border-radius: 0; min-height: 140px;';
+          div.style.cssText = 'display:flex; flex-direction:column; justify-content:space-between; padding:1.25rem; background:var(--panel-secondary); border:1px solid var(--border-subtle); border-radius: 4px; min-height: 150px;';
           div.innerHTML = `
             <div style="margin-bottom: 1.25rem;">
-              <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.2rem;">${escapeHTML(category)}</div>
-              <div style="font-size:0.8rem; color:var(--primary); font-weight: 600; margin-bottom: 0.5rem;">${info.points || 500} pts</div>
-              <div style="font-size:0.85rem; color:var(--text-muted); line-height: 1.4;">${escapeHTML(info.text)}</div>
+              <div style="font-family:'Cinzel',serif; font-size: 1.1rem; font-weight: 700; color:var(--gold-primary); margin-bottom: 0.2rem;">${escapeHTML(category)}</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--gold-muted); font-weight: 600; margin-bottom: 0.5rem;">${pts} pts • ${diff}</div>
+              <div style="font-size:0.85rem; color:var(--text-secondary); line-height: 1.4;">${escapeHTML(info.text)}</div>
             </div>
-            <div style="display:flex; gap:0.5rem; margin-top:auto;"><button onclick="editChallenge('${category}')" style="flex:1; padding:0.5rem; background:rgba(255,255,255,0.05); color:var(--text-primary); border:none; border-radius: 0; cursor:pointer; font-weight:500; letter-spacing: 1px; transition:all 0.2s; text-align:center;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">EDIT</button><button onclick="deleteChallenge('${category}')" style="flex:1; padding:0.5rem; background:rgba(255,255,255,0.05); color:var(--text-primary); border:none; border-radius: 0; cursor:pointer; font-weight:500; letter-spacing: 1px; transition:all 0.2s; text-align:center;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">DELETE</button></div>
+            <div style="display:flex; gap:0.5rem; margin-top:auto;">
+              <button onclick="editChallenge('${category}')" style="flex:1; padding:0.5rem; background:rgba(201,154,82,0.1); color:var(--gold-primary); border:1px solid var(--border-subtle); border-radius: 3px; cursor:pointer; font-family:'Cinzel',serif; font-weight:600;">EDIT</button>
+              <button onclick="deleteChallenge('${category}')" style="flex:1; padding:0.5rem; background:rgba(166,68,68,0.1); color:var(--danger); border:1px solid var(--danger); border-radius: 3px; cursor:pointer; font-family:'Cinzel',serif; font-weight:600;">DELETE</button>
+            </div>
           `;
           adminList.appendChild(div);
         }
       }
       
       const bonusTab = document.getElementById('bonusFilterTab');
-      if (bonusTab) {
-        bonusTab.style.display = hasBonus ? 'flex' : 'none';
-      }
+      if (bonusTab) bonusTab.style.display = hasBonus ? 'flex' : 'none';
       
-      // After rendering challenges, we also need to re-apply the solved colors if the user is in a team
-      fetchMyTeam();
       filterChallenges();
+      updateChallengeBoxesFromTeam();
+
+      // Default select on initial render
+      if (!currentCategory && firstCategory) {
+        selectChallenge(firstCategory);
+      } else if (currentCategory && currentChallenges[currentCategory]) {
+        selectChallenge(currentCategory);
+      }
     }
-    
-    
+
+    function selectChallenge(category) {
+      currentCategory = category;
+      const chall = currentChallenges[category];
+      if (!chall) return;
+
+      // Update card active classes
+      document.querySelectorAll('#challengeCategoriesContainer .challenge-card').forEach(card => {
+        if (card.getAttribute('data-category') === category) {
+          card.classList.add('selected');
+        } else {
+          card.classList.remove('selected');
+        }
+      });
+
+      const modal = document.getElementById('challengeModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalDiff = document.getElementById('modalDiff');
+      const modalPoints = document.getElementById('modalPoints');
+      const modalIcon = document.getElementById('modalCategoryIcon');
+
+      modalTitle.textContent = category;
+      modalDiff.textContent = chall.difficulty || 'EASY';
+      modalPoints.textContent = chall.points || 500;
+      if (modalIcon) modalIcon.innerHTML = getCategoryIcon(category);
+
+      // Brief
+      const desc = chall.text || `Solve the ${category} challenge and submit your flag.`;
+      document.getElementById('challengeDescription').textContent = desc;
+
+      // Hint (Quartermaster's Secret)
+      const hintSection = document.getElementById('hintSection');
+      const hintContent = document.getElementById('challengeHintContent');
+      if (chall.hasHint) {
+        hintSection.style.display = 'block';
+        if (chall.hintUnlocked || (chall.hint && chall.hint.trim())) {
+          hintContent.innerHTML = `
+            <div class="hint-unlocked-box">
+              <div style="font-size: 11px; color: var(--gold-primary); margin-bottom: 6px; letter-spacing: 0.1em; font-family: 'Cinzel', serif;">[ UNLOCKED HINT ]</div>
+              <div>${escapeHTML(chall.hint)}</div>
+            </div>
+          `;
+        } else {
+          const cost = chall.nextHintCost || 5;
+          hintContent.innerHTML = `
+            <div class="hint-locked-box">
+              <div class="hint-locked-message">
+                The Quartermaster holds a secret for this challenge. Revealing it will deduct <strong>${cost} points</strong> from your crew's treasure.
+              </div>
+              <button type="button" class="hint-unlock-btn" onclick="openHintUnlockModal('${escapeHTML(category)}', ${cost})">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
+                Unlock Hint (-${cost} PTS)
+              </button>
+            </div>
+          `;
+        }
+      } else {
+        hintSection.style.display = 'none';
+      }
+
+      // Attachments (Salvaged Files)
+      const resContainer = document.getElementById('resourceContainer');
+      const dlBtn = document.getElementById('downloadResourceBtn');
+      const attName = document.getElementById('attachmentName');
+      if (chall.resource) {
+        resContainer.style.display = 'block';
+        dlBtn.href = '/downloads/' + chall.resource;
+        const fName = chall.originalResourceName || chall.resource;
+        dlBtn.setAttribute('download', fName);
+        if (attName) attName.textContent = fName;
+      } else {
+        resContainer.style.display = 'none';
+      }
+
+      document.getElementById('flagInput').value = '';
+      document.getElementById('flagResult').textContent = '';
+      modal.style.display = 'flex';
+    }
+
+    // Quartermaster Hint Unlock Confirmation Modal
+    let hintTargetCategory = null;
+    let hintTargetCost = 5;
+
+    function openHintUnlockModal(category, cost) {
+      hintTargetCategory = category;
+      hintTargetCost = cost;
+      document.getElementById('hintModalPrompt').innerHTML = `Are you sure you want to reveal the Quartermaster's secret for <strong>${escapeHTML(category)}</strong>?`;
+      document.getElementById('hintModalPenaltyPoints').textContent = cost;
+      document.getElementById('hintConfirmModal').style.display = 'flex';
+    }
+
+    function closeHintUnlockModal() {
+      document.getElementById('hintConfirmModal').style.display = 'none';
+    }
+
+    function confirmHintUnlock() {
+      const btn = document.getElementById('confirmUnlockHintBtn');
+      btn.disabled = true;
+      btn.textContent = 'Unlocking...';
+
+      fetch('/api/challenge/hint/unlock', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category: hintTargetCategory })
+      })
+      .then(res => res.json())
+      .then(data => {
+        btn.disabled = false;
+        btn.textContent = 'Deduct & Reveal';
+        closeHintUnlockModal();
+        if (data.error) {
+          showCustomConfirm("Quartermaster's Refusal", data.error, true, null);
+        } else {
+          if (currentChallenges[hintTargetCategory]) {
+            currentChallenges[hintTargetCategory].hint = data.hint;
+            currentChallenges[hintTargetCategory].hintUnlocked = true;
+            if (data.nextHintCost) {
+              for (const k in currentChallenges) {
+                currentChallenges[k].nextHintCost = data.nextHintCost;
+              }
+            }
+          }
+          fetchMyTeam();
+          fetchTeamScores();
+          if (currentCategory === hintTargetCategory) {
+            selectChallenge(currentCategory);
+          }
+          showToast(data.message || `Hint revealed! ${data.cost} points deducted.`);
+        }
+      })
+      .catch(err => {
+        btn.disabled = false;
+        btn.textContent = 'Deduct & Reveal';
+        closeHintUnlockModal();
+        showCustomConfirm("Error", "Could not connect to Quartermaster: " + err.message, true, null);
+      });
+    }
+
+    // Flag Submission
+    document.addEventListener('DOMContentLoaded', () => {
+      const submitFlagBtn = document.getElementById('submitFlagBtn');
+      const flagInput = document.getElementById('flagInput');
+      const flagResult = document.getElementById('flagResult');
+
+      if (submitFlagBtn && flagInput) {
+        submitFlagBtn.addEventListener('click', () => {
+          const flag = flagInput.value.trim();
+          if (!flag) {
+            flagResult.style.color = 'var(--danger)';
+            flagResult.textContent = 'Please enter a flag to submit.';
+            return;
+          }
+          flagResult.style.color = 'var(--gold-muted)';
+          flagResult.textContent = 'Submitting flag to captain...';
+
+          fetch('/api/challenge/flag', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ category: currentCategory, flag })
+          })
+          .then(res => {
+            if (!res.ok) {
+              return res.json().then(data => { throw new Error(data.error || 'Submission error'); });
+            }
+            return res.json();
+          })
+          .then(data => {
+            flagResult.textContent = data.message;
+            flagResult.style.color = "var(--success)";
+            fetchMyTeam();
+            fetchTeamScores();
+            const solvedBox = document.querySelector(`.challenge-card[data-category="${currentCategory}"]`);
+            if (solvedBox) solvedBox.classList.add('solved');
+            showToast("Bounty Claimed! " + data.message);
+          })
+          .catch(err => {
+            flagResult.textContent = err.message;
+            flagResult.style.color = "var(--danger)";
+          });
+        });
+
+        flagInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') submitFlagBtn.click();
+        });
+      }
+    });
+
+    // ======================================================
+    // ADMIN ACTIONS
+    // ======================================================
     function editChallenge(category) {
       if (!currentChallenges[category]) return;
       document.getElementById('adminCatInput').value = category;
-      document.getElementById('adminTextInput').value = currentChallenges[category].text;
+      document.getElementById('adminSubtitleInput').value = currentChallenges[category].subtitle || '';
+      document.getElementById('adminTextInput').value = currentChallenges[category].text || '';
       document.getElementById('adminFlagInput').value = '********';
       document.getElementById('adminPointsInput').value = currentChallenges[category].points || 500;
       document.getElementById('adminDiffInput').value = currentChallenges[category].difficulty || 'EASY';
       document.getElementById('adminHintInput').value = currentChallenges[category].hint || '';
+      
       const fileInput = document.getElementById('adminResourceInput');
       if (fileInput) fileInput.value = '';
       const fileDisplay = document.getElementById('fileNameDisplay');
       if (fileDisplay) {
-        if (currentChallenges[category].originalResourceName) {
-           fileDisplay.textContent = 'Current: ' + currentChallenges[category].originalResourceName;
-        } else if (currentChallenges[category].resource) {
-           fileDisplay.textContent = 'Current: ' + currentChallenges[category].resource;
-        } else {
-           fileDisplay.textContent = 'No file chosen';
-        }
+        fileDisplay.textContent = currentChallenges[category].originalResourceName || 'No file chosen';
       }
       const removeCb = document.getElementById('adminRemoveResource');
       if (removeCb) removeCb.checked = false;
+      
       document.getElementById('adminFormCard').style.display = 'block';
-      document.getElementById('adminHintInput').value = '';
-            document.getElementById('adminCatInput').focus();
+      document.getElementById('adminCatInput').focus();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    
+
     function deleteChallenge(category) {
-      showCustomConfirm("Delete Challenge", "Are you sure you want to delete " + category + "?", false, (confirmed) => {
+      showCustomConfirm("Scuttle Challenge", "Are you sure you want to delete " + category + "?", false, (confirmed) => {
         if (!confirmed) return;
         fetch('/api/admin/challenges/delete', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ category })
         }).then(res => res.json()).then(data => {
-           if(data.error) showCustomConfirm("Error", data.error, true, null);
+           if (data.error) showCustomConfirm("Error", data.error, true, null);
            else fetchChallenges();
         });
       });
     }
-    
-    
+
     document.addEventListener('DOMContentLoaded', () => {
       const toggleBtn = document.getElementById('toggleAdminFormBtn');
       const formCard = document.getElementById('adminFormCard');
       const bonusBtn = document.getElementById('toggleBonusFormBtn');
+
       if (bonusBtn && formCard) {
         bonusBtn.addEventListener('click', () => {
           formCard.style.display = formCard.style.display === 'none' ? 'block' : 'none';
           if (formCard.style.display === 'block') {
             document.getElementById('adminCatInput').value = 'Bonus';
+            document.getElementById('adminSubtitleInput').value = 'Hidden Doubloon';
             document.getElementById('adminDiffInput').value = 'BONUS';
             document.getElementById('adminTextInput').value = 'Hidden bonus challenge!';
             document.getElementById('adminFlagInput').value = '';
@@ -699,15 +970,11 @@
           }
         });
       }
-      
+
       if (toggleBtn && formCard) {
         toggleBtn.addEventListener('click', () => {
-          if (formCard.style.display === 'none') {
-            formCard.style.display = 'block';
-            document.getElementById('adminCatInput').focus();
-          } else {
-            formCard.style.display = 'none';
-          }
+          formCard.style.display = formCard.style.display === 'none' ? 'block' : 'none';
+          if (formCard.style.display === 'block') document.getElementById('adminCatInput').focus();
         });
       }
 
@@ -715,27 +982,29 @@
       if (submitBtn) {
         submitBtn.addEventListener('click', () => {
           const category = document.getElementById('adminCatInput').value;
+          const subtitle = document.getElementById('adminSubtitleInput').value;
           const text = document.getElementById('adminTextInput').value;
           const flag = document.getElementById('adminFlagInput').value;
           const points = document.getElementById('adminPointsInput').value;
-      const difficulty = document.getElementById('adminDiffInput').value;
-      const hint = document.getElementById('adminHintInput').value;
+          const difficulty = document.getElementById('adminDiffInput').value;
+          const hint = document.getElementById('adminHintInput').value;
           const msg = document.getElementById('adminMsg');
-          
+
           if (!category || !text || !flag || !points) {
-            msg.style.color = '#b7410e';
-            msg.textContent = 'All fields (Category, Text, Flag, Points) are compulsory.';
+            msg.style.color = 'var(--danger)';
+            msg.textContent = 'All fields (Category, Text, Flag, Points) are required.';
             return;
           }
-          
+
           const formData = new FormData();
           formData.append('category', category);
+          formData.append('subtitle', subtitle);
           formData.append('text', text);
           formData.append('flag', flag);
           formData.append('points', points);
-      formData.append('difficulty', difficulty);
-      formData.append('hint', hint);
-          
+          formData.append('difficulty', difficulty);
+          formData.append('hint', hint);
+
           const fileInput = document.getElementById('adminResourceInput');
           if (fileInput && fileInput.files.length > 0) {
             formData.append('resource', fileInput.files[0]);
@@ -752,29 +1021,21 @@
           .then(res => res.json())
           .then(data => {
             if (data.error) {
-              msg.style.color = '#b7410e';
+              msg.style.color = 'var(--danger)';
               msg.textContent = data.error;
             } else {
               msg.style.color = 'var(--success)';
               msg.textContent = data.message;
-              document.getElementById('adminCatInput').value = '';
-              document.getElementById('adminTextInput').value = '';
-              document.getElementById('adminFlagInput').value = '';
-              const fInput = document.getElementById('adminResourceInput');
-              if(fInput) fInput.value = '';
-              const fDisplay = document.getElementById('fileNameDisplay');
-              if(fDisplay) fDisplay.textContent = 'No file chosen';
-              const rCb = document.getElementById('adminRemoveResource');
-              if(rCb) rCb.checked = false;
-              fetchChallenges(); // Force local update instantly
+              fetchChallenges();
             }
           });
         });
       }
     });
 
-
-
+    // ======================================================
+    // PROFILE, USERS & CREW MANAGEMENT
+    // ======================================================
     function fetchProfile() {
       fetch('/api/profile')
         .then(res => res.json())
@@ -783,749 +1044,327 @@
           if (!profileDiv) return;
           if (data.error === "Not logged in") { window.location.href = "/"; return; }
           if (data.error) {
-            profileDiv.innerHTML = `<p style="color:#b7410e;">${escapeHTML(data.error)}</p>`;
+            profileDiv.innerHTML = `<p style="color:var(--danger);">${escapeHTML(data.error)}</p>`;
           } else {
-            const teamText = data.teamName ? data.teamName : 'No Team';
-            if (data.isAdmin) { const a = document.getElementById('adminNavLi'); if(a) a.style.display = 'block'; }
+            const teamText = data.teamName ? data.teamName : 'No Crew';
+            if (data.isAdmin) {
+              const a = document.getElementById('adminNavLi');
+              if (a) a.style.display = 'block';
+            }
             profileDiv.innerHTML = `
-              <div id="displayUsernameContainer" style="display: flex; justify-content: flex-start; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                <h3 style="font-size: 2rem; margin: 0;" id="displayUsername">${escapeHTML(data.username)}</h3>
-                <button id="editUsernameBtn" style="padding:0.4rem; border:1px solid var(--border); background:transparent; color:var(--text); border-radius: 0; cursor:pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center;" title="Edit Username">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+              <div id="displayUsernameContainer" style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                <h3 style="font-family:'Cinzel',serif; font-size: 2rem; margin: 0; color:var(--gold-primary);" id="displayUsername">${escapeHTML(data.username)}</h3>
+                <button id="editUsernameBtn" style="padding:0.4rem; border:1px solid var(--border-subtle); background:transparent; color:var(--text-primary); cursor:pointer;" title="Edit Pirate Name">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                 </button>
               </div>
-              <div id="editUsernameForm" style="display: none; justify-content: flex-start; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                 <input type="text" id="newUsernameInput" value="${escapeHTML(data.username)}" style="padding:0.5rem 1rem; border-radius: 0; border:1px solid var(--border); background:transparent; color:var(--text); text-align:left;" />
-                 <button id="saveUsernameBtn" style="padding:0.5rem 1rem; border:none; background:var(--text); color:var(--background); border-radius: 0; cursor:pointer;">Save</button>
-                 <button id="cancelUsernameBtn" style="padding:0.5rem 1rem; border:1px solid var(--border); background:transparent; color:var(--text-muted); border-radius: 0; cursor:pointer;">Cancel</button>
+              <div id="editUsernameForm" style="display: none; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                 <input type="text" id="newUsernameInput" value="${escapeHTML(data.username)}" style="padding:0.5rem 1rem; border:1px solid var(--border-subtle); background:var(--panel-secondary); color:var(--text-primary);" />
+                 <button id="saveUsernameBtn" style="padding:0.5rem 1rem; border:none; background:var(--gold-primary); color:var(--bg-primary); font-family:'Cinzel',serif; font-weight:bold; cursor:pointer;">Save</button>
+                 <button id="cancelUsernameBtn" style="padding:0.5rem 1rem; border:1px solid var(--border-subtle); background:transparent; color:var(--text-secondary); cursor:pointer;">Cancel</button>
               </div>
-              <p style="font-size: 1.2rem;">Team: ${teamText}</p>
-              <p id="profileMessage" style="margin-top: 1rem; color: #b7410e;"></p>
+              <p style="font-size: 1.2rem; color:var(--text-secondary);">Crew: <strong style="color:var(--text-primary); font-family:'Cinzel',serif;">${escapeHTML(teamText)}</strong></p>
+              <p id="profileMessage" style="margin-top: 1rem; color: var(--danger);"></p>
             `;
 
             document.getElementById('editUsernameBtn').addEventListener('click', () => {
               document.getElementById('displayUsernameContainer').style.display = 'none';
               document.getElementById('editUsernameForm').style.display = 'flex';
             });
-            
             document.getElementById('cancelUsernameBtn').addEventListener('click', () => {
               document.getElementById('displayUsernameContainer').style.display = 'flex';
               document.getElementById('editUsernameForm').style.display = 'none';
               document.getElementById('profileMessage').textContent = '';
             });
-
             document.getElementById('saveUsernameBtn').addEventListener('click', () => {
               const newUsername = document.getElementById('newUsernameInput').value.trim();
-              if(!newUsername) return;
+              if (!newUsername) return;
               fetch('/api/profile/update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ newUsername })
               }).then(res => res.json()).then(resp => {
-                if(resp.error) {
-                  document.getElementById('profileMessage').textContent = resp.error;
-                } else {
-                  fetchProfile();
-                }
-              }).catch(err => console.error(err));
+                if (resp.error) document.getElementById('profileMessage').textContent = resp.error;
+                else fetchProfile();
+              });
             });
           }
-        })
-        .catch(err => console.error('Error fetching profile:', err));
+        });
     }
 
-    // Users List with Search & Pagination
+    // Users Search & List
     let allUsers = [];
-    let currentUsersPage = 1;
-    const usersPageSize = 5;
     function fetchUsers() {
       fetch('/api/users')
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
           allUsers = data;
-          currentUsersPage = 1;
+          allUsersData = data;
+          const opCount = document.getElementById('totalOperatorsCount');
+          if (opCount) opCount.textContent = data.length.toLocaleString();
           renderUsersList();
-        })
-        .catch(err => console.error('Error fetching users:', err));
+        });
     }
+
     function renderUsersList() {
       const searchInput = document.getElementById('userSearchInput');
       const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
-      let filtered = allUsers.filter(user => user.username.toLowerCase().includes(query));
-      const usersList = document.getElementById('usersList');
-      usersList.innerHTML = '';
+      const filtered = allUsers.filter(u => u.username.toLowerCase().includes(query));
+      const list = document.getElementById('usersList');
+      if (!list) return;
+      list.innerHTML = '';
       filtered.forEach(user => {
         const div = document.createElement('div');
         div.className = 'user-item';
-        div.textContent = user.username;
-        usersList.appendChild(div);
-      });
-      document.getElementById('usersPagination').style.display = 'none';
-    }
-        function renderUsersPagination(totalPages) {
-      createSmartPagination(totalPages, currentUsersPage, 'usersPagination', (page) => {
-        currentUsersPage = page;
-        renderUsersList();
+        div.innerHTML = `<strong>${escapeHTML(user.username)}</strong> <span>Solves: ${(user.solvedChallenges || []).length}</span>`;
+        list.appendChild(div);
       });
     }
+
     document.addEventListener('DOMContentLoaded', () => {
       const userSearchBtn = document.getElementById('userSearchBtn');
       const userSearchInput = document.getElementById('userSearchInput');
       if (userSearchBtn && userSearchInput) {
-        userSearchBtn.addEventListener('click', () => { currentUsersPage = 1; renderUsersList(); });
-        userSearchInput.addEventListener('keyup', () => { currentUsersPage = 1; renderUsersList(); });
+        userSearchBtn.addEventListener('click', renderUsersList);
+        userSearchInput.addEventListener('keyup', renderUsersList);
       }
     });
 
-    // Scoreboard Functions (Updated for time-series chart)
-    let scoreChart;
-    let teamScoreHistory = {}; // Store score history for each team
-    let allStandingsData = [];
-    
-    function fetchTeamScores() {
+    // Crews (Teams)
+    let teamsData = [];
+    function fetchTeams() {
       fetch('/api/teams')
-        .then(res => res.json())
+        .then(r => r.json())
         .then(data => {
-          // Sort teams by current score and append rank
-          const sortedTeams = data.sort((a, b) => {
-            if (b.score !== a.score) return b.score - a.score;
-            const getLastSolve = (team) => {
-              if (!team.solvedChallenges) return Infinity;
-              const keys = Object.keys(team.solvedChallenges);
-              if (keys.length === 0) return Infinity;
-              let max = 0;
-              for (const key of keys) {
-                if (team.solvedChallenges[key].timestamp > max) {
-                  max = team.solvedChallenges[key].timestamp;
-                }
-              }
-              return max;
-            };
-            const timeA = getLastSolve(a);
-            const timeB = getLastSolve(b);
-            if (timeA === Infinity && timeB === Infinity) return 0;
-            return timeA - timeB;
-          }).map((t, idx) => {
-            t.rank = idx + 1;
-            return t;
-          });
-          
-          allStandingsData = sortedTeams;
-          
-          // Take only top 10 teams
-          const topTeams = sortedTeams.slice(0, 10);
-          
-          updateTeamScoreDisplay();
-          updateTimeSeriesChart(topTeams);
-          renderStandings();
-        })
-        .catch(err => console.error('Error fetching teams:', err));
-    }
-    
-    function updateTeamScoreDisplay() {
-      fetch('/api/myteam')
-        .then(res => res.json())
-        .then(data => {
-          const teamScoreDiv = document.getElementById('teamScoreDisplay');
-          if (data.team && data.team.score != null) {
-            teamScoreDiv.textContent = `Your Team Score: ${data.team.score} pts`;
-          } else {
-            teamScoreDiv.textContent = 'Your Team Score: N/A';
-          }
-        })
-        .catch(err => console.error(err));
-    }
-    
-    function stringToColor(str) {
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-      }
-      const h = Math.abs(hash) % 360;
-      return `hsla(${h}, 60%, 75%, 0.6)`;
+          teamsData = data;
+          renderTeams();
+        });
     }
 
-    function updateTimeSeriesChart(topTeams) {
-      const ctx = document.getElementById('scoreChart').getContext('2d');
+    function renderTeams() {
+      const searchInput = document.getElementById('teamSearchInput');
+      const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+      const filtered = teamsData.filter(t => t.teamName.toLowerCase().includes(query));
+      const list = document.getElementById('teamsList');
+      if (!list) return;
+      list.innerHTML = '';
+      filtered.forEach(team => {
+        const members = team.membersNames && team.membersNames.length ? escapeHTML(team.membersNames.join(', ')) : 'No members';
+        const div = document.createElement('div');
+        div.className = 'team-item';
+        div.innerHTML = `<div><strong>${escapeHTML(team.teamName)}</strong> — Members: ${members}</div><div style="color:var(--gold-primary); font-weight:bold;">${team.score} pts</div>`;
+        list.appendChild(div);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const teamSearchBtn = document.getElementById('teamSearchBtn');
+      const teamSearchInput = document.getElementById('teamSearchInput');
+      if (teamSearchBtn && teamSearchInput) {
+        teamSearchBtn.addEventListener('click', renderTeams);
+        teamSearchInput.addEventListener('keyup', renderTeams);
+      }
+    });
+
+    // My Team Data
+    function fetchMyTeam() {
+      fetch('/api/myteam')
+        .then(r => r.json())
+        .then(data => {
+          myTeamData = data;
+          const scoreDisplay = document.getElementById('teamScoreDisplay');
+          const myTeamInfo = document.getElementById('myTeamInfo');
+          const noTeamActions = document.getElementById('noTeamActions');
+
+          if (data.team && data.team.id) {
+            const team = data.team;
+            if (scoreDisplay) scoreDisplay.textContent = `Your Crew Score: ${team.score} PTS`;
+            if (myTeamInfo) {
+              const membersHtml = (team.membersNames || []).map(m => `<li>${escapeHTML(m)}</li>`).join('');
+              myTeamInfo.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+                  <div>
+                    <h3 style="font-family:'Cinzel',serif; font-size:1.8rem; color:var(--gold-primary); margin:0;">${escapeHTML(team.teamName)}</h3>
+                    <p style="color:var(--text-secondary); font-size:1rem;">Total Bounty: <strong style="color:var(--gold-primary);">${team.score} PTS</strong></p>
+                  </div>
+                  <button id="leaveTeamBtn" style="padding:0.6rem 1.4rem; border:1px solid var(--danger); background:transparent; color:var(--danger); font-family:'Cinzel',serif; cursor:pointer;">Abandon Ship (Leave Crew)</button>
+                </div>
+                <h4 style="font-family:'Cinzel',serif; color:var(--gold-primary); margin-bottom:0.5rem;">Crew Manifest:</h4>
+                <ul style="list-style:none; padding-left:1rem; border-left:2px solid var(--gold-primary); margin-bottom:1.5rem;">
+                  ${membersHtml}
+                </ul>
+              `;
+
+              document.getElementById('leaveTeamBtn').addEventListener('click', () => {
+                showCustomConfirm("Leave Crew?", "Are you sure you want to leave your crew?", false, (conf) => {
+                  if (!conf) return;
+                  fetch('/api/team/leave', { method: 'POST' }).then(r=>r.json()).then(() => {
+                    fetchMyTeam(); fetchTeamScores();
+                  });
+                });
+              });
+            }
+            if (noTeamActions) noTeamActions.style.display = 'none';
+          } else {
+            if (scoreDisplay) scoreDisplay.textContent = `Your Crew Score: N/A`;
+            if (myTeamInfo) myTeamInfo.innerHTML = `<p style="color:var(--text-secondary);">You are currently sailing alone with no crew.</p>`;
+            if (noTeamActions) noTeamActions.style.display = 'block';
+          }
+          updateChallengeBoxesFromTeam();
+        });
+    }
+
+    function updateChallengeBoxesFromTeam() {
+      if (!myTeamData || !myTeamData.team) return;
+      const team = myTeamData.team;
+      const myTeamId = team.id;
       
-      let earliestTime = Date.now();
-      
-      topTeams.forEach(team => {
-        if (team.scoreHistory) {
-          team.scoreHistory.forEach(point => {
-            if (point.timestamp < earliestTime) earliestTime = point.timestamp;
-          });
+      const teamMembers = allUsersData.filter(u => u.teamId === myTeamId);
+      const solvedSet = new Set();
+      teamMembers.forEach(member => {
+        if (Array.isArray(member.solvedChallenges)) {
+          member.solvedChallenges.forEach(c => solvedSet.add(c));
         }
       });
       
-      const now = Date.now();
-      const startTime = ctfStartTime ? ctfStartTime : (earliestTime - (15 * 60 * 1000));
-      const durationMs = now - startTime;
-      let intervalMs = 15 * 60 * 1000;
-      if (durationMs <= 15 * 60 * 1000) intervalMs = 60 * 1000;
-      else if (durationMs <= 60 * 60 * 1000) intervalMs = 5 * 60 * 1000;
-      else if (durationMs <= 4 * 60 * 60 * 1000) intervalMs = 15 * 60 * 1000;
-      else if (durationMs <= 12 * 60 * 60 * 1000) intervalMs = 30 * 60 * 1000;
-      else intervalMs = 60 * 60 * 1000;
-      
-      const sortedTimestamps = [];
-      for (let t = startTime; t <= now; t += intervalMs) {
-        sortedTimestamps.push(t);
-      }
-      // Ensure the very current time is also included at the end
-      if (sortedTimestamps[sortedTimestamps.length - 1] < now) {
-        sortedTimestamps.push(now);
-      }
-      
-      const labels = sortedTimestamps.map(timestamp => {
-        const diffMs = timestamp - startTime;
-        const diffMins = Math.floor(diffMs / 60000);
-        const hours = Math.floor(diffMins / 60);
-        const mins = diffMins % 60;
-        
-        if (hours <= 0 && mins <= 0) return 'Start';
-        if (hours === 0) return `${mins}m`;
-        if (mins === 0) return `${hours}h`;
-        return `${hours}h ${mins}m`;
+      document.querySelectorAll('#challengeCategoriesContainer .challenge-card').forEach(box => {
+        const cat = box.getAttribute('data-category');
+        if (solvedSet.has(cat)) {
+          box.classList.add('solved');
+        } else {
+          box.classList.remove('solved');
+        }
       });
-      
-      const datasets = topTeams.map((team) => {
-        const color = stringToColor(team.teamName);
-        
-        const data = sortedTimestamps.map(timestamp => {
-          if (!team.scoreHistory || team.scoreHistory.length === 0) return 0;
-          const historyPoints = team.scoreHistory.filter(point => point.timestamp <= timestamp);
-          if (historyPoints.length === 0) return 0;
-          return historyPoints[historyPoints.length - 1].score;
+    }
+
+    // Scoreboard Tabs & Graph
+    let scoreChart;
+    const pirateColors = [
+      '#C99A52', '#31584F', '#E4D5B8', '#8D6A3D', '#5B8A68',
+      '#A64444', '#D4A373', '#4A7C59', '#9381FF', '#B8860B'
+    ];
+
+    function setupScoreboardTabs() {
+      const tabs = document.querySelectorAll('#scoreboard-section .tab-btn');
+      tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          btn.classList.add('active');
+          const tabId = btn.getAttribute('data-tab');
+          document.querySelectorAll('#scoreboard-section .tab-content').forEach(tc => tc.classList.remove('active'));
+          const target = document.getElementById(tabId);
+          if (target) target.classList.add('active');
         });
+      });
+    }
+
+    function fetchTeamScores() {
+      fetch('/api/teams')
+        .then(r => r.json())
+        .then(teams => {
+          teams.sort((a, b) => (b.score || 0) - (a.score || 0));
+          renderStandings(teams);
+          renderScoreGraph(teams);
+        });
+    }
+
+    function renderStandings(teams) {
+      const list = document.getElementById('standingsList');
+      if (!list) return;
+      list.innerHTML = '';
+      teams.forEach((t, idx) => {
+        const div = document.createElement('div');
+        div.className = 'standing-item';
+        div.innerHTML = `
+          <div>
+            <span style="color:var(--gold-primary); font-weight:bold; margin-right:12px;">#${idx + 1}</span>
+            <span class="team-name">${escapeHTML(t.teamName)}</span>
+          </div>
+          <div class="team-score">${t.score || 0} PTS</div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function renderScoreGraph(teams) {
+      const canvas = document.getElementById('scoreChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      const topTeams = teams.slice(0, 8);
+      let timestamps = new Set();
+      topTeams.forEach(t => {
+        (t.scoreHistory || []).forEach(pt => timestamps.add(pt.timestamp));
+      });
+      const sortedTimes = Array.from(timestamps).sort((a,b) => a - b);
+      if (sortedTimes.length === 0) sortedTimes.push(Date.now());
+
+      const labels = sortedTimes.map(t => new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+
+      const datasets = topTeams.map((t, idx) => {
+        const color = pirateColors[idx % pirateColors.length];
+        const history = t.scoreHistory || [];
         
+        const dataPoints = sortedTimes.map(time => {
+          let lastScore = 0;
+          for (const pt of history) {
+            if (pt.timestamp <= time) lastScore = pt.score;
+            else break;
+          }
+          return lastScore;
+        });
+
         return {
-          label: team.teamName,
-          data: data,
+          label: t.teamName,
+          data: dataPoints,
           borderColor: color,
           backgroundColor: color,
           borderWidth: 2,
           pointRadius: 3,
-          pointHoverRadius: 5,
-          pointHitRadius: 25,
-          tension: 0.4
+          tension: 0.3
         };
       });
-      
-      // Destroy previous chart if it exists
+
       if (scoreChart) scoreChart.destroy();
-      
-      // Create new chart
       scoreChart = new Chart(ctx, {
         type: 'line',
-        data: {
-          labels: labels,
-          datasets: datasets
-        },
+        data: { labels, datasets },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           scales: {
             y: {
               beginAtZero: true,
-              title: {
-                display: true,
-                text: 'Score',
-                color: "#ffffff"
-              },
-              ticks: { color: "#ffffff" },
-              grid: { color: 'rgba(255, 255, 255, 0.1)' }
+              grid: { color: 'rgba(73, 54, 34, 0.4)' },
+              ticks: { color: '#A99A82', font: { family: "'JetBrains Mono', monospace" } }
             },
             x: {
-              title: {
-                display: true,
-                text: 'Time',
-                color: "#ffffff"
-              },
-              ticks: { 
-                color: "#ffffff",
-                maxRotation: 45,
-                minRotation: 45
-              },
-              grid: { color: 'rgba(255, 255, 255, 0.1)' }
+              grid: { color: 'rgba(73, 54, 34, 0.3)' },
+              ticks: { color: '#A99A82', font: { family: "'JetBrains Mono', monospace" } }
             }
           },
           plugins: {
             legend: {
-              display: false
+              labels: {
+                color: '#E4D5B8',
+                font: { family: "'Cinzel', serif", size: 12 }
+              }
             },
             tooltip: {
-              usePointStyle: true,
-              mode: 'nearest',
-              intersect: true,
-              backgroundColor: 'rgba(13, 17, 18, 0.95)',
-              titleColor: '#e4e7e3',
-              bodyColor: '#9da39e',
-              titleFont: { family: "'Rajdhani', sans-serif", size: 14, weight: 'bold' },
-              bodyFont: { family: "'JetBrains Mono', monospace", size: 12 },
-              borderColor: 'rgba(180, 190, 185, 0.2)',
+              backgroundColor: '#211810',
+              borderColor: '#C99A52',
               borderWidth: 1,
-              padding: 12,
-              cornerRadius: 0,
-              callbacks: {
-                title: function(tooltipItems) {
-                  return tooltipItems[0].label;
-                },
-                label: function(context) {
-                  return context.dataset.label + ': ' + context.parsed.y + ' pts';
-                }
-              }
+              titleColor: '#C99A52',
+              bodyColor: '#E4D5B8',
+              titleFont: { family: "'Cinzel', serif" },
+              bodyFont: { family: "'JetBrains Mono', monospace" }
             }
-          },
-          interaction: {
-            mode: 'nearest',
-            axis: 'x',
-            intersect: true
           }
         }
       });
     }
-    
-    
-    function renderStandings() {
-      const searchInput = document.getElementById('standingsSearchInput');
-      const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
-      
-      const filteredTeams = allStandingsData.filter(team => 
-        team.teamName.toLowerCase().includes(query)
-      );
 
-      const standingsList = document.getElementById('standingsList');
-      if (!standingsList) return;
-      standingsList.innerHTML = '';
-      
-      filteredTeams.forEach((team) => {
-        const item = document.createElement('div');
-        item.className = 'standing-item';
-        const color = stringToColor(team.teamName);
-        item.innerHTML = `
-          <div class="team-info">
-            <span class="team-name">${team.rank}. ${escapeHTML(team.teamName)}</span>
-          </div>
-          <span class="team-score">${team.score} pts</span>
-        `;
-        standingsList.appendChild(item);
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const standingsSearchBtn = document.getElementById('standingsSearchBtn');
-      const standingsSearchInput = document.getElementById('standingsSearchInput');
-      if (standingsSearchBtn && standingsSearchInput) {
-        standingsSearchBtn.addEventListener('click', () => renderStandings());
-        standingsSearchInput.addEventListener('keyup', () => renderStandings());
-      }
-    });
-    
-    function setupScoreboardTabs() {
-      const tabButtons = document.querySelectorAll('#scoreboard-section .tab-btn');
-      const tabContents = document.querySelectorAll('#scoreboard-section .tab-content');
-      tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          tabButtons.forEach(btn => btn.classList.remove('active'));
-          tabContents.forEach(tc => tc.classList.remove('active'));
-          button.classList.add('active');
-          const tabId = button.getAttribute('data-tab');
-          document.getElementById(tabId).classList.add('active');
-        });
-      });
-    }
-    
-    function fetchMyTeam() {
-      fetch('/api/myteam')
-        .then(response => response.json())
-        .then(data => {
-          const myTeamInfo = document.getElementById('myTeamInfo');
-          const noTeamActions = document.getElementById('noTeamActions');
-          if (!myTeamInfo || !noTeamActions) return;
-          if (data.error === "Not logged in") { window.location.href = "/"; return; }
-          if (data.team) {
-            const members = data.team.membersNames && data.team.membersNames.length ? escapeHTML(data.team.membersNames.join(', ')) : 'No members';
-            myTeamInfo.innerHTML = `
-              <div id="displayTeamNameContainer" style="display: flex; justify-content: flex-start; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-                <div id="displayTeamName" style="font-size: 1.5rem; margin: 0;"><strong>${escapeHTML(data.team.teamName)}</strong></div>
-                <button id="editTeamNameBtn" style="padding:0.4rem; border:1px solid var(--border); background:transparent; color:var(--text); border-radius: 0; cursor:pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center;" title="Edit Team Name">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                </button>
-              </div>
-              <div id="editTeamNameForm" style="display: none; justify-content: flex-start; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                 <input type="text" id="newTeamNameInput" value="${escapeHTML(data.team.teamName)}" style="padding:0.5rem 1rem; border-radius: 0; border:1px solid var(--border); background:transparent; color:var(--text); text-align:center;" />
-                 <button id="saveTeamNameBtn" style="padding:0.5rem 1rem; border:none; background:var(--text); color:var(--background); border-radius: 0; cursor:pointer;">Save</button>
-                 <button id="cancelTeamNameBtn" style="padding:0.5rem 1rem; border:1px solid var(--border); background:transparent; color:var(--text-muted); border-radius: 0; cursor:pointer;">Cancel</button>
-              </div>
-              
-              <div style="font-size: 1.25rem; font-weight: 600; margin-top: 1.5rem;"><div style="text-align: left;">Total Team Score: <span style="color:var(--primary);">${data.team.score || 0} pts</span></div></div>
-              ${(() => {
-                let html = '<div style="margin-top: 1.5rem; text-align: left; display: block; width: 100%; max-width: 400px;">';
-                if (data.team.memberDetails) {
-                  data.team.memberDetails.forEach(m => {
-                    html += '<div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 0;">';
-                    html += '<div style="font-weight: 600; font-size: 1.1rem; display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.5rem; margin-bottom: 0.5rem;"><span>' + m.username + '</span> <span style="color:var(--primary); font-size:1rem;">' + m.totalPoints + ' pts</span></div>';
-                    if (m.solvedChallenges && m.solvedChallenges.length > 0) {
-                      m.solvedChallenges.forEach(c => {
-                        html += '<div style="display:flex; justify-content:space-between; align-items:center; font-size:0.9rem; padding: 0.25rem 0;"><span>' + c.category + '</span><span style="opacity:0.7;">' + c.points + ' pts</span></div>';
-                      });
-                    } else {
-                      html += '<div style="font-size:0.9rem; opacity:0.5; font-style:italic; text-align:center; margin-top:0.5rem;">No challenges solved yet</div>';
-                    }
-                    html += '</div>';
-                  });
-                }
-                html += '</div>';
-                return html;
-              })()}
-
-              <div style="margin-top: 1.5rem; text-align: left;">
-                <button id="leaveTeamBtn" style="padding:0.5rem 1rem; border:1px solid var(--accent); background:var(--accent-soft); color:var(--accent); border-radius: 0; cursor:pointer; font-size: 0.85rem; transition: all 0.2s;">Leave Team</button>
-              </div>
-              <p id="teamMessage" style="margin-top: 1rem; color: var(--accent); text-align: left;"></p>
-            `;
-            
-            document.getElementById('leaveTeamBtn').addEventListener('click', () => {
-              showCustomConfirm("Leave Team", "Are you sure you want to leave this team?", false, (confirmed) => {
-                if (confirmed) {
-                  fetch('/api/team/leave', { method: 'POST' })
-                    .then(res => res.json())
-                    .then(resp => {
-                      if (resp.error) {
-                        document.getElementById('teamMessage').textContent = resp.error;
-                      } else {
-                        fetchMyTeam();
-                        fetchProfile();
-                        fetchTeamScores(); fetchTeams(); fetchMyTeam();
-                      }
-                    })
-                    .catch(err => console.error(err));
-                }
-              });
-            });
-
-            document.getElementById('editTeamNameBtn').addEventListener('click', () => {
-              document.getElementById('displayTeamNameContainer').style.display = 'none';
-              document.getElementById('editTeamNameForm').style.display = 'flex';
-            });
-            
-            document.getElementById('cancelTeamNameBtn').addEventListener('click', () => {
-              document.getElementById('displayTeamNameContainer').style.display = 'flex';
-              document.getElementById('editTeamNameForm').style.display = 'none';
-              document.getElementById('teamMessage').textContent = '';
-            });
-
-            document.getElementById('saveTeamNameBtn').addEventListener('click', () => {
-              const newTeamName = document.getElementById('newTeamNameInput').value.trim();
-              if(!newTeamName) return;
-              fetch('/api/team/update', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ newTeamName })
-              }).then(res => res.json()).then(resp => {
-                if(resp.error) {
-                  document.getElementById('teamMessage').textContent = resp.error;
-                } else {
-                  fetchMyTeam(); // reload team
-                  fetchTeamScores(); fetchTeams(); fetchMyTeam(); // update global standings to reflect new name
-                }
-              }).catch(err => console.error(err));
-            });
-            noTeamActions.style.display = 'none';
-          } else {
-            myTeamInfo.innerHTML = '<p>You are not in a team.</p>';
-            noTeamActions.style.display = 'block';
-          }
-        })
-        .catch(err => console.error('Error fetching my team:', err));
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      setupScoreboardTabs();
-      fetchTeamScores(); fetchTeams(); fetchMyTeam();
-      updateChallengeBoxesFromTeam();
-      
-      
-      
-      fetchConfig();
-      function updateAdminStartButton() {
-        const btn = document.getElementById('adminStartCtfBtn');
-        if (!btn) return;
-        if (ctfStartTime) {
-          btn.innerHTML = '🛑 Stop CTF';
-          btn.style.background = 'transparent';
-          btn.style.border = '1px solid #b7410e';
-          btn.style.color = '#b7410e';
-        } else {
-          btn.innerHTML = '▶ Start CTF';
-          btn.style.background = 'var(--text)';
-          btn.style.border = 'none';
-          btn.style.color = 'var(--background)';
-        }
-      }
-
-      const adminStartCtfBtn = document.getElementById('adminStartCtfBtn');
-      if (adminStartCtfBtn) {
-        adminStartCtfBtn.addEventListener('click', () => {
-          if (ctfStartTime) {
-            showCustomConfirm("Stop CTF?", "Are you sure you want to STOP the CTF? Players won't be able to submit flags.", false, (res) => {
-              if(!res) return;
-              fetch('/api/admin/stop', { method: 'POST' }).then(r=>r.json()).then(d => {
-                if(d.error) showCustomConfirm("Error", d.error, true, null);
-              });
-            });
-          } else {
-            showCustomConfirm("Start CTF?", "Are you sure you want to START the CTF timer? (This will NOT wipe data)", false, (res) => {
-              if(!res) return;
-              fetch('/api/admin/start', { method: 'POST' }).then(r=>r.json()).then(d => {
-                if(d.error) showCustomConfirm("Error", d.error, true, null);
-              });
-            });
-          }
-        });
-      }
-
-      const adminWipeDataBtn = document.getElementById('adminWipeDataBtn');
-      if (adminWipeDataBtn) {
-        adminWipeDataBtn.addEventListener('click', () => {
-          showCustomConfirm("Wipe Data?", "Are you sure you want to WIPE ALL scores and solve data? This action is irreversible!", false, (res) => {
-            if(!res) return;
-            fetch('/api/admin/wipe', { method: 'POST' }).then(r=>r.json()).then(d => {
-              if(d.error) showCustomConfirm("Error", d.error, true, null);
-              else showCustomConfirm("Success", d.message, true, null);
-            });
-          });
-        });
-      }
-      
-      const socket = io();
-      socket.on('configUpdate', (data) => {
-         ctfStartTime = data.ctfStartTime;
-         startLocalTimer();
-         updateAdminStartButton();
-         // If started, refresh everything to show wiped scores
-         fetchChallenges(); fetchProfile(); fetchTeamScores(); fetchTeams(); fetchMyTeam(); fetchUsers();
-      });
-
-      socket.on('usersUpdate', () => { fetchProfile(); fetchTeamScores(); fetchTeams(); fetchMyTeam(); fetchUsers(); updateChallengeBoxesFromTeam(); });
-      socket.on('challengesUpdate', () => {
-        fetchChallenges();
-        // Live update the modal if it's currently open
-        if (typeof currentCategory !== 'undefined' && currentCategory) {
-          setTimeout(() => {
-            if (currentChallenges[currentCategory] && document.getElementById('challengeModal').style.display === 'flex') {
-              document.getElementById('challengeDescription').textContent = currentChallenges[currentCategory].text;
-              document.getElementById('modalTitle').textContent = currentCategory + ' Challenge';
-            }
-          }, 300); // Wait for fetchChallenges to populate data
-        }
-      });
-      socket.on('teamsUpdate', () => {
-        fetchProfile(); fetchTeamScores(); fetchTeams(); fetchMyTeam(); fetchUsers(); updateChallengeBoxesFromTeam();
-      });
-      
-      // Set up auto-refresh for scoreboard every 5 minutes as a fallback
-      setInterval(fetchTeamScores, 5 * 60 * 1000);
-    });
-
-    // Function to update challenge boxes based on team members' solved challenges
-    function updateChallengeBoxesFromTeam() {
-      fetch('/api/myteam')
-        .then(res => res.json())
-        .then(myTeamData => {
-          if (myTeamData.team && myTeamData.team.id) {
-            const myTeamId = myTeamData.team.id;
-            fetch('/api/users')
-              .then(res => res.json())
-              .then(allUsersData => {
-                const teamMembers = allUsersData.filter(user => user.teamId === myTeamId);
-                const solvedSet = new Set();
-                teamMembers.forEach(member => {
-                  if (Array.isArray(member.solvedChallenges)) {
-                    member.solvedChallenges.forEach(challenge => solvedSet.add(challenge));
-                  }
-                });
-                solvedSet.forEach(category => {
-                  const box = document.querySelector(`.challenge-card[data-category="${category}"]`);
-                  if (box) {
-                    box.style.backgroundColor = "var(--accent-soft)"; box.style.borderColor = "var(--accent)"; box.style.color = "var(--accent)";  
-                  }
-                });
-              })
-              .catch(err => console.error("Error fetching users for team:", err));
-          }
-        })
-        .catch(err => console.error("Error fetching my team:", err));
-    }
-
-    // TEAMS SCRIPT (listing teams, search, pagination)
-    let teamsData = [];
-    let currentPage = 1;
-    const pageSize = 5;
-    function fetchTeams() {
-      fetch('/api/teams')
-        .then(response => response.json())
-        .then(data => { teamsData = data; currentPage = 1; renderTeams(); })
-        .catch(error => console.error('Error fetching teams:', error));
-    }
-    function renderTeams() {
-      const searchInput = document.getElementById('teamSearchInput');
-      const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
-      let filtered = teamsData.filter(team =>
-        team.teamName.toLowerCase().includes(query)
-      );
-      const teamsList = document.getElementById('teamsList');
-      if (teamsList) {
-        teamsList.innerHTML = '';
-        filtered.forEach(team => {
-          const members = team.membersNames && team.membersNames.length ? escapeHTML(team.membersNames.join(', ')) : 'No members';
-          const div = document.createElement('div');
-          div.className = 'team-item';
-          div.innerHTML = `<strong>${escapeHTML(team.teamName)}</strong> — Members: ${members}`;
-          teamsList.appendChild(div);
-        });
-      }
-      document.getElementById('teamsPagination').style.display = 'none';
-    }
-        function createSmartPagination(totalPages, activePage, containerId, renderCallback) {
-      const paginationDiv = document.getElementById(containerId);
-      if (!paginationDiv) return;
-      paginationDiv.innerHTML = '';
-      if (totalPages <= 1) return;
-
-      const addBtn = (pageNum, isEllipsis = false) => {
-        const btn = document.createElement('button');
-        btn.textContent = pageNum;
-        if (isEllipsis) {
-          btn.disabled = true;
-          btn.style.cursor = 'default';
-          btn.style.background = 'transparent';
-          btn.style.border = 'none';
-          btn.style.color = 'var(--text-muted)';
-        } else {
-          if (pageNum === activePage) btn.classList.add('active');
-          btn.addEventListener('click', () => { renderCallback(pageNum); });
-        }
-        paginationDiv.appendChild(btn);
-      };
-
-      if (totalPages <= 7) {
-        for (let i = 1; i <= totalPages; i++) addBtn(i);
-      } else {
-        if (activePage <= 4) {
-          for (let i = 1; i <= 5; i++) addBtn(i);
-          addBtn('...', true);
-          addBtn(totalPages);
-        } else if (activePage >= totalPages - 3) {
-          addBtn(1);
-          addBtn('...', true);
-          for (let i = totalPages - 4; i <= totalPages; i++) addBtn(i);
-        } else {
-          addBtn(1);
-          addBtn('...', true);
-          addBtn(activePage - 1);
-          addBtn(activePage);
-          addBtn(activePage + 1);
-          addBtn('...', true);
-          addBtn(totalPages);
-        }
-      }
-    }
-
-    function renderPagination(totalPages) {
-      createSmartPagination(totalPages, currentPage, 'teamsPagination', (page) => {
-        currentPage = page;
-        renderTeams();
-      });
-    }
-    document.addEventListener('DOMContentLoaded', () => {
-      const searchBtn = document.getElementById('teamSearchBtn');
-      const searchInput = document.getElementById('teamSearchInput');
-      if (searchBtn && searchInput) {
-        searchBtn.addEventListener('click', () => { currentPage = 1; renderTeams(); });
-        searchInput.addEventListener('keyup', () => { currentPage = 1; renderTeams(); });
-      }
-      fetchTeams();
-      fetchMyTeam();
-      const showJoinFormBtn = document.getElementById('showJoinForm');
-      const showCreateFormBtn = document.getElementById('showCreateForm');
-      const joinTeamSection = document.getElementById('joinTeamSection');
-      const createTeamSection = document.getElementById('createTeamSection');
-      if (showJoinFormBtn && joinTeamSection && createTeamSection) {
-        showJoinFormBtn.addEventListener('click', () => { joinTeamSection.style.display = 'block'; createTeamSection.style.display = 'none'; });
-      }
-      if (showCreateFormBtn && joinTeamSection && createTeamSection) {
-        showCreateFormBtn.addEventListener('click', () => { createTeamSection.style.display = 'block'; joinTeamSection.style.display = 'none'; });
-      }
-      const cancelJoinTeamBtn = document.getElementById('cancelJoinTeam');
-      if (cancelJoinTeamBtn) {
-        cancelJoinTeamBtn.addEventListener('click', () => { joinTeamSection.style.display = 'none'; });
-      }
-      const cancelCreateTeamBtn = document.getElementById('cancelCreateTeam');
-      if (cancelCreateTeamBtn) {
-        cancelCreateTeamBtn.addEventListener('click', () => { createTeamSection.style.display = 'none'; });
-      }
-      const submitJoinTeamBtn = document.getElementById('submitJoinTeam');
-      if (submitJoinTeamBtn) {
-        submitJoinTeamBtn.addEventListener('click', () => {
-          const teamName = document.getElementById('joinTeamName').value;
-          const teamPassword = document.getElementById('joinTeamPassword').value;
-          fetch('/api/team/join', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ teamName, password: teamPassword })
-          })
-            .then(res => res.json())
-            .then(data => {
-              const joinTeamMessage = document.getElementById('joinTeamMessage');
-              if (data.error === "Not logged in") { window.location.href = "/"; return; }
-          if (data.error) {
-                joinTeamMessage.innerText = data.error;
-              } else {
-                joinTeamMessage.innerText = data.message;
-                fetchMyTeam();
-                joinTeamSection.style.display = 'none';
-              }
-            })
-            .catch(err => {
-              console.error('Error joining team:', err);
-              document.getElementById('joinTeamMessage').innerText = 'Error joining team.';
-            });
-        });
-      }
-      const submitCreateTeamBtn = document.getElementById('submitCreateTeam');
-      if (submitCreateTeamBtn) {
-        submitCreateTeamBtn.addEventListener('click', () => {
-          const teamName = document.getElementById('createTeamName').value;
-          const teamPassword = document.getElementById('createTeamPassword').value;
-          fetch('/api/team/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ teamName, password: teamPassword })
-          })
-            .then(res => res.json())
-            .then(data => { 
-              const createTeamMessage = document.getElementById('createTeamMessage');
-              if (data.error === "Not logged in") { window.location.href = "/"; return; }
-          if (data.error) {
-                createTeamMessage.innerText = data.error;
-              } else {
-                createTeamMessage.innerText = data.message;
-                fetchMyTeam();
-                createTeamSection.style.display = 'none';
-              }
-            })
-            .catch(err => {
-              console.error('Error creating team:', err);
-              document.getElementById('createTeamMessage').innerText = 'Error creating team.';
-            });
-        });
-      }
-    });
-
-    
-    let currentCategory = '';
+    // Timer & Sockets
     let ctfStartTime = null;
     let timerInterval = null;
 
@@ -1543,10 +1382,10 @@
       if (!display) return;
       if (!ctfStartTime) {
         display.textContent = '--:--:--';
-        display.style.color = 'var(--text-muted)';
+        display.style.color = 'var(--text-secondary)';
         return;
       }
-      display.style.color = 'var(--primary)';
+      display.style.color = 'var(--gold-primary)';
       display.textContent = formatTime(Date.now() - ctfStartTime);
     }
 
@@ -1564,101 +1403,34 @@
       });
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const modal = document.getElementById('challengeModal');
-      const modalTitle = document.getElementById('modalTitle');
-      const flagInput = document.getElementById('flagInput');
-      const flagResult = document.getElementById('flagResult');
-      const submitFlagBtn = document.getElementById('submitFlagBtn');
-      
-      const catContainer = document.getElementById('challengeCategoriesContainer');
-      if (catContainer) {
-        catContainer.addEventListener('click', (e) => {
-          const box = e.target.closest('.challenge-card');
-          if (box) {
-            currentCategory = box.getAttribute('data-category');
-            modalTitle.textContent = currentCategory;
-            const points = box.getAttribute('data-points');
-            const ptEl = document.getElementById('modalPoints');
-            if(ptEl) ptEl.textContent = points;
-            const diffEl = document.getElementById('modalDiff');
-            if(diffEl) diffEl.textContent = box.getAttribute('data-diff');
+    function updateAdminStartButton() {
+      const btn = document.getElementById('adminStartCtfBtn');
+      if (!btn) return;
+      if (ctfStartTime) {
+        btn.textContent = '🛑 Stop CTF';
+        btn.style.background = 'transparent';
+        btn.style.border = '1px solid var(--danger)';
+        btn.style.color = 'var(--danger)';
+      } else {
+        btn.textContent = '▶ Start CTF';
+        btn.style.background = 'var(--gold-primary)';
+        btn.style.border = 'none';
+        btn.style.color = 'var(--bg-primary)';
+      }
+    }
 
-            
-            // Set dynamic text from currentChallenges
-            const text = currentChallenges[currentCategory] ? currentChallenges[currentCategory].text : 'Solve the ' + currentCategory + ' challenge and submit your flag.';
-            document.getElementById('challengeDescription').textContent = text;
-            const hintSection = document.getElementById('hintSection');
-            const hintText = document.getElementById('challengeHint');
-            if (currentChallenges[currentCategory] && currentChallenges[currentCategory].hint) {
-              hintSection.style.display = 'block';
-              hintText.textContent = currentChallenges[currentCategory].hint;
-            } else {
-              hintSection.style.display = 'none';
-            }
-            const resContainer = document.getElementById('resourceContainer');
-            const dlBtn = document.getElementById('downloadResourceBtn');
-            if (currentChallenges[currentCategory] && currentChallenges[currentCategory].resource) {
-              resContainer.style.display = 'block';
-              dlBtn.href = '/downloads/' + currentChallenges[currentCategory].resource;
-              const fName = currentChallenges[currentCategory].originalResourceName || currentChallenges[currentCategory].resource;
-              dlBtn.setAttribute('download', fName);
-              const attName = document.getElementById('attachmentName');
-              if(attName) attName.textContent = fName;
-            } else {
-              resContainer.style.display = 'none';
-            }
-            
-            flagInput.value = '';
-            flagResult.textContent = '';
-            modal.style.display = 'flex';
-          }
+    // Initialization
+    document.addEventListener('DOMContentLoaded', () => {
+      // Mobile drawer toggle
+      const mobileToggle = document.querySelector('.mobile-menu-toggle');
+      if (mobileToggle) {
+        mobileToggle.addEventListener('click', () => {
+          document.body.classList.toggle('mobile-menu-open');
         });
       }
-      
-      if(document.querySelector('.modal .close')) document.querySelector('.modal .close').addEventListener('click', () => { modal.style.display = 'none'; });
-      // window.addEventListener('click', (e) => { if (e.target == modal) modal.style.display = 'none'; });
-      if(submitFlagBtn) {
-        submitFlagBtn.addEventListener('click', () => {
-          const flag = flagInput.value.trim();
-          if (!flag) {
-            flagResult.textContent = 'Please enter a flag.';
-            return;
-          }
-          fetch('/api/challenge/flag', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ category: currentCategory, flag })
-          })
-            .then(res => {
-              if (!res.ok) {
-                return res.json().then(data => { throw new Error(data.error || 'Error checking flag.'); });
-              }
-              return res.json();
-            })
-            .then(data => {
-              flagResult.textContent = data.message || data.error;
-              if (data.message && !data.message.includes("Incorrect")) {
-                flagResult.style.color = "var(--success)";
-                fetchMyTeam();
-                fetchTeamScores();
-                const solvedBox = document.querySelector(`.challenge-card[data-category="${currentCategory}"]`);
-                if (solvedBox) {
-                  solvedBox.style.backgroundColor = "var(--accent-soft)";
-                  solvedBox.style.borderColor = "var(--accent)";
-                  solvedBox.style.color = "var(--accent)";
-                }
-              } else {
-                flagResult.style.color = "#b7410e";
-              }
-            })
-            .catch(err => {
-              flagResult.textContent = err.message;
-            });
-        });
-      }
-      
-      // Fetch initial data
+
+      setupScoreboardTabs();
+      fetchConfig();
       fetchChallenges();
       fetchProfile();
       fetchTeamScores();
@@ -1666,19 +1438,112 @@
       fetchMyTeam();
       fetchUsers();
 
-    });
-    document.addEventListener('DOMContentLoaded', function() {
-      const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-      const body = document.body;
-      if (mobileMenuToggle) {
-        mobileMenuToggle.addEventListener('click', function() {
-          body.classList.toggle('mobile-menu-open');
-        }); 
+      // Team Join / Create handlers
+      const showJoinBtn = document.getElementById('showJoinForm');
+      const showCreateBtn = document.getElementById('showCreateForm');
+      const joinSec = document.getElementById('joinTeamSection');
+      const createSec = document.getElementById('createTeamSection');
+
+      if (showJoinBtn && joinSec && createSec) {
+        showJoinBtn.addEventListener('click', () => { joinSec.style.display = 'block'; createSec.style.display = 'none'; });
       }
+      if (showCreateBtn && joinSec && createSec) {
+        showCreateBtn.addEventListener('click', () => { createSec.style.display = 'block'; joinSec.style.display = 'none'; });
+      }
+      const cancelJoin = document.getElementById('cancelJoinTeam');
+      if (cancelJoin) cancelJoin.addEventListener('click', () => { joinSec.style.display = 'none'; });
+      const cancelCreate = document.getElementById('cancelCreateTeam');
+      if (cancelCreate) cancelCreate.addEventListener('click', () => { createSec.style.display = 'none'; });
+
+      const submitJoin = document.getElementById('submitJoinTeam');
+      if (submitJoin) {
+        submitJoin.addEventListener('click', () => {
+          const teamName = document.getElementById('joinTeamName').value;
+          const password = document.getElementById('joinTeamPassword').value;
+          fetch('/api/team/join', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ teamName, password })
+          }).then(r => r.json()).then(d => {
+            const msg = document.getElementById('joinTeamMessage');
+            if (d.error) msg.textContent = d.error;
+            else {
+              msg.textContent = d.message;
+              fetchMyTeam(); fetchTeams(); fetchTeamScores();
+              joinSec.style.display = 'none';
+            }
+          });
+        });
+      }
+
+      const submitCreate = document.getElementById('submitCreateTeam');
+      if (submitCreate) {
+        submitCreate.addEventListener('click', () => {
+          const teamName = document.getElementById('createTeamName').value;
+          const password = document.getElementById('createTeamPassword').value;
+          fetch('/api/team/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ teamName, password })
+          }).then(r => r.json()).then(d => {
+            const msg = document.getElementById('createTeamMessage');
+            if (d.error) msg.textContent = d.error;
+            else {
+              msg.textContent = d.message;
+              fetchMyTeam(); fetchTeams(); fetchTeamScores();
+              createSec.style.display = 'none';
+            }
+          });
+        });
+      }
+
+      // Admin Start/Stop & Wipe
+      const adminStartBtn = document.getElementById('adminStartCtfBtn');
+      if (adminStartBtn) {
+        adminStartBtn.addEventListener('click', () => {
+          if (ctfStartTime) {
+            showCustomConfirm("Stop CTF?", "Are you sure you want to stop the CTF? Players won't be able to submit flags.", false, (res) => {
+              if (!res) return;
+              fetch('/api/admin/stop', { method: 'POST' }).then(r=>r.json()).then(d => {
+                if (d.error) showCustomConfirm("Error", d.error, true, null);
+              });
+            });
+          } else {
+            showCustomConfirm("Start CTF?", "Start the expedition timer now?", false, (res) => {
+              if (!res) return;
+              fetch('/api/admin/start', { method: 'POST' }).then(r=>r.json()).then(d => {
+                if (d.error) showCustomConfirm("Error", d.error, true, null);
+              });
+            });
+          }
+        });
+      }
+
+      const adminWipeBtn = document.getElementById('adminWipeDataBtn');
+      if (adminWipeBtn) {
+        adminWipeBtn.addEventListener('click', () => {
+          showCustomConfirm("Wipe All Records?", "Are you sure you want to WIPE all scores, solves, and hints? This cannot be undone!", false, (res) => {
+            if (!res) return;
+            fetch('/api/admin/wipe', { method: 'POST' }).then(r=>r.json()).then(d => {
+              if (d.error) showCustomConfirm("Error", d.error, true, null);
+              else showCustomConfirm("Expedition Reset", d.message, true, null);
+            });
+          });
+        });
+      }
+
+      // Sockets
+      const socket = io();
+      socket.on('configUpdate', (data) => {
+        ctfStartTime = data.ctfStartTime;
+        startLocalTimer();
+        updateAdminStartButton();
+        fetchChallenges(); fetchTeamScores(); fetchTeams(); fetchMyTeam();
+      });
+      socket.on('challengesUpdate', () => { fetchChallenges(); });
+      socket.on('teamsUpdate', () => { fetchTeamScores(); fetchTeams(); fetchMyTeam(); });
+      socket.on('usersUpdate', () => { fetchUsers(); fetchProfile(); fetchMyTeam(); });
     });
   </script>
-
-  <div id="ctfTimerDisplay" style="position: fixed; bottom: 40px; right: 20px; font-variant-numeric: tabular-nums; font-size: 2rem; color: var(--primary); font-weight: bold; background: rgba(10, 14, 20, 0.9); padding: 0.5rem 1rem; border-radius: 0; border: 1px solid var(--primary); backdrop-filter: blur(10px); z-index: 9999; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 10px rgba(200, 214, 75, 0.2);">--:--:--</div>
 </body>
 </html>
-

@@ -41,6 +41,7 @@ loginForm.addEventListener('submit', async (e) => {
       loginError.textContent = data.error || 'Login failed.';
     } else {
       // On success, redirect to the dashboard
+      sessionStorage.removeItem('lostCodeIntroSeen');
       sessionStorage.removeItem('coreDumpIntroSeen');
       window.location.href = '/dashboard';
     }

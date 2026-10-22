@@ -6,7 +6,8 @@
     "resource": "Forensics_1787430748695_Forensics.zip",
     "originalResourceName": "Forensics.zip",
     "difficulty": "EASY",
-    "hint": "Don't judge a file by its extension. Let the MIME type speak."
+    "hint": "Don't judge a file by its extension. Let the MIME type speak.",
+    "subtitle": "The Forged Manifest"
   },
   "Reverse Engineering": {
     "hash": "$2b$10$2uICLrX0GVxOweA9issRheLZ39PPGuav2wbsGkv3nKT7sOOK3u/q.",
@@ -15,7 +16,8 @@
     "difficulty": "HARD",
     "hint": "There are way too many complex equations in this binary to solve by hand or brute force. Try using   \t\t\t  an advanced solver script like the Z3 Theorem Prover, or a symbolic execution framework like Angr to \t\t\t  find the mathematical path to success.",
     "resource": "ReverseEngineering_1787589741486_ReverseEngineering.zip",
-    "originalResourceName": "Reverse_Engineering.zip"
+    "originalResourceName": "Reverse_Engineering.zip",
+    "subtitle": "Ghost Mechanism"
   },
   "Web Exploitation": {
     "hash": "$2b$10$ar8bqUhNPPXj6ikxo3Uh0eANLMz28aSD.copu1zXbhw/.SRO8ov8q",
@@ -24,7 +26,8 @@
     "difficulty": "MEDIUM",
     "hint": "username - elliot and password - angela",
     "resource": "WebExploitation_1787589271945_WebExploitation.zip",
-    "originalResourceName": "Web_Exploitation.zip"
+    "originalResourceName": "Web_Exploitation.zip",
+    "subtitle": "The Governor's Vault"
   },
   "OSINT": {
     "hash": "$2b$10$vdMZ0pUAxAxUOodT5glOaeQX4rI0B0WXeZs4i1H3klmBTqx8leLNq",
@@ -33,7 +36,8 @@
     "difficulty": "EASY",
     "hint": "Start with the car wash. Follow the trail through public records and business information.  Flag Format: coredump{abc_xyz_123_456}",
     "resource": "OSINT_1787431176233_OSINT.zip",
-    "originalResourceName": "OSINT.zip"
+    "originalResourceName": "OSINT.zip",
+    "subtitle": "Follow the Trail"
   },
   "Steganography": {
     "hash": "$2b$10$ASBCaQfU2tSByLfbARzsHOlVg.BLsO/vQsdIV.QKvw1LZ3FQ5BPXS",
@@ -42,7 +46,8 @@
     "difficulty": "EASY",
     "hint": "Start by examining the image's metadata. If that doesn't reveal everything, look for something hidden within the file itself.",
     "resource": "Steganography_1787431294318_Steg.zip",
-    "originalResourceName": "Steg.zip"
+    "originalResourceName": "Steg.zip",
+    "subtitle": "Message in a Bottle"
   },
   "Binary Analysis": {
     "hash": "$2b$10$qKg0Parpal8SpRORZi4NbOecfExRoMxkg/6wSeMZhxKQk6Dl.2kMS",
@@ -51,7 +56,8 @@
     "difficulty": "HARD",
     "hint": "The 'strings' command won't save you here because the flag isn't stored as continuous text in        \t\t\t  memory. Load the core dump into GDB along with the executable, figure out where the data was loaded, \t\t\t  and inspect the raw memory registers to pull out the raw hex values.",
     "resource": "BinaryAnalysis_1787589817384_BinaryAnalysis.zip",
-    "originalResourceName": "Binary_Analysis.zip"
+    "originalResourceName": "Binary_Analysis.zip",
+    "subtitle": "Sunken Registers"
   },
   "Miscellaneous": {
     "text": "My friend hid the flag somewhere inside a pile of complete gibberish — and then encoded the entire thing. Can you work your way through the mess and find what was hidden?",
@@ -60,7 +66,8 @@
     "difficulty": "EASY",
     "hint": "The gibberish isn't the only thing you need to decode. Sometimes, one layer of encoding leads to another.",
     "resource": "Miscellaneous_1787431347872_Misc.zip",
-    "originalResourceName": "Misc.zip"
+    "originalResourceName": "Misc.zip",
+    "subtitle": "Dead Man's Switch"
   },
   "Miscellaneous 2": {
     "text": "I asked a cow for the flag, but all it gave me was a strange sequence of moos in two different tones. Maybe the cow is trying to tell you something...",
@@ -69,7 +76,8 @@
     "difficulty": "EASY",
     "hint": "Two different tones. Two different symbols. Think about a code that only needs two states.",
     "resource": "Miscellaneous2_1787431414804_Misc2.zip",
-    "originalResourceName": "Misc_2.zip"
+    "originalResourceName": "Misc_2.zip",
+    "subtitle": "The Bovine Cipher"
   },
   "Pwn": {
     "text": "We managed to get a copy of the company's secure chat portal executable. It's heavily protected by modern memory mitigations (Stack Canaries). Can you find a way to bypass the protections and access the secret admin function to reveal the flag?",
@@ -78,7 +86,8 @@
     "difficulty": "HARD",
     "hint": "The 'gets()' function gives you a classic buffer overflow, but the Stack Canary will crash the       \t\t\t  program before you can win. Notice how the program prints back your alias? Try entering format       \t\t\t  string specifiers (like %15$p) to leak the secret Canary off the stack so you can perfectly place it \t\t\t  back during your overflow.",
     "resource": "Pwn_1787589783337_Pwn.zip",
-    "originalResourceName": "Pwn.zip"
+    "originalResourceName": "Pwn.zip",
+    "subtitle": "Walk the Plank"
   },
   "OSINT 2": {
     "text": "9 years ago, during the first quarter of the year, a traveler named Clemens visited a restaurant somewhere in the Caribbean. Before leaving, he wrote an online review describing his experience. \t\tHe described the location as gorgeous and surrounded by the Caribbean Sea, but wasn't impressed with the service or the food considering the price. \t\tDuring his visit, Clemens also purchased a drink. \t\tYour task is to identify the restaurant he visited, find the drink he ordered, and determine how much it cost in Dominican pesos.",
@@ -87,7 +96,8 @@
     "difficulty": "MEDIUM",
     "hint": "Hint: Don’t focus only on the text—the information linked to the image may lead you to the answer. \t\tFlag Format : coredump{restaurantname_drinkname_priceinnumbers}",
     "resource": "OSINT2_1787684560216_OSINT.zip",
-    "originalResourceName": "OSINT.zip"
+    "originalResourceName": "OSINT.zip",
+    "subtitle": "The Caribbean Log"
   },
   "Networking": {
     "text": "We intercepted a strange ping sweep on our network. It looks like normal diagnostic traffic, but our intrusion detection system flagged a weird payload signature. Can you extract the hidden data?",
@@ -96,7 +106,8 @@
     "hint": "I am always before your eyes, but you scan right past me.",
     "resource": "Networking_1787589391967_Networking.zip",
     "originalResourceName": "Networking.zip",
-    "hash": "$2b$10$iYqdXiPscJuIXkZiYP4sa.8maDfRq/cZdHLqraN287NfrwNQCVxta"
+    "hash": "$2b$10$iYqdXiPscJuIXkZiYP4sa.8maDfRq/cZdHLqraN287NfrwNQCVxta",
+    "subtitle": "Siren's Call"
   },
   "Cryptography": {
     "text": "Two messages were encrypted using the exact same One-Time Pad (OTP) key.  \t\t\tWe know the plaintext of the first message is: \t\t\t\"The weather in London is terrible today.\"  \t\t\t- transmission1.hex contains the encrypted first message. \t\t\t- transmission2.hex contains the encrypted flag.  \t\t\tRecover the flag from transmission2.hex.",
@@ -105,6 +116,7 @@
     "hint": "[ Transmission 1 = Plaintext 1 ⊕ Key ] , [ Transmission 2 = Plaintext 2 ⊕ Key ]",
     "resource": "Cryptography_1787589537471_Cryptography.zip",
     "originalResourceName": "Cryptography.zip",
-    "hash": "$2b$10$ruYxyw7UufpacIiPRAuRVOYuG/qzONdp.MZ4xNGwZOQ8aZka2XrBW"
+    "hash": "$2b$10$ruYxyw7UufpacIiPRAuRVOYuG/qzONdp.MZ4xNGwZOQ8aZka2XrBW",
+    "subtitle": "Cipher Chest"
   }
 }

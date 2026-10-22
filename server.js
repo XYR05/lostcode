@@ -82,6 +82,7 @@ app.post('/api/admin/wipe', (req, res) => {
       team.scoreHistory = ctfConfig.ctfStartTime ? [{ timestamp: ctfConfig.ctfStartTime, score: 0 }] : [];
       team.score = 0;
       team.solvedChallenges = {};
+      team.hintsUnlocked = {};
   });
   users.forEach(user => {
       user.solvedChallenges = [];
@@ -189,6 +190,22 @@ app.get('/api/challenges', (req, res) => {
   const flagsFilePath = path.join(__dirname, 'private', 'flags.json');
   if (!fs.existsSync(flagsFilePath)) return res.json({});
   const flagsData = JSON.parse(fs.readFileSync(flagsFilePath, 'utf8'));
+
+  let userTeam = null;
+  let isAdminUser = false;
+  if (req.session.userId) {
+    const currentUser = users.find(u => u.id === req.session.userId);
+    if (currentUser) {
+      if (currentUser.id === 'user_admin_1') isAdminUser = true;
+      if (currentUser.teamId) {
+        userTeam = teams.find(t => t.id === currentUser.teamId);
+      }
+    }
+  }
+
+  const hintsUnlockedCount = (userTeam && userTeam.hintsUnlocked) ? Object.keys(userTeam.hintsUnlocked).length : 0;
+  const nextHintCost = (hintsUnlockedCount + 1) * 5;
+
   const safeData = {};
   for (const key in flagsData) {
     let solvesCount = 0;
@@ -202,14 +219,21 @@ app.get('/api/challenges', (req, res) => {
       if (teamSolvedIt) solvesCount++;
     });
 
+    const hasHint = Boolean(flagsData[key].hint && flagsData[key].hint.trim());
+    const isHintUnlocked = Boolean(userTeam && userTeam.hintsUnlocked && userTeam.hintsUnlocked[key]);
+
     safeData[key] = { 
       text: flagsData[key].text, 
+      subtitle: flagsData[key].subtitle || "",
       points: flagsData[key].points || 500,
       difficulty: flagsData[key].difficulty || "EASY",
-      hint: flagsData[key].hint || "",
+      hint: (isHintUnlocked || isAdminUser) ? (flagsData[key].hint || "") : null,
+      hasHint: hasHint,
+      hintUnlocked: isHintUnlocked,
       resource: flagsData[key].resource,
       originalResourceName: flagsData[key].originalResourceName,
-      solves: solvesCount
+      solves: solvesCount,
+      nextHintCost: nextHintCost
     };
   }
   res.json(safeData);
@@ -228,7 +252,7 @@ app.post('/api/admin/challenges', isAdmin, upload.single('resource'), (req, res)
   const currentUser = users.find(u => u.id === req.session.userId);
   if (!currentUser || currentUser.id !== 'user_admin_1') return res.status(403).json({ error: 'Forbidden' });
   
-  const { category, text, flag, points, removeResource, difficulty, hint } = req.body;
+  const { category, text, flag, points, removeResource, difficulty, hint, subtitle } = req.body;
   if (!category || !text || !flag || !points) return res.status(400).json({ error: 'All fields (Category, Text, Flag, Points) are required.' });
   
   const flagsFilePath = path.join(__dirname, 'private', 'flags.json');
@@ -246,6 +270,7 @@ app.post('/api/admin/challenges', isAdmin, upload.single('resource'), (req, res)
   
   const newPoints = parseInt(points) || 500;
   flagsData[category].text = text;
+  flagsData[category].subtitle = subtitle || flagsData[category].subtitle || "";
   flagsData[category].points = newPoints;
   flagsData[category].difficulty = difficulty || "EASY";
   flagsData[category].hint = hint || "";
@@ -417,7 +442,12 @@ app.get('/api/myteam', (req, res) => {
   if (!myTeam.solvedChallenges || typeof myTeam.solvedChallenges !== 'object') {
     myTeam.solvedChallenges = {};
   }
-  res.json({ team: { ...myTeam, membersNames, memberDetails } });
+  if (!myTeam.hintsUnlocked || typeof myTeam.hintsUnlocked !== 'object') {
+    myTeam.hintsUnlocked = {};
+  }
+  const hintsUnlockedCount = Object.keys(myTeam.hintsUnlocked).length;
+  const nextHintCost = (hintsUnlockedCount + 1) * 5;
+  res.json({ team: { ...myTeam, membersNames, memberDetails, hintsUnlockedCount, nextHintCost } });
 });
 
 app.get('/api/profile', (req, res) => {
@@ -553,6 +583,76 @@ app.post('/api/challenge/flag', (req, res) => {
   io.emit('teamsUpdate');
   io.emit('usersUpdate');
   return res.json({ message: `Correct flag! ${pointsEarned} points added to your team.` });
+});
+
+// Unlock Hint with Escalating Deduction (-5, -10, -15...)
+app.post('/api/challenge/hint/unlock', (req, res) => {
+  if (!ctfConfig.ctfStartTime) return res.status(403).json({ error: 'The CTF has not started yet!' });
+  if (!req.session.userId) return res.status(403).json({ error: 'Not logged in' });
+  const { category } = req.body;
+  if (!category) return res.status(400).json({ error: 'Category required.' });
+
+  const currentUser = users.find(u => u.id === req.session.userId);
+  if (!currentUser || !currentUser.teamId) return res.status(400).json({ error: 'You are not in a team.' });
+  const team = teams.find(t => t.id === currentUser.teamId);
+  if (!team) return res.status(400).json({ error: 'Team not found.' });
+
+  const flagsFilePath = path.join(__dirname, 'private', 'flags.json');
+  if (!fs.existsSync(flagsFilePath)) return res.status(500).json({ error: 'Flags file not found.' });
+  const flagsData = JSON.parse(fs.readFileSync(flagsFilePath, 'utf8'));
+  const challengeObj = flagsData[category];
+  if (!challengeObj) return res.status(404).json({ error: 'Challenge not found.' });
+  if (!challengeObj.hint || !challengeObj.hint.trim()) return res.status(400).json({ error: 'This challenge has no hint.' });
+
+  if (!team.hintsUnlocked || typeof team.hintsUnlocked !== 'object') {
+    team.hintsUnlocked = {};
+  }
+
+  // If already unlocked for this team, return it without deducting again
+  if (team.hintsUnlocked[category]) {
+    return res.json({
+      message: 'Hint already unlocked.',
+      hint: challengeObj.hint,
+      cost: 0,
+      alreadyUnlocked: true,
+      teamScore: team.score,
+      hintsUnlockedCount: Object.keys(team.hintsUnlocked).length,
+      nextHintCost: (Object.keys(team.hintsUnlocked).length + 1) * 5
+    });
+  }
+
+  // Calculate escalating penalty: 1st hint = 5, 2nd = 10, 3rd = 15...
+  const currentCount = Object.keys(team.hintsUnlocked).length;
+  const cost = (currentCount + 1) * 5;
+
+  team.score -= cost;
+  team.hintsUnlocked[category] = {
+    cost,
+    unlockedAt: Date.now(),
+    unlockedBy: currentUser.username
+  };
+
+  if (!team.scoreHistory) {
+    team.scoreHistory = [{ timestamp: Date.now() - 1000, score: team.score + cost }];
+  }
+  team.scoreHistory.push({ timestamp: Date.now(), score: team.score });
+
+  try {
+    fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
+  } catch (err) {
+    console.error("Error writing teams.json:", err);
+    return res.status(500).json({ error: 'Internal server error.' });
+  }
+
+  io.emit('teamsUpdate');
+  return res.json({
+    message: `Quartermaster's secret revealed! ${cost} points deducted from your team.`,
+    hint: challengeObj.hint,
+    cost,
+    teamScore: team.score,
+    hintsUnlockedCount: currentCount + 1,
+    nextHintCost: (currentCount + 2) * 5
+  });
 });
 
 // -----------------------
