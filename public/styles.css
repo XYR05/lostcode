@@ -38,7 +38,7 @@ body {
   width: 100%;
   background: 
     linear-gradient(rgba(23, 17, 12, 0.78), rgba(23, 17, 12, 0.84)),
-    url("/map-bg.png") center / cover fixed;
+    url("/bg.png") center / cover fixed;
   color: var(--text-primary);
   line-height: 1.6;
   position: relative;

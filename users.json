@@ -5,19 +5,6 @@
     "email": "admin@ctf.com",
     "password": "$2b$10$DnsVPwsCDKj7O5fFiYnFh.2M12Cj/LXx/yUUYbI4gjItqEf4MG7bG",
     "teamId": "team_admin_1",
-    "solvedChallenges": [
-      "Forensics",
-      "OSINT",
-      "Steganography",
-      "Miscellaneous",
-      "Miscellaneous 2",
-      "Web Exploitation",
-      "Networking",
-      "Cryptography",
-      "Reverse Engineering",
-      "Binary Analysis",
-      "Pwn",
-      "OSINT 2"
-    ]
+    "solvedChallenges": []
   }
 ]

@@ -88,25 +88,34 @@
       
       <!-- LEFT PANEL: CHALLENGES LIST -->
       <div class="challenges-panel">
-        <div class="panel-header">
-          <svg class="panel-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14.5 17.5L3 6V3h3l11.5 11.5"></path>
-            <path d="M13 19l6-6"></path>
-            <path d="M16 16l4 4"></path>
-            <path d="M19 21l2-2"></path>
-            <path d="M9.5 17.5L21 6V3h-3L6.5 14.5"></path>
-            <path d="M11 19l-6-6"></path>
-            <path d="M8 16l-4 4"></path>
-            <path d="M5 21l-2-2"></path>
-          </svg>
-          <h3 class="panel-title">CHALLENGES</h3>
+        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg class="panel-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14.5 17.5L3 6V3h3l11.5 11.5"></path>
+              <path d="M13 19l6-6"></path>
+              <path d="M16 16l4 4"></path>
+              <path d="M19 21l2-2"></path>
+              <path d="M9.5 17.5L21 6V3h-3L6.5 14.5"></path>
+              <path d="M11 19l-6-6"></path>
+              <path d="M8 16l-4 4"></path>
+              <path d="M5 21l-2-2"></path>
+            </svg>
+            <h3 class="panel-title">EXPEDITION RIDDLES</h3>
+          </div>
+          <button type="button" class="tournament-flow-btn" onclick="openTournamentFlowModal()" title="View Tournament Flow & Rules">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <span>TOURNAMENT FLOW</span>
+          </button>
         </div>
 
         <div class="tabs-container" id="challengeTabs">
-          <div class="category active" data-diff="EASY">EASY</div>
-          <div class="category" data-diff="MEDIUM">MEDIUM</div>
-          <div class="category" data-diff="HARD">HARD</div>
-          <div class="category" data-diff="BONUS" style="display: none;" id="bonusFilterTab">BONUS</div>
+          <div class="category active" data-round="ALL">ALL (19)</div>
+          <div class="category" data-round="1">ROUND 1 (10)</div>
+          <div class="category" data-round="2">ROUND 2 (6)</div>
+          <div class="category" data-round="3">ROUND 3 (2)</div>
+          <div class="category" data-round="4">ROUND 4 (1)</div>
         </div>
 
         <div class="challenges-list" id="challengeCategoriesContainer">
@@ -391,6 +400,33 @@
     </div>
   </div>
 
+  <!-- TOURNAMENT FLOW MODAL -->
+  <div id="tournamentFlowModal" class="modal" style="display: none; z-index: 10002;">
+    <div class="modal-content" style="max-width: 660px; width: 94%; max-height: 90vh; overflow-y: auto; text-align: left; padding: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold-primary)" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <h3 class="modal-title" style="margin: 0; font-family: 'Cinzel', serif;">TOURNAMENT FLOW & RULES</h3>
+        </div>
+        <button class="close-btn" style="position: static; font-size: 1.5rem;" onclick="closeTournamentFlowModal()">&times;</button>
+      </div>
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <img src="/tournament_flow.png" alt="Lost Code Tournament Flow" style="max-width: 100%; height: auto; border: 1px solid var(--border-subtle); border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+      </div>
+      <div style="font-family: 'Rajdhani', sans-serif; font-size: 15px; color: var(--text-secondary); line-height: 1.6;">
+        <div style="margin-bottom: 10px;"><strong style="color: var(--gold-primary);">ROUND 1 (QUALIFIERS):</strong> 10 Teams per group • 10 Riddles • 0 Eliminations</div>
+        <div style="margin-bottom: 10px;"><strong style="color: var(--gold-primary);">ROUND 2 (GROUP STAGE):</strong> Group 1 (5 Teams) & Group 2 (5 Teams) • 6 Riddles • 2 Eliminations per group → 3 Teams Left</div>
+        <div style="margin-bottom: 10px;"><strong style="color: var(--gold-primary);">ROUND 3 (SEMI-FINALS):</strong> 3 Teams (G1) & 3 Teams (G2) • 2 Riddles • 2 Eliminations → 2 Teams Left</div>
+        <div style="margin-bottom: 10px;"><strong style="color: var(--gold-primary);">ROUND 4 (FINALS):</strong> 1 Team VS 1 Team • 1 Riddle • Champion Decided</div>
+        <div style="padding: 12px; background: rgba(201, 154, 82, 0.1); border-left: 3px solid var(--gold-primary); margin-top: 15px; font-size: 13px; color: var(--text-primary);">
+          ⚠️ <strong>Quartermaster Hint Cost:</strong> Hints carry an escalating score deduction: Hint #1 = -5 pts, Hint #2 = -10 pts, Hint #3 = -15 pts, Hint #4 = -20 pts...
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- INTRO / RULES MODAL -->
   <div id="introModal" class="modal" style="display: none; z-index: 10000; align-items: center; justify-content: center;">
     <div class="modal-content" style="max-width: 900px; width: 92%; padding: 2.5rem; text-align: left;">
@@ -611,11 +647,12 @@
     function filterChallenges() {
       const activeTab = document.querySelector('#challengeTabs .category.active');
       if (!activeTab) return;
-      const targetDiff = activeTab.getAttribute('data-diff');
+      const targetRound = activeTab.getAttribute('data-round');
       
       let firstVisibleCategory = null;
       document.querySelectorAll('#challengeCategoriesContainer .challenge-card').forEach(card => {
-        if (card.getAttribute('data-diff') === targetDiff) {
+        const cardRound = card.getAttribute('data-round');
+        if (targetRound === 'ALL' || cardRound === targetRound) {
           card.style.display = 'flex';
           if (!firstVisibleCategory) firstVisibleCategory = card.getAttribute('data-category');
         } else {
@@ -650,25 +687,29 @@
       if (catContainer) catContainer.innerHTML = '';
       if (adminList) adminList.innerHTML = '';
       
-      const orderedCategories = [
-        "Forensics", "OSINT", "Steganography", "Miscellaneous", "Miscellaneous 2",
-        "Cryptography", "Web Exploitation", "Networking", "OSINT 2",
-        "Reverse Engineering", "Binary Analysis", "Pwn"
-      ];
-      
-      const allCategories = new Set([...orderedCategories, ...Object.keys(currentChallenges)]);
-      let hasBonus = false;
+      const allCategories = Object.keys(currentChallenges).sort((a, b) => {
+        const cA = currentChallenges[a];
+        const cB = currentChallenges[b];
+        const rA = cA.round || 1;
+        const rB = cB.round || 1;
+        if (rA !== rB) return rA - rB;
+        const nA = cA.riddleNumber || 1;
+        const nB = cB.riddleNumber || 1;
+        return nA - nB;
+      });
       let firstCategory = null;
       
       for (const category of allCategories) {
         if (!currentChallenges[category]) continue;
         const info = currentChallenges[category];
-        if (info.difficulty === 'BONUS') hasBonus = true;
         if (!firstCategory) firstCategory = category;
         
         const pts = info.points || 500;
         const diff = info.difficulty || 'EASY';
-        const subtitle = info.subtitle || `CTF // ${diff} // ${pts} PTS`;
+        const roundNum = info.round || 1;
+        const riddleNum = info.riddleNumber || 1;
+        const roundTag = `ROUND ${roundNum} // RIDDLE ${String(riddleNum).padStart(2, '0')}`;
+        const displayName = info.subtitle || category;
         
         if (catContainer) {
           const div = document.createElement('div');
@@ -677,11 +718,13 @@
           div.setAttribute('data-category', category);
           div.setAttribute('data-points', pts);
           div.setAttribute('data-diff', diff);
+          div.setAttribute('data-round', String(roundNum));
           div.innerHTML = `
-            <div class="c-icon-wrapper">${getCategoryIcon(category)}</div>
+            <div class="c-icon-wrapper">${getCategoryIcon(info.category || category)}</div>
             <div class="c-info">
-              <div class="c-title">${escapeHTML(category)}</div>
-              <div class="c-subtitle">${escapeHTML(subtitle)}</div>
+              <div class="c-round-tag">${escapeHTML(roundTag)}</div>
+              <div class="c-title">${escapeHTML(displayName)}</div>
+              <div class="c-subtitle">${escapeHTML(info.category || 'Riddle')} • ${pts} PTS • ${diff}</div>
             </div>
             <div class="c-solves">${info.solves || 0} SOLVES</div>
             <div class="c-arrow">&gt;</div>
@@ -697,8 +740,9 @@
           div.style.cssText = 'display:flex; flex-direction:column; justify-content:space-between; padding:1.25rem; background:var(--panel-secondary); border:1px solid var(--border-subtle); border-radius: 4px; min-height: 150px;';
           div.innerHTML = `
             <div style="margin-bottom: 1.25rem;">
-              <div style="font-family:'Cinzel',serif; font-size: 1.1rem; font-weight: 700; color:var(--gold-primary); margin-bottom: 0.2rem;">${escapeHTML(category)}</div>
-              <div style="font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--gold-muted); font-weight: 600; margin-bottom: 0.5rem;">${pts} pts • ${diff}</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--gold-muted); font-weight: 600; margin-bottom: 0.2rem;">${escapeHTML(roundTag)}</div>
+              <div style="font-family:'Cinzel',serif; font-size: 1.1rem; font-weight: 700; color:var(--gold-primary); margin-bottom: 0.2rem;">${escapeHTML(displayName)}</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--text-secondary); margin-bottom: 0.5rem;">${escapeHTML(info.category || '')} • ${pts} pts • ${diff}</div>
               <div style="font-size:0.85rem; color:var(--text-secondary); line-height: 1.4;">${escapeHTML(info.text)}</div>
             </div>
             <div style="display:flex; gap:0.5rem; margin-top:auto;">
@@ -709,9 +753,6 @@
           adminList.appendChild(div);
         }
       }
-      
-      const bonusTab = document.getElementById('bonusFilterTab');
-      if (bonusTab) bonusTab.style.display = hasBonus ? 'flex' : 'none';
       
       filterChallenges();
       updateChallengeBoxesFromTeam();
@@ -744,10 +785,17 @@
       const modalPoints = document.getElementById('modalPoints');
       const modalIcon = document.getElementById('modalCategoryIcon');
 
-      modalTitle.textContent = category;
+      modalTitle.textContent = chall.subtitle || category;
       modalDiff.textContent = chall.difficulty || 'EASY';
       modalPoints.textContent = chall.points || 500;
-      if (modalIcon) modalIcon.innerHTML = getCategoryIcon(category);
+      if (modalIcon) modalIcon.innerHTML = getCategoryIcon(chall.category || category);
+
+      const subEl = document.querySelector('.detail-header-subtitle');
+      if (subEl) {
+        subEl.innerHTML = `
+          ROUND ${chall.round || 1}: ${escapeHTML(chall.roundName || 'Qualifiers')} // RIDDLE ${chall.riddleNumber || 1} // <span id="modalDiff">${chall.difficulty || 'EASY'}</span> // <span id="modalPoints">${chall.points || 500}</span> POINTS
+        `;
+      }
 
       // Brief
       const desc = chall.text || `Solve the ${category} challenge and submit your flag.`;
@@ -758,11 +806,11 @@
       const hintContent = document.getElementById('challengeHintContent');
       if (chall.hasHint) {
         hintSection.style.display = 'block';
-        if (chall.hintUnlocked || (chall.hint && chall.hint.trim())) {
+        if (chall.hintUnlocked) {
           hintContent.innerHTML = `
             <div class="hint-unlocked-box">
               <div style="font-size: 11px; color: var(--gold-primary); margin-bottom: 6px; letter-spacing: 0.1em; font-family: 'Cinzel', serif;">[ UNLOCKED HINT ]</div>
-              <div>${escapeHTML(chall.hint)}</div>
+              <div>${escapeHTML(chall.hint || '')}</div>
             </div>
           `;
         } else {
@@ -770,7 +818,7 @@
           hintContent.innerHTML = `
             <div class="hint-locked-box">
               <div class="hint-locked-message">
-                The Quartermaster holds a secret for this challenge. Revealing it will deduct <strong>${cost} points</strong> from your crew's treasure.
+                The Quartermaster holds a secret for this riddle. Revealing it will deduct <strong>${cost} points</strong> from your crew's treasure.
               </div>
               <button type="button" class="hint-unlock-btn" onclick="openHintUnlockModal('${escapeHTML(category)}', ${cost})">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
@@ -816,6 +864,16 @@
 
     function closeHintUnlockModal() {
       document.getElementById('hintConfirmModal').style.display = 'none';
+    }
+
+    function openTournamentFlowModal() {
+      const m = document.getElementById('tournamentFlowModal');
+      if (m) m.style.display = 'flex';
+    }
+
+    function closeTournamentFlowModal() {
+      const m = document.getElementById('tournamentFlowModal');
+      if (m) m.style.display = 'none';
     }
 
     function confirmHintUnlock() {
@@ -921,7 +979,7 @@
       document.getElementById('adminFlagInput').value = '********';
       document.getElementById('adminPointsInput').value = currentChallenges[category].points || 500;
       document.getElementById('adminDiffInput').value = currentChallenges[category].difficulty || 'EASY';
-      document.getElementById('adminHintInput').value = currentChallenges[category].hint || '';
+      document.getElementById('adminHintInput').value = currentChallenges[category].adminHint || currentChallenges[category].hint || '';
       
       const fileInput = document.getElementById('adminResourceInput');
       if (fileInput) fileInput.value = '';

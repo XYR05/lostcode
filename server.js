@@ -227,7 +227,12 @@ app.get('/api/challenges', (req, res) => {
       subtitle: flagsData[key].subtitle || "",
       points: flagsData[key].points || 500,
       difficulty: flagsData[key].difficulty || "EASY",
-      hint: (isHintUnlocked || isAdminUser) ? (flagsData[key].hint || "") : null,
+      round: flagsData[key].round || 1,
+      roundName: flagsData[key].roundName || "Round 1: Qualifiers",
+      riddleNumber: flagsData[key].riddleNumber || 1,
+      category: flagsData[key].category || "Miscellaneous",
+      hint: isHintUnlocked ? (flagsData[key].hint || "") : null,
+      adminHint: isAdminUser ? (flagsData[key].hint || "") : null,
       hasHint: hasHint,
       hintUnlocked: isHintUnlocked,
       resource: flagsData[key].resource,
@@ -530,7 +535,8 @@ app.post('/api/team/join', (req, res) => {
 });
 
 app.post('/api/challenge/flag', (req, res) => {
-  if (!ctfConfig.ctfStartTime) return res.status(403).json({ error: 'The CTF has not started yet!' });
+  const isAdminUser = req.session.userId === 'user_admin_1';
+  if (!ctfConfig.ctfStartTime && !isAdminUser) return res.status(403).json({ error: 'The CTF has not started yet!' });
   if (!req.session.userId) return res.status(403).json({ error: 'Not logged in' });
   const { category, flag } = req.body;
   if (!category || !flag) return res.status(400).json({ error: 'Category and flag required.' });
@@ -587,7 +593,8 @@ app.post('/api/challenge/flag', (req, res) => {
 
 // Unlock Hint with Escalating Deduction (-5, -10, -15...)
 app.post('/api/challenge/hint/unlock', (req, res) => {
-  if (!ctfConfig.ctfStartTime) return res.status(403).json({ error: 'The CTF has not started yet!' });
+  const isAdminUser = req.session.userId === 'user_admin_1';
+  if (!ctfConfig.ctfStartTime && !isAdminUser) return res.status(403).json({ error: 'The CTF has not started yet!' });
   if (!req.session.userId) return res.status(403).json({ error: 'Not logged in' });
   const { category } = req.body;
   if (!category) return res.status(400).json({ error: 'Category required.' });

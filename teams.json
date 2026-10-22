@@ -9,60 +9,13 @@
     "membersNames": [
       "admin"
     ],
-    "score": 4650,
+    "score": 0,
     "solvedChallenges": {},
+    "hintsUnlocked": {},
     "scoreHistory": [
       {
         "timestamp": 1787320792157,
         "score": 0
-      },
-      {
-        "timestamp": 1787591584846,
-        "score": 100
-      },
-      {
-        "timestamp": 1787591597200,
-        "score": 300
-      },
-      {
-        "timestamp": 1787591612801,
-        "score": 500
-      },
-      {
-        "timestamp": 1787591620793,
-        "score": 700
-      },
-      {
-        "timestamp": 1787591634032,
-        "score": 850
-      },
-      {
-        "timestamp": 1787591657984,
-        "score": 1150
-      },
-      {
-        "timestamp": 1787591680874,
-        "score": 1450
-      },
-      {
-        "timestamp": 1787591693794,
-        "score": 1850
-      },
-      {
-        "timestamp": 1787591705426,
-        "score": 2650
-      },
-      {
-        "timestamp": 1787591722322,
-        "score": 3250
-      },
-      {
-        "timestamp": 1787591735771,
-        "score": 4250
-      },
-      {
-        "timestamp": 1787684810911,
-        "score": 4650
       }
     ]
   }

@@ -62,7 +62,7 @@
 body {
   background: 
     linear-gradient(rgba(23, 17, 12, 0.72), rgba(23, 17, 12, 0.80)),
-    url("/map-bg.png") center / cover fixed;
+    url("/bg.png") center / cover fixed;
   color: var(--text-primary);
   min-height: 100vh;
   padding-top: 76px;
@@ -335,13 +335,39 @@ body::after {
   margin: 0;
 }
 
-/* Difficulty Tabs */
+/* Difficulty & Round Tabs */
 .tabs-container {
   display: flex;
-  gap: 32px;
+  gap: 20px;
   margin-bottom: 24px;
   border-bottom: 1px solid var(--border-subtle);
   padding-bottom: 4px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: thin;
+}
+
+.tournament-flow-btn {
+  background: rgba(201, 154, 82, 0.12);
+  border: 1px solid var(--gold-muted);
+  color: var(--gold-primary);
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.tournament-flow-btn:hover {
+  background: var(--gold-primary);
+  color: var(--bg-primary);
+  box-shadow: 0 0 12px rgba(201, 154, 82, 0.4);
 }
 
 .category {
@@ -431,6 +457,15 @@ body::after {
   flex: 1;
 }
 
+.c-round-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--gold-muted);
+  text-transform: uppercase;
+}
+
 .c-title {
   font-family: 'Cinzel', serif;
   font-size: 15px;
@@ -466,7 +501,16 @@ body::after {
 }
 
 /* Solved Card Badge */
-.challenge-card.solved .c-title {
+.challenge-card.solved .c-round-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--gold-muted);
+  text-transform: uppercase;
+}
+
+.c-title {
   color: var(--gold-primary);
 }
 .challenge-card.solved::before {
