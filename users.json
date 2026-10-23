@@ -1,7 +1,7 @@
 [
   {
-    "id": "user_admin_1",
-    "username": "admin",
+    "id": "team_admin_1",
+    "username": "lostcode",
     "email": "admin@lostcode",
     "password": "$2b$10$A23zOSJuRgv81BCVBd83Z.D9d5z2MY1hH8ykTf5MfJNzEIzSuFviu",
     "teamId": "team_admin_1",
