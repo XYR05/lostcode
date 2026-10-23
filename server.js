@@ -135,54 +135,138 @@ try {
   console.error("Error reading teams.json:", err);
 }
 
+// Helper: Identify admin teams to exclude from public rankings and solve counters
+function isAdminTeam(team) {
+  if (!team) return false;
+  const name = (team.teamName || '').toLowerCase().trim();
+  return team.id === 'team_admin_1' || name === 'lostcode' || name === 'admin' || name.includes('admin');
+}
+
 // -----------------------
 // User Endpoints
 // -----------------------
 
 app.post('/api/register', (req, res) => {
-  const { username, email, password } = req.body;
-  const tagError = validateNoTags(username, "Username");
+  const { teamName, username, email, password } = req.body;
+  const crewName = (teamName || '').trim();
+  const rawAlias = (username || crewName).trim();
+  const userEmail = (email || `${crewName.toLowerCase().replace(/[^a-z0-9]/g, '')}@lostcode`).trim();
+
+  const tagError = validateNoTags(crewName || rawAlias, "Crew/User name");
   if (tagError) return res.status(400).json({ error: tagError });
-  if (!username || !email || !password) {
-    return res.status(400).json({ error: 'All fields required.' });
+
+  if ((!crewName && !rawAlias) || !password) {
+    return res.status(400).json({ error: 'Crew name and password required.' });
   }
-  const trimmedUser = username.trim();
-  if (users.find(u => u.email === email)) return res.status(400).json({ error: 'Email already in use.' });
-  if (users.find(u => u.username.toLowerCase() === trimmedUser.toLowerCase())) return res.status(400).json({ error: 'Username already in use.' });
+
+  const effectiveTeamName = crewName || rawAlias;
+  if (teams.find(t => t.teamName.toLowerCase() === effectiveTeamName.toLowerCase())) {
+    return res.status(400).json({ error: 'Crew / Team name already in use.' });
+  }
+
   const hashedPassword = bcrypt.hashSync(password, 10);
-  const newUser = {
-    id: Date.now().toString(),
-    username: trimmedUser,
-    email,
+  const newUserId = 'user_' + Date.now();
+  const newTeamId = 'team_' + Date.now();
+
+  const newTeam = {
+    id: newTeamId,
+    teamName: effectiveTeamName,
     password: hashedPassword,
-    teamId: null,
+    members: [newUserId],
+    membersNames: [rawAlias],
+    score: 0,
+    solvedChallenges: {},
+    hintsUnlocked: {},
+    scoreHistory: [{ timestamp: Date.now(), score: 0 }]
+  };
+
+  const newUser = {
+    id: newUserId,
+    username: rawAlias,
+    email: userEmail,
+    password: hashedPassword,
+    teamId: newTeamId,
     solvedChallenges: []
   };
+
+  teams.push(newTeam);
   users.push(newUser);
+
   try {
+    fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
     fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
   } catch (err) {
-    console.error("Error writing users.json:", err);
+    console.error("Error writing files:", err);
     return res.status(500).json({ error: 'Internal server error.' });
   }
+
+  io.emit('teamsUpdate');
   io.emit('usersUpdate');
-  res.json({ message: 'User registered successfully!' });
+  res.json({ message: 'Crew enlisted successfully! Board the ship with your crew name and password.' });
 });
 
 app.post('/api/login', (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password required.' });
+  const { teamName, email, identifier, username, password } = req.body;
+  const loginKey = (teamName || identifier || email || username || '').trim();
+  if (!loginKey || !password) {
+    return res.status(400).json({ error: 'Crew / Team name and password required.' });
   }
-  const user = users.find(u => u.email === email);
-  if (!user) {
-    return res.status(400).json({ error: 'User not found.' });
+
+  // 1. Direct match by teamName (case-insensitive)
+  let matchedTeam = teams.find(t => t.teamName.trim().toLowerCase() === loginKey.toLowerCase());
+
+  // Special aliases for admin: 'lostcode', 'admin@lostcode', 'admin', 'admin@ctf.com'
+  if (!matchedTeam && (
+    loginKey.toLowerCase() === 'lostcode' ||
+    loginKey.toLowerCase() === 'admin@lostcode' ||
+    loginKey.toLowerCase() === 'admin' ||
+    loginKey.toLowerCase() === 'admin@ctf.com'
+  )) {
+    matchedTeam = teams.find(t => t.id === 'team_admin_1' || t.teamName.toLowerCase() === 'lostcode');
   }
-  if (!bcrypt.compareSync(password, user.password)) {
-    return res.status(400).json({ error: 'Invalid password.' });
+
+  if (matchedTeam) {
+    const teamPwMatches = matchedTeam.password && bcrypt.compareSync(password, matchedTeam.password);
+    let user = users.find(u => matchedTeam.members && matchedTeam.members.includes(u.id));
+    const userPwMatches = user && user.password && bcrypt.compareSync(password, user.password);
+
+    if (teamPwMatches || userPwMatches) {
+      if (!user) {
+        user = users.find(u => u.teamId === matchedTeam.id);
+        if (!user) {
+          user = {
+            id: 'user_' + Date.now(),
+            username: matchedTeam.teamName,
+            email: `${matchedTeam.teamName.toLowerCase()}@lostcode`,
+            password: matchedTeam.password,
+            teamId: matchedTeam.id,
+            solvedChallenges: []
+          };
+          users.push(user);
+          try {
+            fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
+      req.session.userId = user.id;
+      return res.json({ message: 'Login successful!', teamName: matchedTeam.teamName });
+    }
   }
-  req.session.userId = user.id;
-  res.json({ message: 'Login successful!' });
+
+  // 2. Fallback: match by individual user email or username
+  const user = users.find(u => 
+    u.email.toLowerCase() === loginKey.toLowerCase() || 
+    u.username.toLowerCase() === loginKey.toLowerCase()
+  );
+
+  if (user && bcrypt.compareSync(password, user.password)) {
+    req.session.userId = user.id;
+    return res.json({ message: 'Login successful!' });
+  }
+
+  return res.status(400).json({ error: 'Invalid crew name or password.' });
 });
 
 
@@ -211,7 +295,7 @@ app.get('/api/challenges', (req, res) => {
     let solvesCount = 0;
     teams.forEach(team => {
       // Exclude admin teams from solve counts
-      if (team.teamName.toLowerCase().includes('admin')) return;
+      if (isAdminTeam(team)) return;
       const teamSolvedIt = team.members.some(memberId => {
         const member = users.find(u => u.id === memberId);
         return member && Array.isArray(member.solvedChallenges) && member.solvedChallenges.includes(key);
@@ -396,7 +480,7 @@ app.get('/api/users', (req, res) => {
 // -----------------------
 
 app.get('/api/teams', (req, res) => {
-  const teamsWithNames = teams.filter(t => !t.teamName.toLowerCase().includes('admin')).map(team => {
+  const teamsWithNames = teams.filter(t => !isAdminTeam(t)).map(team => {
     const membersNames = team.members
       .map(memberId => {
         const memberUser = users.find(u => u.id === memberId);

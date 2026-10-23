@@ -2,8 +2,8 @@
   {
     "id": "user_admin_1",
     "username": "admin",
-    "email": "admin@ctf.com",
-    "password": "$2b$10$DnsVPwsCDKj7O5fFiYnFh.2M12Cj/LXx/yUUYbI4gjItqEf4MG7bG",
+    "email": "admin@lostcode",
+    "password": "$2b$10$A23zOSJuRgv81BCVBd83Z.D9d5z2MY1hH8ykTf5MfJNzEIzSuFviu",
     "teamId": "team_admin_1",
     "solvedChallenges": []
   }

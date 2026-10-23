@@ -1,8 +1,8 @@
 [
   {
     "id": "team_admin_1",
-    "teamName": "ADMIN",
-    "password": "$2b$10$2M5hlPz/B9Ydo/LBKHHtr.QR75uH3QvOMugAAvJGscgF/inI.avsS",
+    "teamName": "lostcode",
+    "password": "$2b$10$A23zOSJuRgv81BCVBd83Z.D9d5z2MY1hH8ykTf5MfJNzEIzSuFviu",
     "members": [
       "user_admin_1"
     ],

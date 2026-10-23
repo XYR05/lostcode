@@ -21,11 +21,11 @@ loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   loginError.textContent = '';
 
-  const email = document.getElementById('loginEmail').value.trim();
+  const teamName = document.getElementById('loginTeam').value.trim();
   const password = document.getElementById('loginPassword').value;
 
-  if (!email || !password) {
-    loginError.textContent = 'Both email and password are required.';
+  if (!teamName || !password) {
+    loginError.textContent = 'Both crew name and password are required.';
     return;
   }
 
@@ -33,7 +33,7 @@ loginForm.addEventListener('submit', async (e) => {
     const res = await fetch('/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ teamName, password })
     });
     const data = await res.json();
 
@@ -59,14 +59,15 @@ registerForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   registerError.textContent = '';
 
-  const username = document.getElementById('username').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-  const confirmPassword = document.getElementById('confirmPassword').value;
+  const teamName = document.getElementById('registerTeamName').value.trim();
+  const captainInput = document.getElementById('registerCaptain');
+  const username = (captainInput && captainInput.value ? captainInput.value : teamName).trim();
+  const password = document.getElementById('registerPassword').value;
+  const confirmPassword = document.getElementById('registerConfirmPassword').value;
 
   // Basic validation
-  if (!username || !email || !password || !confirmPassword) {
-    registerError.textContent = 'All fields are required.';
+  if (!teamName || !password || !confirmPassword) {
+    registerError.textContent = 'Crew name and passwords are required.';
     return;
   }
   if (password !== confirmPassword) {
@@ -78,7 +79,7 @@ registerForm.addEventListener('submit', async (e) => {
     const res = await fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password })
+      body: JSON.stringify({ teamName, username, password })
     });
     const data = await res.json();
 
@@ -101,9 +102,9 @@ registerForm.addEventListener('submit', async (e) => {
       popup.style.boxShadow = 'inset 0 0 20px rgba(200, 214, 75, 0.1), 0 10px 30px rgba(0, 0, 0, 0.8)';
       
       popup.innerHTML = `
-        <h3 style="margin-bottom: 1rem; font-size: 1.5rem; color: var(--accent);">Success!</h3>
+        <h3 style="margin-bottom: 1rem; font-size: 1.5rem; color: var(--accent);">Crew Enlisted!</h3>
         <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">${data.message}</p>
-        <button id="closePopupBtn" style="padding: 0.75rem 1.5rem; background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent); border-radius: 0; cursor: pointer; font-weight: 500;">Login Now</button>
+        <button id="closePopupBtn" style="padding: 0.75rem 1.5rem; background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent); border-radius: 0; cursor: pointer; font-weight: 500;">Board Now</button>
       `;
       
       const overlay = document.createElement('div');
@@ -124,8 +125,8 @@ registerForm.addEventListener('submit', async (e) => {
         document.body.removeChild(overlay);
       });
 
-      // Auto-fill email
-      document.getElementById('loginEmail').value = email;
+      // Auto-fill crew name on login form
+      document.getElementById('loginTeam').value = teamName;
       
       registerForm.reset();
       container.classList.remove('sign-up-mode');

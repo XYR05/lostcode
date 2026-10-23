@@ -18,7 +18,7 @@
         </div>
         <h2>Sign In</h2>
         <div class="input-field">
-          <input type="email" id="loginEmail" placeholder="Pirate Email (e.g. admin@ctf.com)" required />
+          <input type="text" id="loginTeam" placeholder="Crew / Team Name (e.g. lostcode)" required />
         </div>
         <div class="input-field">
           <input type="password" id="loginPassword" placeholder="Secret Key / Password" required />
@@ -33,21 +33,21 @@
           <img src="/lost_code_logo.png" alt="Lost Code Logo" onerror="this.style.display='none';" />
           <div class="auth-brand-title">LOST CODE</div>
         </div>
-        <h2>Sign Up</h2>
+        <h2>Enlist Crew</h2>
         <div class="input-field">
-          <input type="text" id="username" placeholder="Pirate Alias / Username" required />
+          <input type="text" id="registerTeamName" placeholder="Crew / Team Name" required />
         </div>
         <div class="input-field">
-          <input type="email" id="email" placeholder="Email Address" required />
+          <input type="text" id="registerCaptain" placeholder="Captain Alias (Optional)" />
         </div>
         <div class="input-field">
-          <input type="password" id="password" placeholder="Password" required />
+          <input type="password" id="registerPassword" placeholder="Crew Password" required />
         </div>
         <div class="input-field">
-          <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
+          <input type="password" id="registerConfirmPassword" placeholder="Confirm Password" required />
         </div>
         <p id="registerError" class="error-message"></p>
-        <button type="submit" class="btn">Join the Crew</button>
+        <button type="submit" class="btn">Enlist the Crew</button>
       </form>
     </div>
 
@@ -56,8 +56,8 @@
       <!-- Left Panel (visible in sign-up-mode) -->
       <div class="panel left-panel">
         <div class="content">
-          <h3>One of Us?</h3>
-          <p>Already signed the pirate articles? Return to the helm and access your dashboard.</p>
+          <h3>Already Sailing?</h3>
+          <p>Already signed the pirate articles? Return to the helm and board the ship with your crew credentials.</p>
           <button class="btn transparent" id="signInBtn">Sign In</button>
         </div>
       </div>
@@ -66,8 +66,8 @@
       <div class="panel right-panel">
         <div class="content">
           <h3>New Buccaneer?</h3>
-          <p>Join the Lost Code expedition! Create your pirate alias and sail for the hidden flags today.</p>
-          <button class="btn transparent" id="signUpBtn">Sign Up</button>
+          <p>Join the Lost Code expedition! Enlist your pirate crew and sail for the hidden flags today.</p>
+          <button class="btn transparent" id="signUpBtn">Enlist Crew</button>
         </div>
       </div>
     </div>
