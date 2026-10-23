@@ -135,8 +135,8 @@
           </div>
         </div>
 
-        <!-- Captain's Brief -->
-        <div class="detail-section">
+        <!-- Captain's Brief (Round 1 only) -->
+        <div class="detail-section" id="captainBriefSection">
           <div class="detail-section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
@@ -268,7 +268,9 @@
           <option value="3">Tournament Round: Round 3 (Semi-Finals - 2 Riddles)</option>
           <option value="4">Tournament Round: Round 4 (Finals - 1 Riddle)</option>
         </select>
-        <input type="text" id="adminTextInput" placeholder="Challenge Text / Brief" style="width: 100%; max-width: 500px; text-align: center;">
+        <div id="adminTextContainer" style="width: 100%; max-width: 500px;">
+          <input type="text" id="adminTextInput" placeholder="Challenge Text / Brief (Round 1 only)" style="width: 100%; text-align: center;">
+        </div>
         <input type="text" id="adminFlagInput" placeholder="Flag (will be hashed automatically)" style="width: 100%; max-width: 500px; text-align: center;">
         <select id="adminDiffInput" style="padding:0.75rem 1.25rem; border:1px solid var(--gold-primary); background:var(--panel-bg); color:var(--gold-primary); width: 100%; max-width: 500px; text-align: center; cursor: pointer; outline: none; font-weight: bold; font-family:'Cinzel', serif;">
           <option value="EASY">Difficulty: EASY</option>
@@ -726,7 +728,7 @@
               <div style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--gold-muted); font-weight: 600; margin-bottom: 0.2rem;">${escapeHTML(roundTag)}</div>
               <div style="font-family:'Cinzel',serif; font-size: 1.1rem; font-weight: 700; color:var(--gold-primary); margin-bottom: 0.2rem;">${escapeHTML(displayName)}</div>
               <div style="font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--text-secondary); margin-bottom: 0.5rem;">${escapeHTML(info.category || '')} • ${pts} pts • ${diff}</div>
-              <div style="font-size:0.85rem; color:var(--text-secondary); line-height: 1.4;">${escapeHTML(info.text)}</div>
+              ${roundNum === 1 && info.text ? `<div style="font-size:0.85rem; color:var(--text-secondary); line-height: 1.4;">${escapeHTML(info.text)}</div>` : `<div style="font-size:0.8rem; color:var(--gold-muted); font-style:italic;">Brief revealed via preceding round flag.</div>`}
             </div>
             <div style="display:flex; gap:0.5rem; margin-top:auto;">
               <button onclick="editChallenge('${category}')" style="flex:1; padding:0.5rem; background:rgba(201,154,82,0.1); color:var(--gold-primary); border:1px solid var(--border-subtle); border-radius: 3px; cursor:pointer; font-family:'Cinzel',serif; font-weight:600;">EDIT</button>
@@ -780,9 +782,16 @@
         `;
       }
 
-      // Brief
-      const desc = chall.text || `Solve the ${category} challenge and submit your flag.`;
-      document.getElementById('challengeDescription').textContent = desc;
+      // Brief (Round 1 only; hidden for Rounds 2, 3, 4 where brief is in the previous flag answer)
+      const briefSection = document.getElementById('captainBriefSection');
+      const roundNum = chall.round || 1;
+      if (roundNum === 1 && chall.text && chall.text.trim()) {
+        if (briefSection) briefSection.style.display = 'block';
+        document.getElementById('challengeDescription').textContent = chall.text;
+      } else {
+        if (briefSection) briefSection.style.display = 'none';
+        document.getElementById('challengeDescription').textContent = '';
+      }
 
       // Hint (Quartermaster's Secret)
       const hintSection = document.getElementById('hintSection');
@@ -973,6 +982,20 @@
     // ======================================================
     // ADMIN ACTIONS
     // ======================================================
+    function syncAdminRoundFields() {
+      const roundInput = document.getElementById('adminRoundInput');
+      const textContainer = document.getElementById('adminTextContainer');
+      const textInput = document.getElementById('adminTextInput');
+      if (!roundInput) return;
+      const roundVal = roundInput.value;
+      if (roundVal === '1') {
+        if (textContainer) textContainer.style.display = 'block';
+      } else {
+        if (textContainer) textContainer.style.display = 'none';
+        if (textInput) textInput.value = '';
+      }
+    }
+
     function editChallenge(category) {
       if (!currentChallenges[category]) return;
       document.getElementById('adminCatInput').value = category;
@@ -987,6 +1010,7 @@
       if (roundInput) {
         roundInput.value = String(currentChallenges[category].round || 1);
       }
+      syncAdminRoundFields();
       
       document.getElementById('adminFormCard').style.display = 'block';
       document.getElementById('adminCatInput').focus();
@@ -1011,6 +1035,12 @@
       const toggleBtn = document.getElementById('toggleAdminFormBtn');
       const formCard = document.getElementById('adminFormCard');
       const bonusBtn = document.getElementById('toggleBonusFormBtn');
+      const roundInput = document.getElementById('adminRoundInput');
+
+      if (roundInput) {
+        roundInput.addEventListener('change', syncAdminRoundFields);
+        syncAdminRoundFields();
+      }
 
       if (bonusBtn && formCard) {
         bonusBtn.addEventListener('click', () => {
@@ -1018,9 +1048,12 @@
           if (formCard.style.display === 'block') {
             document.getElementById('adminCatInput').value = 'Bonus';
             document.getElementById('adminSubtitleInput').value = 'Hidden Doubloon';
-            if (document.getElementById('adminRoundInput')) document.getElementById('adminRoundInput').value = '4';
+            if (document.getElementById('adminRoundInput')) {
+              document.getElementById('adminRoundInput').value = '4';
+              syncAdminRoundFields();
+            }
             document.getElementById('adminDiffInput').value = 'BONUS';
-            document.getElementById('adminTextInput').value = 'Hidden bonus challenge!';
+            document.getElementById('adminTextInput').value = '';
             document.getElementById('adminFlagInput').value = '';
             document.getElementById('adminPointsInput').value = '1000';
             document.getElementById('adminHintInput').value = '';
@@ -1031,7 +1064,10 @@
       if (toggleBtn && formCard) {
         toggleBtn.addEventListener('click', () => {
           formCard.style.display = formCard.style.display === 'none' ? 'block' : 'none';
-          if (formCard.style.display === 'block') document.getElementById('adminCatInput').focus();
+          if (formCard.style.display === 'block') {
+            document.getElementById('adminCatInput').focus();
+            syncAdminRoundFields();
+          }
         });
       }
 
@@ -1040,17 +1076,20 @@
         submitBtn.addEventListener('click', () => {
           const category = document.getElementById('adminCatInput').value;
           const subtitle = document.getElementById('adminSubtitleInput').value;
-          const text = document.getElementById('adminTextInput').value;
+          const round = document.getElementById('adminRoundInput') ? document.getElementById('adminRoundInput').value : '1';
+          const roundNum = parseInt(round, 10) || 1;
+          const text = roundNum === 1 ? document.getElementById('adminTextInput').value : '';
           const flag = document.getElementById('adminFlagInput').value;
           const points = document.getElementById('adminPointsInput').value;
           const difficulty = document.getElementById('adminDiffInput').value;
           const hint = document.getElementById('adminHintInput').value;
-          const round = document.getElementById('adminRoundInput') ? document.getElementById('adminRoundInput').value : 1;
           const msg = document.getElementById('adminMsg');
 
-          if (!category || !text || !flag || !points) {
+          if (!category || (roundNum === 1 && !text) || !flag || !points) {
             msg.style.color = 'var(--danger)';
-            msg.textContent = 'All fields (Category, Text, Flag, Points) are required.';
+            msg.textContent = roundNum === 1 
+              ? 'All fields (Category, Text, Flag, Points) are required.'
+              : 'All fields (Category, Flag, Points) are required.';
             return;
           }
 

@@ -301,12 +301,18 @@ const isAdmin = (req, res, next) => {
 app.post('/api/admin/challenges', isAdmin, upload.single('resource'), (req, res) => {
   
   const { category, text, flag, points, removeResource, difficulty, hint, subtitle, round } = req.body;
-  if (!category || !text || !flag || !points) return res.status(400).json({ error: 'All fields (Category, Text, Flag, Points) are required.' });
   
   const flagsFilePath = path.join(__dirname, 'private', 'flags.json');
   let flagsData = {};
   if (fs.existsSync(flagsFilePath)) {
     flagsData = JSON.parse(fs.readFileSync(flagsFilePath, 'utf8'));
+  }
+  
+  const roundNum = parseInt(round, 10) || (flagsData[category] && flagsData[category].round) || 1;
+  if (!category || (roundNum === 1 && !text) || !flag || !points) {
+    return res.status(400).json({ error: roundNum === 1 
+      ? 'All fields (Category, Text, Flag, Points) are required.' 
+      : 'All fields (Category, Flag, Points) are required.' });
   }
   
   let oldPoints = null;
@@ -317,13 +323,11 @@ app.post('/api/admin/challenges', isAdmin, upload.single('resource'), (req, res)
   }
   
   const newPoints = parseInt(points) || 500;
-  flagsData[category].text = text;
+  flagsData[category].text = roundNum === 1 ? (text || "") : "";
   flagsData[category].subtitle = subtitle || flagsData[category].subtitle || "";
   flagsData[category].points = newPoints;
   flagsData[category].difficulty = difficulty || "EASY";
   flagsData[category].hint = hint || "";
-  
-  const roundNum = parseInt(round) || flagsData[category].round || 1;
   flagsData[category].round = roundNum;
   const roundNames = {
     1: 'Round 1: Qualifiers',
