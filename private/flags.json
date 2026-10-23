@@ -1,46 +1,4 @@
 {
-  "Round 1 - Riddle 1: The Forged Manifest": {
-    "round": 1,
-    "roundName": "Round 1: Qualifiers",
-    "riddleNumber": 1,
-    "category": "Forensics",
-    "subtitle": "The Forged Manifest",
-    "difficulty": "EASY",
-    "points": 100,
-    "text": "A file that doesn't look quite right has been left behind. Sometimes, the first step in solving a mystery is simply asking: what exactly am I looking at?",
-    "hint": "Don't judge a file by its extension. Let the MIME type speak.",
-    "resource": "Forensics_1787430748695_Forensics.zip",
-    "originalResourceName": "Forensics.zip",
-    "hash": "$2b$10$onuVSFLyCx02HcrGE5DZGO6voNT1G1JvF.JNo6b.XdIeY4fGmpOMa"
-  },
-  "Round 1 - Riddle 2: Follow the Trail": {
-    "round": 1,
-    "roundName": "Round 1: Qualifiers",
-    "riddleNumber": 2,
-    "category": "OSINT",
-    "subtitle": "Follow the Trail",
-    "difficulty": "EASY",
-    "points": 200,
-    "text": "A familiar car wash hides more than just dirty cars. Somewhere behind the business is a lawyer, and your job is to uncover his real name and phone number using publicly available information.",
-    "hint": "Start with the car wash. Follow the trail through public records and business information. Flag Format: lostcode{abc_xyz_123_456}",
-    "resource": "OSINT_1787431176233_OSINT.zip",
-    "originalResourceName": "OSINT.zip",
-    "hash": "$2b$10$vdMZ0pUAxAxUOodT5glOaeQX4rI0B0WXeZs4i1H3klmBTqx8leLNq"
-  },
-  "Round 1 - Riddle 3: Message in a Bottle": {
-    "round": 1,
-    "roundName": "Round 1: Qualifiers",
-    "riddleNumber": 3,
-    "category": "Steganography",
-    "subtitle": "Message in a Bottle",
-    "difficulty": "EASY",
-    "points": 200,
-    "text": "This image looks innocent enough... but there's more hiding inside it than what meets the eye. Dig into its metadata and investigate what the image may be concealing.",
-    "hint": "Start by examining the image's metadata. If that doesn't reveal everything, look for something hidden within the file itself.",
-    "resource": "Steganography_1787431294318_Steg.zip",
-    "originalResourceName": "Steg.zip",
-    "hash": "$2b$10$ASBCaQfU2tSByLfbARzsHOlVg.BLsO/vQsdIV.QKvw1LZ3FQ5BPXS"
-  },
   "Round 1 - Riddle 4: Dead Man's Switch": {
     "round": 1,
     "roundName": "Round 1: Qualifiers",
