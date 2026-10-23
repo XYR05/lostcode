@@ -13,3 +13,7 @@ changes.txt
 cookie.txt
 public/downloads/
 node_modules/
+
+sessions/
+*.txt
+*.png

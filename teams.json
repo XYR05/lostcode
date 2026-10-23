@@ -3,19 +3,37 @@
     "id": "team_admin_1",
     "teamName": "lostcode",
     "password": "$2b$10$A23zOSJuRgv81BCVBd83Z.D9d5z2MY1hH8ykTf5MfJNzEIzSuFviu",
-    "members": [
-      "user_admin_1"
-    ],
-    "membersNames": [
-      "admin"
-    ],
     "score": 0,
-    "solvedChallenges": {},
+    "solvedChallenges": [],
     "hintsUnlocked": {},
+    "scoreHistory": []
+  },
+  {
+    "id": "team_1792775667341",
+    "teamName": "BlackPearl",
+    "password": "$2b$10$2eve48v7bxGLNN.BhH1YXuZr/EoqCrpDQP3YQSDmwK16SD225hNUW",
+    "score": 195,
+    "solvedChallenges": [
+      "Round 1 - Riddle 8: The Quarterdeck"
+    ],
+    "hintsUnlocked": {
+      "Round 1 - Riddle 6: Sailor's Compass": {
+        "cost": 5,
+        "unlockedAt": 1792775698938
+      }
+    },
     "scoreHistory": [
       {
-        "timestamp": 1787320792157,
+        "timestamp": 1792775667341,
         "score": 0
+      },
+      {
+        "timestamp": 1792775680686,
+        "score": 200
+      },
+      {
+        "timestamp": 1792775698938,
+        "score": 195
       }
     ]
   }

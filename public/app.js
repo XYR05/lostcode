@@ -60,8 +60,6 @@ registerForm.addEventListener('submit', async (e) => {
   registerError.textContent = '';
 
   const teamName = document.getElementById('registerTeamName').value.trim();
-  const captainInput = document.getElementById('registerCaptain');
-  const username = (captainInput && captainInput.value ? captainInput.value : teamName).trim();
   const password = document.getElementById('registerPassword').value;
   const confirmPassword = document.getElementById('registerConfirmPassword').value;
 
@@ -79,7 +77,7 @@ registerForm.addEventListener('submit', async (e) => {
     const res = await fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ teamName, username, password })
+      body: JSON.stringify({ teamName, password })
     });
     const data = await res.json();
 

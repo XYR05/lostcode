@@ -40,17 +40,15 @@
 
     <div class="nav-center">
       <a href="#" class="nav-link active" onclick="showSection('dashboard-content'); return false;">Dashboard</a>
-      <a href="#" class="nav-link" onclick="showSection('users-section'); return false;">Users</a>
-      <a href="#" class="nav-link" onclick="showSection('teams-section'); return false;">Teams</a>
-      <a href="#" class="nav-link" onclick="showSection('scoreboard-section'); return false;">Leaderboard</a>
       <a href="#" class="nav-link" onclick="showSection('challenges-section'); return false;">Challenges</a>
+      <a href="#" class="nav-link" onclick="showSection('scoreboard-section'); return false;">Leaderboard</a>
+      <a href="#" class="nav-link" onclick="showSection('teams-section'); return false;">Crews</a>
       <a href="#" class="nav-link" onclick="showSection('admin-section'); return false;" id="adminNavLi" style="display:none;">Admin Portal</a>
     </div>
 
     <div class="nav-right">
       <div class="nav-right-divider"></div>
-      <a href="#" class="nav-link" onclick="showSection('team-section'); return false;" id="teamPageLink">My Team</a>
-      <a href="#" class="nav-link" onclick="showSection('profile-section'); return false;">Profile</a>
+      <a href="#" class="nav-link" onclick="showSection('team-section'); return false;" id="teamPageLink">My Crew</a>
       <a href="/logout" class="nav-link" style="color: var(--text-secondary);">Logout</a>
     </div>
   </nav>
@@ -66,15 +64,15 @@
 
     <div class="stats-row">
       <div class="stat-card">
-        <div class="stat-value" id="totalChallengesCount">12</div>
-        <div class="stat-label">CHALLENGES</div>
+        <div class="stat-value" id="totalChallengesCount">19</div>
+        <div class="stat-label">RIDDLES</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" id="totalOperatorsCount">0</div>
-        <div class="stat-label">BUCCANEERS</div>
+        <div class="stat-value" id="totalTeamsCount">0</div>
+        <div class="stat-label">REGISTERED CREWS</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" id="totalPointsCount">5,250</div>
+        <div class="stat-value" id="totalPointsCount">0</div>
         <div class="stat-label">TOTAL BOUNTY</div>
       </div>
     </div>
@@ -183,23 +181,10 @@
   </section>
 
   <!-- ====================================================== -->
-  <!-- 4. USERS SECTION                                       -->
-  <!-- ====================================================== -->
-  <section id="users-section" class="info-section" style="display: none;">
-    <h2>Buccaneers</h2>
-    <div class="users-search">
-      <input type="text" id="userSearchInput" placeholder="Search by pirate name..." />
-      <button id="userSearchBtn">Search</button>
-    </div>
-    <div id="usersList"></div>
-    <div id="usersPagination"></div>
-  </section>
-
-  <!-- ====================================================== -->
-  <!-- 5. TEAMS SECTION                                       -->
+  <!-- 4. CREWS (TEAMS) SECTION                               -->
   <!-- ====================================================== -->
   <section id="teams-section" class="info-section" style="display: none;">
-    <h2>Crews</h2>
+    <h2>Expedition Crews</h2>
     <div class="teams-search">
       <input type="text" id="teamSearchInput" placeholder="Search by crew name..." />
       <button id="teamSearchBtn">Search</button>
@@ -209,37 +194,12 @@
   </section>
 
   <!-- ====================================================== -->
-  <!-- 6. MY TEAM SECTION                                     -->
+  <!-- 5. MY CREW HEADQUARTERS SECTION                        -->
   <!-- ====================================================== -->
   <section id="team-section" class="info-section" style="display: none;">
     <section id="myTeamSection" style="text-align: left;">
-      <h2>My Crew</h2>
+      <h2>My Crew Headquarters</h2>
       <div id="myTeamInfo"></div>
-      <br>
-      <div id="noTeamActions" style="display: none; margin-bottom: 2rem;">
-        <button id="showJoinForm" style="margin-right: 10px;">Join Crew</button>
-        <button id="showCreateForm">Create Crew</button>
-      </div>
-    </section>
-
-    <!-- Join Team Form -->
-    <section id="joinTeamSection" style="display: none; margin-top: 2rem; text-align: left;">
-      <h3 style="font-family: 'Cinzel', serif; color: var(--gold-primary); margin-bottom: 1rem;">Join a Crew</h3>
-      <input type="text" id="joinTeamName" placeholder="Crew Name" />
-      <input type="password" id="joinTeamPassword" placeholder="Crew Password" />
-      <button id="submitJoinTeam">Join</button>
-      <button id="cancelJoinTeam">Cancel</button>
-      <div id="joinTeamMessage" style="margin-top: 10px; color: var(--gold-primary);"></div>
-    </section>
-
-    <!-- Create Team Form -->
-    <section id="createTeamSection" style="display: none; margin-top: 2rem; text-align: left;">
-      <h3 style="font-family: 'Cinzel', serif; color: var(--gold-primary); margin-bottom: 1rem;">Create a Crew</h3>
-      <input type="text" id="createTeamName" placeholder="Crew Name" />
-      <input type="password" id="createTeamPassword" placeholder="Crew Password" />
-      <button id="submitCreateTeam">Create</button>
-      <button id="cancelCreateTeam">Cancel</button>
-      <div id="createTeamMessage" style="margin-top: 10px; color: var(--gold-primary);"></div>
     </section>
   </section>
 
@@ -327,13 +287,6 @@
     <div id="adminChallengesList" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;"></div>
   </section>
 
-  <!-- ====================================================== -->
-  <!-- 9. PROFILE SECTION                                     -->
-  <!-- ====================================================== -->
-  <section id="profile-section" class="info-section" style="display: none;">
-    <h2>Pirate Profile</h2>
-    <div id="profileInfo"></div>
-  </section>
 
   <!-- ====================================================== -->
   <!-- 10. MODALS                                             -->
@@ -651,7 +604,6 @@
     let currentChallenges = {};
     let currentCategory = '';
     let myTeamData = null;
-    let allUsersData = [];
 
     function fetchChallenges() {
       fetch('/api/challenges')
@@ -862,8 +814,35 @@
         hintSection.style.display = 'none';
       }
 
-      document.getElementById('flagInput').value = '';
-      document.getElementById('flagResult').textContent = '';
+      // Single-Submitter Check: Lock if already claimed by crew
+      const solvedChallenges = (myTeamData && myTeamData.team && myTeamData.team.solvedChallenges) || [];
+      const isSolved = Array.isArray(solvedChallenges) 
+        ? solvedChallenges.includes(category) 
+        : Boolean(solvedChallenges[category]);
+
+      const flagInput = document.getElementById('flagInput');
+      const submitFlagBtn = document.getElementById('submitFlagBtn');
+      const flagResult = document.getElementById('flagResult');
+
+      if (isSolved) {
+        flagInput.value = 'Bounty already claimed by your crew!';
+        flagInput.disabled = true;
+        submitFlagBtn.disabled = true;
+        submitFlagBtn.textContent = 'SOLVED';
+        submitFlagBtn.style.opacity = '0.6';
+        submitFlagBtn.style.cursor = 'not-allowed';
+        flagResult.textContent = '✓ Bounty Claimed by Crew';
+        flagResult.style.color = 'var(--success)';
+      } else {
+        flagInput.value = '';
+        flagInput.disabled = false;
+        submitFlagBtn.disabled = false;
+        submitFlagBtn.textContent = 'SUBMIT FLAG';
+        submitFlagBtn.style.opacity = '1';
+        submitFlagBtn.style.cursor = 'pointer';
+        flagResult.textContent = '';
+      }
+
       modal.style.display = 'flex';
     }
 
@@ -967,6 +946,12 @@
           .then(data => {
             flagResult.textContent = data.message;
             flagResult.style.color = "var(--success)";
+            flagInput.value = 'Bounty already claimed by your crew!';
+            flagInput.disabled = true;
+            submitFlagBtn.disabled = true;
+            submitFlagBtn.textContent = 'SOLVED';
+            submitFlagBtn.style.opacity = '0.6';
+            submitFlagBtn.style.cursor = 'not-allowed';
             fetchMyTeam();
             fetchTeamScores();
             const solvedBox = document.querySelector(`.challenge-card[data-category="${currentCategory}"]`);
@@ -1099,101 +1084,20 @@
     });
 
     // ======================================================
-    // PROFILE, USERS & CREW MANAGEMENT
+    // CREW & SESSION MANAGEMENT
     // ======================================================
     function fetchProfile() {
       fetch('/api/profile')
         .then(res => res.json())
         .then(data => {
-          const profileDiv = document.getElementById('profileInfo');
-          if (!profileDiv) return;
           if (data.error === "Not logged in") { window.location.href = "/"; return; }
-          if (data.error) {
-            profileDiv.innerHTML = `<p style="color:var(--danger);">${escapeHTML(data.error)}</p>`;
-          } else {
-            const teamText = data.teamName ? data.teamName : 'No Crew';
-            if (data.isAdmin) {
-              const a = document.getElementById('adminNavLi');
-              if (a) a.style.display = 'block';
-            }
-            profileDiv.innerHTML = `
-              <div id="displayUsernameContainer" style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                <h3 style="font-family:'Cinzel',serif; font-size: 2rem; margin: 0; color:var(--gold-primary);" id="displayUsername">${escapeHTML(data.username)}</h3>
-                <button id="editUsernameBtn" style="padding:0.4rem; border:1px solid var(--border-subtle); background:transparent; color:var(--text-primary); cursor:pointer;" title="Edit Pirate Name">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                </button>
-              </div>
-              <div id="editUsernameForm" style="display: none; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                 <input type="text" id="newUsernameInput" value="${escapeHTML(data.username)}" style="padding:0.5rem 1rem; border:1px solid var(--border-subtle); background:var(--panel-secondary); color:var(--text-primary);" />
-                 <button id="saveUsernameBtn" style="padding:0.5rem 1rem; border:none; background:var(--gold-primary); color:var(--bg-primary); font-family:'Cinzel',serif; font-weight:bold; cursor:pointer;">Save</button>
-                 <button id="cancelUsernameBtn" style="padding:0.5rem 1rem; border:1px solid var(--border-subtle); background:transparent; color:var(--text-secondary); cursor:pointer;">Cancel</button>
-              </div>
-              <p style="font-size: 1.2rem; color:var(--text-secondary);">Crew: <strong style="color:var(--text-primary); font-family:'Cinzel',serif;">${escapeHTML(teamText)}</strong></p>
-              <p id="profileMessage" style="margin-top: 1rem; color: var(--danger);"></p>
-            `;
-
-            document.getElementById('editUsernameBtn').addEventListener('click', () => {
-              document.getElementById('displayUsernameContainer').style.display = 'none';
-              document.getElementById('editUsernameForm').style.display = 'flex';
-            });
-            document.getElementById('cancelUsernameBtn').addEventListener('click', () => {
-              document.getElementById('displayUsernameContainer').style.display = 'flex';
-              document.getElementById('editUsernameForm').style.display = 'none';
-              document.getElementById('profileMessage').textContent = '';
-            });
-            document.getElementById('saveUsernameBtn').addEventListener('click', () => {
-              const newUsername = document.getElementById('newUsernameInput').value.trim();
-              if (!newUsername) return;
-              fetch('/api/profile/update', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ newUsername })
-              }).then(res => res.json()).then(resp => {
-                if (resp.error) document.getElementById('profileMessage').textContent = resp.error;
-                else fetchProfile();
-              });
-            });
+          if (data.isAdmin) {
+            const a = document.getElementById('adminNavLi');
+            if (a) a.style.display = 'block';
           }
-        });
+        })
+        .catch(err => console.error("Profile fetch error:", err));
     }
-
-    // Users Search & List
-    let allUsers = [];
-    function fetchUsers() {
-      fetch('/api/users')
-        .then(r => r.json())
-        .then(data => {
-          allUsers = data;
-          allUsersData = data;
-          const opCount = document.getElementById('totalOperatorsCount');
-          if (opCount) opCount.textContent = data.length.toLocaleString();
-          renderUsersList();
-        });
-    }
-
-    function renderUsersList() {
-      const searchInput = document.getElementById('userSearchInput');
-      const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
-      const filtered = allUsers.filter(u => u.username.toLowerCase().includes(query));
-      const list = document.getElementById('usersList');
-      if (!list) return;
-      list.innerHTML = '';
-      filtered.forEach(user => {
-        const div = document.createElement('div');
-        div.className = 'user-item';
-        div.innerHTML = `<strong>${escapeHTML(user.username)}</strong> <span>Solves: ${(user.solvedChallenges || []).length}</span>`;
-        list.appendChild(div);
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const userSearchBtn = document.getElementById('userSearchBtn');
-      const userSearchInput = document.getElementById('userSearchInput');
-      if (userSearchBtn && userSearchInput) {
-        userSearchBtn.addEventListener('click', renderUsersList);
-        userSearchInput.addEventListener('keyup', renderUsersList);
-      }
-    });
 
     // Crews (Teams)
     let teamsData = [];
@@ -1202,8 +1106,11 @@
         .then(r => r.json())
         .then(data => {
           teamsData = data;
+          const crewCount = document.getElementById('totalTeamsCount');
+          if (crewCount) crewCount.textContent = data.length.toLocaleString();
           renderTeams();
-        });
+        })
+        .catch(err => console.error("Teams fetch error:", err));
     }
 
     function renderTeams() {
@@ -1213,11 +1120,11 @@
       const list = document.getElementById('teamsList');
       if (!list) return;
       list.innerHTML = '';
-      filtered.forEach(team => {
-        const members = team.membersNames && team.membersNames.length ? escapeHTML(team.membersNames.join(', ')) : 'No members';
+      filtered.forEach((team) => {
+        const solvedCount = Array.isArray(team.solvedChallenges) ? team.solvedChallenges.length : (team.solvedChallenges ? Object.keys(team.solvedChallenges).length : 0);
         const div = document.createElement('div');
         div.className = 'team-item';
-        div.innerHTML = `<div><strong>${escapeHTML(team.teamName)}</strong> — Members: ${members}</div><div style="color:var(--gold-primary); font-weight:bold;">${team.score} pts</div>`;
+        div.innerHTML = `<div><strong>${escapeHTML(team.teamName)}</strong> — Solved: ${solvedCount} Riddles</div><div style="color:var(--gold-primary); font-weight:bold;">${team.score || 0} PTS</div>`;
         list.appendChild(div);
       });
     }
@@ -1231,7 +1138,7 @@
       }
     });
 
-    // My Team Data
+    // My Crew Headquarters Data
     function fetchMyTeam() {
       fetch('/api/myteam')
         .then(r => r.json())
@@ -1239,58 +1146,51 @@
           myTeamData = data;
           const scoreDisplay = document.getElementById('teamScoreDisplay');
           const myTeamInfo = document.getElementById('myTeamInfo');
-          const noTeamActions = document.getElementById('noTeamActions');
 
           if (data.team && data.team.id) {
             const team = data.team;
             if (scoreDisplay) scoreDisplay.textContent = `Your Crew Score: ${team.score} PTS`;
             if (myTeamInfo) {
-              const membersHtml = (team.membersNames || []).map(m => `<li>${escapeHTML(m)}</li>`).join('');
-              myTeamInfo.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
-                  <div>
-                    <h3 style="font-family:'Cinzel',serif; font-size:1.8rem; color:var(--gold-primary); margin:0;">${escapeHTML(team.teamName)}</h3>
-                    <p style="color:var(--text-secondary); font-size:1rem;">Total Bounty: <strong style="color:var(--gold-primary);">${team.score} PTS</strong></p>
-                  </div>
-                  <button id="leaveTeamBtn" style="padding:0.6rem 1.4rem; border:1px solid var(--danger); background:transparent; color:var(--danger); font-family:'Cinzel',serif; cursor:pointer;">Abandon Ship (Leave Crew)</button>
-                </div>
-                <h4 style="font-family:'Cinzel',serif; color:var(--gold-primary); margin-bottom:0.5rem;">Crew Manifest:</h4>
-                <ul style="list-style:none; padding-left:1rem; border-left:2px solid var(--gold-primary); margin-bottom:1.5rem;">
-                  ${membersHtml}
-                </ul>
-              `;
+              const solvedArr = Array.isArray(team.solvedChallenges) ? team.solvedChallenges : Object.keys(team.solvedChallenges || {});
+              const solvedItemsHtml = solvedArr.length > 0 
+                ? solvedArr.map(s => `<li style="margin-bottom:0.4rem; color:var(--text-primary);"><span style="color:var(--gold-primary);">✓</span> ${escapeHTML(s)}</li>`).join('')
+                : '<li style="color:var(--text-secondary); font-style:italic;">No riddles solved yet. Set sail and claim your first bounty!</li>';
+              
+              const hintsCount = team.hintsUnlockedCount || (team.hintsUnlocked ? Object.keys(team.hintsUnlocked).length : 0);
+              const nextHintPenalty = team.nextHintCost || (hintsCount + 1) * 5;
 
-              document.getElementById('leaveTeamBtn').addEventListener('click', () => {
-                showCustomConfirm("Leave Crew?", "Are you sure you want to leave your crew?", false, (conf) => {
-                  if (!conf) return;
-                  fetch('/api/team/leave', { method: 'POST' }).then(r=>r.json()).then(() => {
-                    fetchMyTeam(); fetchTeamScores();
-                  });
-                });
-              });
+              myTeamInfo.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; background:rgba(23,17,12,0.6); padding:1.5rem; border:1px solid var(--border-subtle); border-radius:4px;">
+                  <div>
+                    <div style="font-size:0.85rem; color:var(--gold-muted); font-family:'Cinzel',serif; letter-spacing:0.1em; margin-bottom:0.25rem;">[ ACTIVE CREW ]</div>
+                    <h3 style="font-family:'Cinzel',serif; font-size:2rem; color:var(--gold-primary); margin:0;">${escapeHTML(team.teamName)}</h3>
+                    <p style="color:var(--text-secondary); font-size:1.05rem; margin-top:0.4rem;">Total Treasure Bounty: <strong style="color:var(--gold-primary);">${team.score} PTS</strong></p>
+                  </div>
+                  <div style="text-align:right;">
+                    <div style="font-size:0.9rem; color:var(--text-secondary);">Hints Unlocked: <strong style="color:var(--gold-primary);">${hintsCount}</strong></div>
+                    <div style="font-size:0.8rem; color:var(--gold-muted); margin-top:0.2rem;">Next Hint Penalty: -${nextHintPenalty} PTS</div>
+                  </div>
+                </div>
+
+                <div style="background:rgba(0,0,0,0.35); padding:1.25rem; border:1px solid var(--border-subtle); border-radius:4px;">
+                  <h4 style="font-family:'Cinzel',serif; color:var(--gold-primary); font-size:1.1rem; margin-top:0; margin-bottom:0.75rem;">Solved Riddles Manifest (${solvedArr.length}):</h4>
+                  <ul style="list-style:none; padding-left:0.5rem; margin:0;">
+                    ${solvedItemsHtml}
+                  </ul>
+                </div>
+              `;
             }
-            if (noTeamActions) noTeamActions.style.display = 'none';
-          } else {
-            if (scoreDisplay) scoreDisplay.textContent = `Your Crew Score: N/A`;
-            if (myTeamInfo) myTeamInfo.innerHTML = `<p style="color:var(--text-secondary);">You are currently sailing alone with no crew.</p>`;
-            if (noTeamActions) noTeamActions.style.display = 'block';
           }
           updateChallengeBoxesFromTeam();
-        });
+        })
+        .catch(err => console.error("MyTeam fetch error:", err));
     }
 
     function updateChallengeBoxesFromTeam() {
       if (!myTeamData || !myTeamData.team) return;
       const team = myTeamData.team;
-      const myTeamId = team.id;
-      
-      const teamMembers = allUsersData.filter(u => u.teamId === myTeamId);
-      const solvedSet = new Set();
-      teamMembers.forEach(member => {
-        if (Array.isArray(member.solvedChallenges)) {
-          member.solvedChallenges.forEach(c => solvedSet.add(c));
-        }
-      });
+      const solvedArr = Array.isArray(team.solvedChallenges) ? team.solvedChallenges : Object.keys(team.solvedChallenges || {});
+      const solvedSet = new Set(solvedArr);
       
       document.querySelectorAll('#challengeCategoriesContainer .challenge-card').forEach(box => {
         const cat = box.getAttribute('data-category');
@@ -1501,66 +1401,6 @@
       fetchTeamScores();
       fetchTeams();
       fetchMyTeam();
-      fetchUsers();
-
-      // Team Join / Create handlers
-      const showJoinBtn = document.getElementById('showJoinForm');
-      const showCreateBtn = document.getElementById('showCreateForm');
-      const joinSec = document.getElementById('joinTeamSection');
-      const createSec = document.getElementById('createTeamSection');
-
-      if (showJoinBtn && joinSec && createSec) {
-        showJoinBtn.addEventListener('click', () => { joinSec.style.display = 'block'; createSec.style.display = 'none'; });
-      }
-      if (showCreateBtn && joinSec && createSec) {
-        showCreateBtn.addEventListener('click', () => { createSec.style.display = 'block'; joinSec.style.display = 'none'; });
-      }
-      const cancelJoin = document.getElementById('cancelJoinTeam');
-      if (cancelJoin) cancelJoin.addEventListener('click', () => { joinSec.style.display = 'none'; });
-      const cancelCreate = document.getElementById('cancelCreateTeam');
-      if (cancelCreate) cancelCreate.addEventListener('click', () => { createSec.style.display = 'none'; });
-
-      const submitJoin = document.getElementById('submitJoinTeam');
-      if (submitJoin) {
-        submitJoin.addEventListener('click', () => {
-          const teamName = document.getElementById('joinTeamName').value;
-          const password = document.getElementById('joinTeamPassword').value;
-          fetch('/api/team/join', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ teamName, password })
-          }).then(r => r.json()).then(d => {
-            const msg = document.getElementById('joinTeamMessage');
-            if (d.error) msg.textContent = d.error;
-            else {
-              msg.textContent = d.message;
-              fetchMyTeam(); fetchTeams(); fetchTeamScores();
-              joinSec.style.display = 'none';
-            }
-          });
-        });
-      }
-
-      const submitCreate = document.getElementById('submitCreateTeam');
-      if (submitCreate) {
-        submitCreate.addEventListener('click', () => {
-          const teamName = document.getElementById('createTeamName').value;
-          const password = document.getElementById('createTeamPassword').value;
-          fetch('/api/team/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ teamName, password })
-          }).then(r => r.json()).then(d => {
-            const msg = document.getElementById('createTeamMessage');
-            if (d.error) msg.textContent = d.error;
-            else {
-              msg.textContent = d.message;
-              fetchMyTeam(); fetchTeams(); fetchTeamScores();
-              createSec.style.display = 'none';
-            }
-          });
-        });
-      }
 
       // Admin Start/Stop & Wipe
       const adminStartBtn = document.getElementById('adminStartCtfBtn');
@@ -1607,7 +1447,6 @@
       });
       socket.on('challengesUpdate', () => { fetchChallenges(); });
       socket.on('teamsUpdate', () => { fetchTeamScores(); fetchTeams(); fetchMyTeam(); });
-      socket.on('usersUpdate', () => { fetchUsers(); fetchProfile(); fetchMyTeam(); });
     });
   </script>
 </body>

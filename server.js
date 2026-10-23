@@ -52,7 +52,7 @@ app.get('/api/config', (req, res) => {
 });
 
 app.post('/api/admin/start', (req, res) => {
-  const currentUser = users.find(u => u.id === req.session.userId);
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
   
   ctfConfig.ctfStartTime = Date.now();
   fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2));
@@ -62,9 +62,7 @@ app.post('/api/admin/start', (req, res) => {
 });
 
 app.post('/api/admin/stop', (req, res) => {
-  if (!req.session.userId) return res.status(403).json({ error: 'Not logged in' });
-  const currentUser = users.find(u => u.id === req.session.userId);
-  if (!currentUser || currentUser.id !== 'user_admin_1') return res.status(403).json({ error: 'Forbidden' });
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
   
   ctfConfig.ctfStartTime = null;
   fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2));
@@ -74,14 +72,12 @@ app.post('/api/admin/stop', (req, res) => {
 });
 
 app.post('/api/admin/wipe', (req, res) => {
-  if (!req.session.userId) return res.status(403).json({ error: 'Not logged in' });
-  const currentUser = users.find(u => u.id === req.session.userId);
-  if (!currentUser || currentUser.id !== 'user_admin_1') return res.status(403).json({ error: 'Forbidden' });
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
   
   teams.forEach(team => {
-      team.scoreHistory = ctfConfig.ctfStartTime ? [{ timestamp: ctfConfig.ctfStartTime, score: 0 }] : [];
+      team.scoreHistory = [];
       team.score = 0;
-      team.solvedChallenges = {};
+      team.solvedChallenges = [];
       team.hintsUnlocked = {};
   });
   users.forEach(user => {
@@ -90,7 +86,6 @@ app.post('/api/admin/wipe', (req, res) => {
   fs.writeFileSync(path.join(__dirname, 'teams.json'), JSON.stringify(teams, null, 2));
   fs.writeFileSync(path.join(__dirname, 'users.json'), JSON.stringify(users, null, 2));
   io.emit('teamsUpdate');
-  io.emit('usersUpdate');
   
   res.json({ message: 'All scores and solves have been securely wiped.' });
 });
@@ -108,20 +103,6 @@ const validateNoTags = (str, fieldName) => {
 };
 
 // -----------------------
-// Load Users
-// -----------------------
-const usersFilePath = path.join(__dirname, 'users.json');
-let users = [];
-try {
-  if (fs.existsSync(usersFilePath)) {
-    const usersData = fs.readFileSync(usersFilePath, 'utf8');
-    users = JSON.parse(usersData);
-  }
-} catch (err) {
-  console.error("Error reading users.json:", err);
-}
-
-// -----------------------
 // Load Teams
 // -----------------------
 const teamsFilePath = path.join(__dirname, 'teams.json');
@@ -135,6 +116,20 @@ try {
   console.error("Error reading teams.json:", err);
 }
 
+// -----------------------
+// Load Users (maintained as shadow file for backward compatibility)
+// -----------------------
+const usersFilePath = path.join(__dirname, 'users.json');
+let users = [];
+try {
+  if (fs.existsSync(usersFilePath)) {
+    const usersData = fs.readFileSync(usersFilePath, 'utf8');
+    users = JSON.parse(usersData);
+  }
+} catch (err) {
+  console.error("Error reading users.json:", err);
+}
+
 // Helper: Identify admin teams to exclude from public rankings and solve counters
 function isAdminTeam(team) {
   if (!team) return false;
@@ -142,48 +137,63 @@ function isAdminTeam(team) {
   return team.id === 'team_admin_1' || name === 'lostcode' || name === 'admin' || name.includes('admin');
 }
 
+function getCurrentTeam(req) {
+  if (!req.session) return null;
+  if (req.session.teamId) {
+    return teams.find(t => t.id === req.session.teamId) || null;
+  }
+  if (req.session.userId) {
+    const u = users.find(user => user.id === req.session.userId);
+    if (u && u.teamId) return teams.find(t => t.id === u.teamId) || null;
+    return teams.find(t => t.id === req.session.userId) || null;
+  }
+  return null;
+}
+
+function isAdminSession(req) {
+  if (!req.session) return false;
+  if (req.session.isAdmin) return true;
+  if (req.session.userId === 'user_admin_1') return true;
+  const team = getCurrentTeam(req);
+  return team ? isAdminTeam(team) : false;
+}
+
 // -----------------------
-// User Endpoints
+// Crew Registration & Login
 // -----------------------
 
 app.post('/api/register', (req, res) => {
-  const { teamName, username, email, password } = req.body;
+  const { teamName, password } = req.body;
   const crewName = (teamName || '').trim();
-  const rawAlias = (username || crewName).trim();
-  const userEmail = (email || `${crewName.toLowerCase().replace(/[^a-z0-9]/g, '')}@lostcode`).trim();
 
-  const tagError = validateNoTags(crewName || rawAlias, "Crew/User name");
+  const tagError = validateNoTags(crewName, "Crew name");
   if (tagError) return res.status(400).json({ error: tagError });
 
-  if ((!crewName && !rawAlias) || !password) {
+  if (!crewName || !password) {
     return res.status(400).json({ error: 'Crew name and password required.' });
   }
 
-  const effectiveTeamName = crewName || rawAlias;
-  if (teams.find(t => t.teamName.toLowerCase() === effectiveTeamName.toLowerCase())) {
+  if (teams.find(t => t.teamName.toLowerCase() === crewName.toLowerCase())) {
     return res.status(400).json({ error: 'Crew / Team name already in use.' });
   }
 
   const hashedPassword = bcrypt.hashSync(password, 10);
-  const newUserId = 'user_' + Date.now();
   const newTeamId = 'team_' + Date.now();
 
   const newTeam = {
     id: newTeamId,
-    teamName: effectiveTeamName,
+    teamName: crewName,
     password: hashedPassword,
-    members: [newUserId],
-    membersNames: [rawAlias],
     score: 0,
-    solvedChallenges: {},
+    solvedChallenges: [],
     hintsUnlocked: {},
     scoreHistory: [{ timestamp: Date.now(), score: 0 }]
   };
 
   const newUser = {
-    id: newUserId,
-    username: rawAlias,
-    email: userEmail,
+    id: newTeamId,
+    username: crewName,
+    email: `${crewName.toLowerCase().replace(/[^a-z0-9]/g, '')}@lostcode`,
     password: hashedPassword,
     teamId: newTeamId,
     solvedChallenges: []
@@ -201,21 +211,18 @@ app.post('/api/register', (req, res) => {
   }
 
   io.emit('teamsUpdate');
-  io.emit('usersUpdate');
   res.json({ message: 'Crew enlisted successfully! Board the ship with your crew name and password.' });
 });
 
 app.post('/api/login', (req, res) => {
-  const { teamName, email, identifier, username, password } = req.body;
+  const { teamName, identifier, email, username, password } = req.body;
   const loginKey = (teamName || identifier || email || username || '').trim();
   if (!loginKey || !password) {
     return res.status(400).json({ error: 'Crew / Team name and password required.' });
   }
 
-  // 1. Direct match by teamName (case-insensitive)
   let matchedTeam = teams.find(t => t.teamName.trim().toLowerCase() === loginKey.toLowerCase());
 
-  // Special aliases for admin: 'lostcode', 'admin@lostcode', 'admin', 'admin@ctf.com'
   if (!matchedTeam && (
     loginKey.toLowerCase() === 'lostcode' ||
     loginKey.toLowerCase() === 'admin@lostcode' ||
@@ -227,65 +234,25 @@ app.post('/api/login', (req, res) => {
 
   if (matchedTeam) {
     const teamPwMatches = matchedTeam.password && bcrypt.compareSync(password, matchedTeam.password);
-    let user = users.find(u => matchedTeam.members && matchedTeam.members.includes(u.id));
-    const userPwMatches = user && user.password && bcrypt.compareSync(password, user.password);
-
-    if (teamPwMatches || userPwMatches) {
-      if (!user) {
-        user = users.find(u => u.teamId === matchedTeam.id);
-        if (!user) {
-          user = {
-            id: 'user_' + Date.now(),
-            username: matchedTeam.teamName,
-            email: `${matchedTeam.teamName.toLowerCase()}@lostcode`,
-            password: matchedTeam.password,
-            teamId: matchedTeam.id,
-            solvedChallenges: []
-          };
-          users.push(user);
-          try {
-            fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
-          } catch (e) {
-            console.error(e);
-          }
-        }
-      }
-      req.session.userId = user.id;
+    if (teamPwMatches) {
+      req.session.teamId = matchedTeam.id;
+      req.session.teamName = matchedTeam.teamName;
+      req.session.isAdmin = (matchedTeam.id === 'team_admin_1' || matchedTeam.teamName.toLowerCase() === 'lostcode');
+      req.session.userId = matchedTeam.id;
       return res.json({ message: 'Login successful!', teamName: matchedTeam.teamName });
     }
   }
 
-  // 2. Fallback: match by individual user email or username
-  const user = users.find(u => 
-    u.email.toLowerCase() === loginKey.toLowerCase() || 
-    u.username.toLowerCase() === loginKey.toLowerCase()
-  );
-
-  if (user && bcrypt.compareSync(password, user.password)) {
-    req.session.userId = user.id;
-    return res.json({ message: 'Login successful!' });
-  }
-
   return res.status(400).json({ error: 'Invalid crew name or password.' });
 });
-
 
 app.get('/api/challenges', (req, res) => {
   const flagsFilePath = path.join(__dirname, 'private', 'flags.json');
   if (!fs.existsSync(flagsFilePath)) return res.json({});
   const flagsData = JSON.parse(fs.readFileSync(flagsFilePath, 'utf8'));
 
-  let userTeam = null;
-  let isAdminUser = false;
-  if (req.session.userId) {
-    const currentUser = users.find(u => u.id === req.session.userId);
-    if (currentUser) {
-      if (currentUser.id === 'user_admin_1') isAdminUser = true;
-      if (currentUser.teamId) {
-        userTeam = teams.find(t => t.id === currentUser.teamId);
-      }
-    }
-  }
+  const userTeam = getCurrentTeam(req);
+  const isAdminUser = isAdminSession(req);
 
   const hintsUnlockedCount = (userTeam && userTeam.hintsUnlocked) ? Object.keys(userTeam.hintsUnlocked).length : 0;
   const nextHintCost = (hintsUnlockedCount + 1) * 5;
@@ -294,13 +261,11 @@ app.get('/api/challenges', (req, res) => {
   for (const key in flagsData) {
     let solvesCount = 0;
     teams.forEach(team => {
-      // Exclude admin teams from solve counts
       if (isAdminTeam(team)) return;
-      const teamSolvedIt = team.members.some(memberId => {
-        const member = users.find(u => u.id === memberId);
-        return member && Array.isArray(member.solvedChallenges) && member.solvedChallenges.includes(key);
-      });
-      if (teamSolvedIt) solvesCount++;
+      const solvedList = Array.isArray(team.solvedChallenges)
+        ? team.solvedChallenges
+        : (team.solvedChallenges ? Object.keys(team.solvedChallenges) : []);
+      if (solvedList.includes(key)) solvesCount++;
     });
 
     const hasHint = Boolean(flagsData[key].hint && flagsData[key].hint.trim());
@@ -328,18 +293,12 @@ app.get('/api/challenges', (req, res) => {
   res.json(safeData);
 });
 
-
 const isAdmin = (req, res, next) => {
-  if (!req.session.userId) return res.status(403).json({ error: 'Not logged in' });
-  const currentUser = users.find(u => u.id === req.session.userId);
-  if (!currentUser || currentUser.id !== 'user_admin_1') return res.status(403).json({ error: 'Forbidden' });
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
   next();
 };
 
 app.post('/api/admin/challenges', isAdmin, upload.single('resource'), (req, res) => {
-  if (!req.session.userId) return res.status(403).json({ error: 'Not logged in' });
-  const currentUser = users.find(u => u.id === req.session.userId);
-  if (!currentUser || currentUser.id !== 'user_admin_1') return res.status(403).json({ error: 'Forbidden' });
   
   const { category, text, flag, points, removeResource, difficulty, hint, subtitle, round } = req.body;
   if (!category || !text || !flag || !points) return res.status(400).json({ error: 'All fields (Category, Text, Flag, Points) are required.' });
@@ -404,10 +363,8 @@ app.post('/api/admin/challenges', isAdmin, upload.single('resource'), (req, res)
     let teamsChanged = false;
     
     teams.forEach(team => {
-      const teamSolvedIt = team.members.some(memberId => {
-        const member = users.find(u => u.id === memberId);
-        return member && Array.isArray(member.solvedChallenges) && member.solvedChallenges.includes(category);
-      });
+      const solvedList = Array.isArray(team.solvedChallenges) ? team.solvedChallenges : Object.keys(team.solvedChallenges || {});
+      const teamSolvedIt = solvedList.includes(category);
       
       if (teamSolvedIt) {
         team.score += pointDiff;
@@ -429,11 +386,7 @@ app.post('/api/admin/challenges', isAdmin, upload.single('resource'), (req, res)
   res.json({ message: 'Challenge updated successfully.' });
 });
 
-app.post('/api/admin/challenges/delete', (req, res) => {
-  if (!req.session.userId) return res.status(403).json({ error: 'Not logged in' });
-  const currentUser = users.find(u => u.id === req.session.userId);
-  if (!currentUser || currentUser.id !== 'user_admin_1') return res.status(403).json({ error: 'Forbidden' });
-  
+app.post('/api/admin/challenges/delete', isAdmin, (req, res) => {
   const { category } = req.body;
   if (!category) return res.status(400).json({ error: 'Category required.' });
   
@@ -448,10 +401,14 @@ app.post('/api/admin/challenges/delete', (req, res) => {
       // Remove points from teams that solved it
       let teamsChanged = false;
       teams.forEach(team => {
-        const teamSolvedIt = team.members.some(memberId => {
-          const member = users.find(u => u.id === memberId);
-          return member && Array.isArray(member.solvedChallenges) && member.solvedChallenges.includes(category);
-        });
+        let teamSolvedIt = false;
+        if (Array.isArray(team.solvedChallenges) && team.solvedChallenges.includes(category)) {
+          team.solvedChallenges = team.solvedChallenges.filter(c => c !== category);
+          teamSolvedIt = true;
+        } else if (team.solvedChallenges && team.solvedChallenges[category]) {
+          delete team.solvedChallenges[category];
+          teamSolvedIt = true;
+        }
         
         if (teamSolvedIt) {
           team.score -= pointsToDeduct;
@@ -479,7 +436,6 @@ app.post('/api/admin/challenges/delete', (req, res) => {
       if (usersChanged || teamsChanged) {
         fs.writeFileSync(path.join(__dirname, 'users.json'), JSON.stringify(users, null, 2));
         fs.writeFileSync(path.join(__dirname, 'teams.json'), JSON.stringify(teams, null, 2));
-        io.emit('usersUpdate');
         io.emit('teamsUpdate');
       }
     }
@@ -488,157 +444,70 @@ app.post('/api/admin/challenges/delete', (req, res) => {
   res.json({ message: 'Challenge deleted successfully.' });
 });
 
-app.get('/api/users', (req, res) => {
-  res.json(users);
-});
-
 // -----------------------
 // Team Endpoints
 // -----------------------
 
 app.get('/api/teams', (req, res) => {
-  const teamsWithNames = teams.filter(t => !isAdminTeam(t)).map(team => {
-    const membersNames = team.members
-      .map(memberId => {
-        const memberUser = users.find(u => u.id === memberId);
-        return memberUser ? memberUser.username : null;
-      })
-      .filter(Boolean);
-    if (typeof team.score !== 'number') team.score = 0;
-    if (!team.solvedChallenges || typeof team.solvedChallenges !== 'object') {
-      team.solvedChallenges = {};
-    }
-    return { ...team, membersNames };
+  const safeTeams = teams.filter(t => !isAdminTeam(t)).map(team => {
+    const solvedChallenges = Array.isArray(team.solvedChallenges) 
+      ? team.solvedChallenges 
+      : (team.solvedChallenges ? Object.keys(team.solvedChallenges) : []);
+    return {
+      id: team.id,
+      teamName: team.teamName,
+      score: typeof team.score === 'number' ? team.score : 0,
+      solvedChallenges,
+      scoreHistory: team.scoreHistory || []
+    };
   });
-  res.json(teamsWithNames);
+  res.json(safeTeams);
 });
 
 app.get('/api/myteam', (req, res) => {
-  const userId = req.session.userId;
-  if (!userId) return res.status(403).json({ error: 'Not logged in' });
-  const currentUser = users.find(u => u.id === userId);
-  if (!currentUser || !currentUser.teamId) return res.json({ message: 'No team found for this user.' });
-  const myTeam = teams.find(t => t.id === currentUser.teamId);
-  if (!myTeam) return res.json({ message: 'No team found for this user.' });
-  
-  const flagsFilePath = path.join(__dirname, 'private', 'flags.json');
-  let flagsData = {};
-  if (fs.existsSync(flagsFilePath)) flagsData = JSON.parse(fs.readFileSync(flagsFilePath, 'utf8'));
-  
-  const membersNames = [];
-  const memberDetails = myTeam.members.map(memberId => {
-    const mUser = users.find(u => u.id === memberId);
-    if (!mUser) return null;
-    membersNames.push(mUser.username);
-    
-    let userPoints = 0;
-    const solved = (mUser.solvedChallenges || []).map(cat => {
-      const pts = flagsData[cat] && flagsData[cat].points !== undefined ? Number(flagsData[cat].points) : 500;
-      userPoints += pts;
-      return { category: cat, points: pts };
-    });
-    return {
-      username: mUser.username,
-      totalPoints: userPoints,
-      solvedChallenges: solved
-    };
-  }).filter(Boolean);
-  
+  const myTeam = getCurrentTeam(req);
+  if (!myTeam) return res.status(403).json({ error: 'Not logged in' });
+
+  const solvedChallenges = Array.isArray(myTeam.solvedChallenges) 
+    ? myTeam.solvedChallenges 
+    : (myTeam.solvedChallenges ? Object.keys(myTeam.solvedChallenges) : []);
+
   if (typeof myTeam.score !== 'number') myTeam.score = 0;
-  if (!myTeam.solvedChallenges || typeof myTeam.solvedChallenges !== 'object') {
-    myTeam.solvedChallenges = {};
-  }
   if (!myTeam.hintsUnlocked || typeof myTeam.hintsUnlocked !== 'object') {
     myTeam.hintsUnlocked = {};
   }
   const hintsUnlockedCount = Object.keys(myTeam.hintsUnlocked).length;
   const nextHintCost = (hintsUnlockedCount + 1) * 5;
-  res.json({ team: { ...myTeam, membersNames, memberDetails, hintsUnlockedCount, nextHintCost } });
+
+  res.json({
+    team: {
+      id: myTeam.id,
+      teamName: myTeam.teamName,
+      score: myTeam.score,
+      solvedChallenges,
+      hintsUnlocked: myTeam.hintsUnlocked,
+      hintsUnlockedCount,
+      nextHintCost
+    }
+  });
 });
 
 app.get('/api/profile', (req, res) => {
-  if (!req.session.userId) return res.status(403).json({ error: 'Not logged in' });
-  const currentUser = users.find(u => u.id === req.session.userId);
-  if (!currentUser) return res.status(404).json({ error: 'User not found.' });
-  let teamName = null;
-  if (currentUser.teamId) {
-    const myTeam = teams.find(t => t.id === currentUser.teamId);
-    if (myTeam) teamName = myTeam.teamName;
-  }
-  res.json({ username: currentUser.username, teamName, isAdmin: currentUser.id === 'user_admin_1' });
+  const myTeam = getCurrentTeam(req);
+  if (!myTeam) return res.status(403).json({ error: 'Not logged in' });
+  res.json({
+    teamName: myTeam.teamName,
+    isAdmin: isAdminSession(req)
+  });
 });
 
-app.post('/api/team/create', (req, res) => {
-  const userId = req.session.userId;
-  if (!userId) return res.status(403).json({ error: 'Not logged in' });
-  let { teamName, password } = req.body;
-  if (!teamName || !teamName.trim() || !password) return res.status(400).json({ error: 'Team name and password required.' });
-  teamName = teamName.trim();
-  const existingTeam = teams.find(t => t.teamName.trim().toLowerCase() === teamName.toLowerCase());
-  if (existingTeam) return res.status(400).json({ error: 'Team already exists.' });
-  const user = users.find(u => u.id === userId);
-  if (!user) return res.status(404).json({ error: 'User not found.' });
-  const hashedPassword = bcrypt.hashSync(password, 10);
-  const newTeam = {
-    id: Date.now().toString(),
-    teamName,
-    password: hashedPassword,
-    members: [userId],
-    score: 0,
-    solvedChallenges: {},
-    scoreHistory: [{ timestamp: Date.now(), score: 0 }]
-  };
-  teams.push(newTeam);
-  try {
-    fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
-    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
-  } catch (err) {
-    console.error("Error writing team or users file:", err);
-    return res.status(500).json({ error: 'Internal server error.' });
-  }
-  user.teamId = newTeam.id;
-  io.emit('teamsUpdate');
-  io.emit('usersUpdate');
-  res.json({ message: 'Team created successfully!', team: newTeam });
-});
-
-app.post('/api/team/join', (req, res) => {
-  const userId = req.session.userId;
-  if (!userId) return res.status(403).json({ error: 'Not logged in' });
-  const { teamName, password } = req.body;
-  const tagError = validateNoTags(teamName, "Team name");
-  if (tagError) return res.status(400).json({ error: tagError });
-  if (!teamName || !password) return res.status(400).json({ error: 'Team name and password required.' });
-  const team = teams.find(t => t.teamName.toLowerCase() === teamName.toLowerCase());
-  if (!team) return res.status(404).json({ error: 'Team not found.' });
-  if (!bcrypt.compareSync(password, team.password)) return res.status(400).json({ error: 'Incorrect team password.' });
-  if (!team.members.includes(userId)) {
-    team.members.push(userId);
-    try {
-      fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
-    } catch (err) {
-      console.error("Error writing teams.json:", err);
-      return res.status(500).json({ error: 'Internal server error.' });
-    }
-  }
-  const user = users.find(u => u.id === userId);
-  if (!user) return res.status(404).json({ error: 'User not found.' });
-  user.teamId = team.id;
-  try {
-    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
-  } catch (err) {
-    console.error("Error writing users.json:", err);
-    return res.status(500).json({ error: 'Internal server error.' });
-  }
-  io.emit('teamsUpdate');
-  io.emit('usersUpdate');
-  res.json({ message: `Joined team ${team.teamName} successfully.`, team });
-});
-
+// Single-Submitter Flag Submission (Team-level)
 app.post('/api/challenge/flag', (req, res) => {
-  const isAdminUser = req.session.userId === 'user_admin_1';
+  const isAdminUser = isAdminSession(req);
   if (!ctfConfig.ctfStartTime && !isAdminUser) return res.status(403).json({ error: 'The CTF has not started yet!' });
-  if (!req.session.userId) return res.status(403).json({ error: 'Not logged in' });
+  const team = getCurrentTeam(req);
+  if (!team) return res.status(403).json({ error: 'Not logged in' });
+  
   const { category, flag } = req.body;
   if (!category || !flag) return res.status(400).json({ error: 'Category and flag required.' });
   const flagsFilePath = path.join(__dirname, 'private', 'flags.json');
@@ -646,18 +515,12 @@ app.post('/api/challenge/flag', (req, res) => {
   const flagsData = JSON.parse(fs.readFileSync(flagsFilePath, 'utf8'));
   const challengeObj = flagsData[category];
   if (!challengeObj) return res.status(404).json({ error: 'Challenge not found for this category.' });
-  const userId = req.session.userId;
-  const currentUser = users.find(u => u.id === userId);
-  if (!currentUser || !currentUser.teamId) return res.status(400).json({ error: 'You are not in a team.' });
-  const team = teams.find(t => t.id === currentUser.teamId);
-  if (!team) return res.status(400).json({ error: 'Team not found.' });
+
+  if (!Array.isArray(team.solvedChallenges)) {
+    team.solvedChallenges = team.solvedChallenges ? Object.keys(team.solvedChallenges) : [];
+  }
   
-  const alreadySolved = team.members.some(memberId => {
-    const member = users.find(u => u.id === memberId);
-    return member && Array.isArray(member.solvedChallenges) && member.solvedChallenges.includes(category);
-  });
-  
-  if (alreadySolved) {
+  if (team.solvedChallenges.includes(category)) {
     return res.status(400).json({ error: 'This challenge has already been solved by your team.' });
   }
 
@@ -668,19 +531,15 @@ app.post('/api/challenge/flag', (req, res) => {
     return res.status(400).json({ error: 'Incorrect flag.' });
   }
   
-  if (!Array.isArray(currentUser.solvedChallenges)) {
-    currentUser.solvedChallenges = [];
-  }
-  currentUser.solvedChallenges.push(category);
+  team.solvedChallenges.push(category);
   const pointsEarned = challengeObj.points !== undefined ? Number(challengeObj.points) : 500;
-  team.score += pointsEarned;
+  team.score = (team.score || 0) + pointsEarned;
   if (!team.scoreHistory) {
     team.scoreHistory = [{ timestamp: Date.now() - 1000, score: team.score - pointsEarned }];
   }
   team.scoreHistory.push({ timestamp: Date.now(), score: team.score });
   
   try {
-    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
     fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
   } catch (err) {
     console.error("Error writing files:", err);
@@ -688,22 +547,17 @@ app.post('/api/challenge/flag', (req, res) => {
   }
   
   io.emit('teamsUpdate');
-  io.emit('usersUpdate');
   return res.json({ message: `Correct flag! ${pointsEarned} points added to your team.` });
 });
 
 // Unlock Hint with Escalating Deduction (-5, -10, -15...)
 app.post('/api/challenge/hint/unlock', (req, res) => {
-  const isAdminUser = req.session.userId === 'user_admin_1';
+  const isAdminUser = isAdminSession(req);
   if (!ctfConfig.ctfStartTime && !isAdminUser) return res.status(403).json({ error: 'The CTF has not started yet!' });
-  if (!req.session.userId) return res.status(403).json({ error: 'Not logged in' });
+  const team = getCurrentTeam(req);
+  if (!team) return res.status(403).json({ error: 'Not logged in' });
   const { category } = req.body;
   if (!category) return res.status(400).json({ error: 'Category required.' });
-
-  const currentUser = users.find(u => u.id === req.session.userId);
-  if (!currentUser || !currentUser.teamId) return res.status(400).json({ error: 'You are not in a team.' });
-  const team = teams.find(t => t.id === currentUser.teamId);
-  if (!team) return res.status(400).json({ error: 'Team not found.' });
 
   const flagsFilePath = path.join(__dirname, 'private', 'flags.json');
   if (!fs.existsSync(flagsFilePath)) return res.status(500).json({ error: 'Flags file not found.' });
@@ -733,11 +587,10 @@ app.post('/api/challenge/hint/unlock', (req, res) => {
   const currentCount = Object.keys(team.hintsUnlocked).length;
   const cost = (currentCount + 1) * 5;
 
-  team.score -= cost;
+  team.score = (team.score || 0) - cost;
   team.hintsUnlocked[category] = {
     cost,
-    unlockedAt: Date.now(),
-    unlockedBy: currentUser.username
+    unlockedAt: Date.now()
   };
 
   if (!team.scoreHistory) {
@@ -763,101 +616,12 @@ app.post('/api/challenge/hint/unlock', (req, res) => {
   });
 });
 
-// -----------------------
-// Protected Routes & Static Files
-// -----------------------
-
-
-// -----------------------
-// Update Endpoints
-// -----------------------
-
-// Update Username Endpoint
-app.post('/api/profile/update', (req, res) => {
-  if (!req.session.userId) return res.status(403).json({ error: 'Not logged in' });
-  const { newUsername } = req.body;
-  const tagError = validateNoTags(newUsername, "Username");
-  if (tagError) return res.status(400).json({ error: tagError });
-  if (!newUsername || newUsername.trim() === '') {
-    return res.status(400).json({ error: 'Username cannot be empty.' });
-  }
-  
-  // Check if username is already taken
-  if (users.find(u => u.username.trim().toLowerCase() === newUsername.trim().toLowerCase() && u.id !== req.session.userId)) {
-    return res.status(400).json({ error: 'Username already taken.' });
-  }
-
-  const userIndex = users.findIndex(u => u.id === req.session.userId);
-  if (userIndex === -1) return res.status(404).json({ error: 'User not found.' });
-
-  users[userIndex].username = newUsername.trim();
-  fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
-  io.emit('usersUpdate');
-  res.json({ message: 'Username updated successfully.', username: users[userIndex].username });
-});
-
-// Update Team Name Endpoint
-app.post('/api/team/update', (req, res) => {
-  if (!req.session.userId) return res.status(403).json({ error: 'Not logged in' });
-  const { newTeamName } = req.body;
-  const tagError = validateNoTags(newTeamName, "Team name");
-  if (tagError) return res.status(400).json({ error: tagError });
-  if (!newTeamName || newTeamName.trim() === '') {
-    return res.status(400).json({ error: 'Team name cannot be empty.' });
-  }
-
-  const currentUser = users.find(u => u.id === req.session.userId);
-  if (!currentUser || !currentUser.teamId) {
-    return res.status(400).json({ error: 'You are not in a team.' });
-  }
-
-  // Check if team name is already taken
-  if (teams.find(t => t.teamName.trim().toLowerCase() === newTeamName.trim().toLowerCase() && t.id !== currentUser.teamId)) {
-    return res.status(400).json({ error: 'Team name already taken.' });
-  }
-
-  const teamIndex = teams.findIndex(t => t.id === currentUser.teamId);
-  if (teamIndex === -1) return res.status(404).json({ error: 'Team not found.' });
-
-  teams[teamIndex].teamName = newTeamName.trim();
-  fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
-  io.emit('teamsUpdate');
-  res.json({ message: 'Team name updated successfully.', teamName: teams[teamIndex].teamName });
-});
-
-
-// Leave Team Endpoint
-app.post('/api/team/leave', (req, res) => {
-  if (!req.session.userId) return res.status(403).json({ error: 'Not logged in' });
-  
-  const currentUser = users.find(u => u.id === req.session.userId);
-  if (!currentUser || !currentUser.teamId) {
-    return res.status(400).json({ error: 'You are not in a team.' });
-  }
-
-  const teamIndex = teams.findIndex(t => t.id === currentUser.teamId);
-  if (teamIndex !== -1) {
-    const team = teams[teamIndex];
-    team.members = team.members.filter(m => m !== req.session.userId);
-    // Optional: if team is empty, you could delete it, but let's keep it simple and just remove member
-  }
-
-  currentUser.teamId = null;
-
-  fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
-  fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
-  io.emit('teamsUpdate');
-  io.emit('usersUpdate');
-
-  res.json({ message: 'Left team successfully.' });
-});
-
 app.get('/dashboard', (req, res) => {
-  if (!req.session.userId) return res.redirect('/');
-  const currentUser = users.find(u => u.id === req.session.userId);
+  const team = getCurrentTeam(req);
+  if (!team) return res.redirect('/');
   let html = fs.readFileSync(path.join(__dirname, 'private', 'dashboard.html'), 'utf8');
-  if (currentUser && currentUser.id === 'user_admin_1') {
-    html = html.replace('<li id="adminNavLi" style="display:none;">', '<li id="adminNavLi">');
+  if (isAdminSession(req)) {
+    html = html.replace('id="adminNavLi" style="display:none;"', 'id="adminNavLi"');
   }
   res.send(html);
 });
