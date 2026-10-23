@@ -734,19 +734,22 @@
 
     // Departure Listeners
     document.addEventListener('fullscreenchange', () => {
-      if (proctoringArmed && !document.fullscreenElement && !window.isAdminUser) {
+      if (window.isAdminUser) return;
+      if (proctoringArmed && !document.fullscreenElement) {
         triggerProctorViolation('Exited fullscreen');
       }
     });
 
     document.addEventListener('visibilitychange', () => {
-      if (proctoringArmed && document.hidden && !window.isAdminUser) {
+      if (window.isAdminUser) return;
+      if (proctoringArmed && document.hidden) {
         triggerProctorViolation('Tab switched or minimized');
       }
     });
 
     window.addEventListener('blur', () => {
-      if (proctoringArmed && !window.isAdminUser) {
+      if (window.isAdminUser) return;
+      if (proctoringArmed) {
         setTimeout(() => {
           if (!document.hasFocus() && proctoringArmed && !window.isAdminUser) {
             triggerProctorViolation('Window lost focus');
@@ -763,6 +766,18 @@
       const introModal = document.getElementById('introModal');
       const introAgreement = document.getElementById('introAgreement');
       const introContinueBtn = document.getElementById('introContinueBtn');
+
+      // Admin is completely exempt from fullscreen, proctoring alerts, and intro popups
+      if (window.isAdminUser) {
+        if (noticeModal) noticeModal.style.display = 'none';
+        if (introModal) introModal.style.display = 'none';
+        const warningModal = document.getElementById('proctorWarningModal');
+        if (warningModal) warningModal.style.display = 'none';
+        const disqModal = document.getElementById('disqualifiedModal');
+        if (disqModal) disqModal.style.display = 'none';
+        proctoringArmed = false;
+        return;
+      }
 
       if (resumeFullscreenBtn) {
         resumeFullscreenBtn.addEventListener('click', () => {
@@ -1358,6 +1373,14 @@
             const a = document.getElementById('adminNavLi');
             if (a) a.style.display = 'block';
             proctoringArmed = false;
+            const noticeModal = document.getElementById('fullscreenNoticeModal');
+            if (noticeModal) noticeModal.style.display = 'none';
+            const introModal = document.getElementById('introModal');
+            if (introModal) introModal.style.display = 'none';
+            const warningModal = document.getElementById('proctorWarningModal');
+            if (warningModal) warningModal.style.display = 'none';
+            const disqModal = document.getElementById('disqualifiedModal');
+            if (disqModal) disqModal.style.display = 'none';
           } else if (data.disqualified) {
             lockDisqualified(data);
           }

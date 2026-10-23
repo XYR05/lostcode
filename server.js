@@ -706,6 +706,7 @@ app.get('/dashboard', (req, res) => {
   let html = fs.readFileSync(path.join(__dirname, 'private', 'dashboard.html'), 'utf8');
   if (isAdminSession(req)) {
     html = html.replace('id="adminNavLi" style="display:none;"', 'id="adminNavLi"');
+    html = html.replace('<head>', '<head><script>window.isAdminUser = true;</script>');
   }
   res.send(html);
 });
