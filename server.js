@@ -40,15 +40,51 @@ app.use(session({
 
 // Load Config
 const configFilePath = path.join(__dirname, 'private', 'config.json');
-let ctfConfig = { ctfStartTime: null };
+let ctfConfig = { ctfStartTime: null, unlockedRounds: [1] };
 if (fs.existsSync(configFilePath)) {
   ctfConfig = JSON.parse(fs.readFileSync(configFilePath, 'utf8'));
 } else {
   fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2));
 }
+if (!Array.isArray(ctfConfig.unlockedRounds)) {
+  ctfConfig.unlockedRounds = [1];
+}
 
 app.get('/api/config', (req, res) => {
-  res.json(ctfConfig);
+  res.json({
+    ctfStartTime: ctfConfig.ctfStartTime,
+    unlockedRounds: ctfConfig.unlockedRounds || [1]
+  });
+});
+
+app.post('/api/admin/rounds/toggle', (req, res) => {
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
+  const { round, unlocked } = req.body;
+  const roundNum = parseInt(round, 10);
+  if (!roundNum || roundNum < 1 || roundNum > 4) {
+    return res.status(400).json({ error: 'Invalid round number (1-4).' });
+  }
+
+  ctfConfig.unlockedRounds = Array.isArray(ctfConfig.unlockedRounds) ? ctfConfig.unlockedRounds : [1];
+
+  if (unlocked) {
+    if (!ctfConfig.unlockedRounds.includes(roundNum)) {
+      ctfConfig.unlockedRounds.push(roundNum);
+      ctfConfig.unlockedRounds.sort((a, b) => a - b);
+    }
+  } else {
+    ctfConfig.unlockedRounds = ctfConfig.unlockedRounds.filter(r => r !== roundNum);
+  }
+
+  fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2));
+  io.emit('configUpdate', ctfConfig);
+  io.emit('roundsUpdate', ctfConfig.unlockedRounds);
+  io.emit('challengesUpdate');
+
+  res.json({
+    message: `Round ${roundNum} ${unlocked ? 'unlocked' : 'locked'} successfully!`,
+    unlockedRounds: ctfConfig.unlockedRounds
+  });
 });
 
 app.post('/api/admin/start', (req, res) => {
@@ -253,6 +289,7 @@ app.get('/api/challenges', (req, res) => {
 
   const userTeam = getCurrentTeam(req);
   const isAdminUser = isAdminSession(req);
+  const unlockedRounds = Array.isArray(ctfConfig.unlockedRounds) ? ctfConfig.unlockedRounds : [1];
 
   const hintsUnlockedCount = (userTeam && userTeam.hintsUnlocked) ? Object.keys(userTeam.hintsUnlocked).length : 0;
   const nextHintCost = (hintsUnlockedCount + 1) * 5;
@@ -268,26 +305,30 @@ app.get('/api/challenges', (req, res) => {
       if (solvedList.includes(key)) solvesCount++;
     });
 
+    const roundNum = flagsData[key].round || 1;
+    const isRoundUnlocked = isAdminUser || unlockedRounds.includes(roundNum);
+
     const hasHint = Boolean(flagsData[key].hint && flagsData[key].hint.trim());
     const isHintUnlocked = Boolean(userTeam && userTeam.hintsUnlocked && userTeam.hintsUnlocked[key]);
 
     safeData[key] = { 
-      text: flagsData[key].text, 
+      text: isRoundUnlocked ? flagsData[key].text : "🔒 These waters are locked by the Admiralty. Awaiting orders to advance.", 
       subtitle: flagsData[key].subtitle || "",
       points: flagsData[key].points || 500,
       difficulty: flagsData[key].difficulty || "EASY",
-      round: flagsData[key].round || 1,
-      roundName: flagsData[key].roundName || "Round 1: Qualifiers",
+      round: roundNum,
+      roundName: flagsData[key].roundName || "Round 1: Setting Sail",
       riddleNumber: flagsData[key].riddleNumber || 1,
       category: flagsData[key].category || "Miscellaneous",
-      hint: isHintUnlocked ? (flagsData[key].hint || "") : null,
+      hint: isRoundUnlocked ? (isHintUnlocked ? (flagsData[key].hint || "") : null) : null,
       adminHint: isAdminUser ? (flagsData[key].hint || "") : null,
-      hasHint: hasHint,
-      hintUnlocked: isHintUnlocked,
-      resource: flagsData[key].resource,
-      originalResourceName: flagsData[key].originalResourceName,
+      hasHint: isRoundUnlocked ? hasHint : false,
+      hintUnlocked: isRoundUnlocked ? isHintUnlocked : false,
+      resource: isRoundUnlocked ? flagsData[key].resource : null,
+      originalResourceName: isRoundUnlocked ? flagsData[key].originalResourceName : null,
       solves: solvesCount,
-      nextHintCost: nextHintCost
+      nextHintCost: nextHintCost,
+      unlocked: isRoundUnlocked
     };
   }
   res.json(safeData);
@@ -330,10 +371,10 @@ app.post('/api/admin/challenges', isAdmin, upload.single('resource'), (req, res)
   flagsData[category].hint = hint || "";
   flagsData[category].round = roundNum;
   const roundNames = {
-    1: 'Round 1: Qualifiers',
-    2: 'Round 2: Group Stage',
-    3: 'Round 3: Semi-Finals',
-    4: 'Round 4: Finals'
+    1: 'Round 1: Setting Sail',
+    2: 'Round 2: High Seas',
+    3: "Round 3: Dead Man's Creek",
+    4: 'Round 4: Treasure Island'
   };
   flagsData[category].roundName = roundNames[roundNum] || `Round ${roundNum}`;
   if (!flagsData[category].riddleNumber) {
@@ -529,6 +570,12 @@ app.post('/api/challenge/flag', (req, res) => {
   const challengeObj = flagsData[category];
   if (!challengeObj) return res.status(404).json({ error: 'Challenge not found for this category.' });
 
+  const challengeRound = challengeObj.round || 1;
+  const unlockedRounds = Array.isArray(ctfConfig.unlockedRounds) ? ctfConfig.unlockedRounds : [1];
+  if (!isAdminUser && !unlockedRounds.includes(challengeRound)) {
+    return res.status(403).json({ error: "These waters remain locked by the Admiralty! Await captain's orders before charting this course." });
+  }
+
   if (!Array.isArray(team.solvedChallenges)) {
     team.solvedChallenges = team.solvedChallenges ? Object.keys(team.solvedChallenges) : [];
   }
@@ -581,6 +628,12 @@ app.post('/api/challenge/hint/unlock', (req, res) => {
   const challengeObj = flagsData[category];
   if (!challengeObj) return res.status(404).json({ error: 'Challenge not found.' });
   if (!challengeObj.hint || !challengeObj.hint.trim()) return res.status(400).json({ error: 'This challenge has no hint.' });
+
+  const challengeRound = challengeObj.round || 1;
+  const unlockedRounds = Array.isArray(ctfConfig.unlockedRounds) ? ctfConfig.unlockedRounds : [1];
+  if (!isAdminUser && !unlockedRounds.includes(challengeRound)) {
+    return res.status(403).json({ error: "These waters remain locked by the Admiralty! Await captain's orders before seeking clues here." });
+  }
 
   if (!team.hintsUnlocked || typeof team.hintsUnlocked !== 'object') {
     team.hintsUnlocked = {};

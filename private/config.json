@@ -1,3 +1,6 @@
 {
-  "ctfStartTime": null
+  "ctfStartTime": null,
+  "unlockedRounds": [
+    1
+  ]
 }

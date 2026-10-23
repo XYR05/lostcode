@@ -1,7 +1,7 @@
 {
   "Round 1 - Riddle 4: Dead Man's Switch": {
     "round": 1,
-    "roundName": "Round 1: Qualifiers",
+    "roundName": "Round 1: Setting Sail",
     "riddleNumber": 4,
     "category": "Miscellaneous",
     "subtitle": "Dead Man's Switch",
@@ -15,7 +15,7 @@
   },
   "Round 1 - Riddle 5: The Bovine Cipher": {
     "round": 1,
-    "roundName": "Round 1: Qualifiers",
+    "roundName": "Round 1: Setting Sail",
     "riddleNumber": 5,
     "category": "Miscellaneous",
     "subtitle": "The Bovine Cipher",
@@ -29,7 +29,7 @@
   },
   "Round 1 - Riddle 6: Sailor's Compass": {
     "round": 1,
-    "roundName": "Round 1: Qualifiers",
+    "roundName": "Round 1: Setting Sail",
     "riddleNumber": 6,
     "category": "Cryptography",
     "subtitle": "Sailor's Compass",
@@ -41,7 +41,7 @@
   },
   "Round 1 - Riddle 7: Ghost Signal": {
     "round": 1,
-    "roundName": "Round 1: Qualifiers",
+    "roundName": "Round 1: Setting Sail",
     "riddleNumber": 7,
     "category": "Networking",
     "subtitle": "Ghost Signal",
@@ -53,7 +53,7 @@
   },
   "Round 1 - Riddle 8: The Quarterdeck": {
     "round": 1,
-    "roundName": "Round 1: Qualifiers",
+    "roundName": "Round 1: Setting Sail",
     "riddleNumber": 8,
     "category": "Web Exploitation",
     "subtitle": "The Quarterdeck",
@@ -65,7 +65,7 @@
   },
   "Round 1 - Riddle 9: Smuggler's Cask": {
     "round": 1,
-    "roundName": "Round 1: Qualifiers",
+    "roundName": "Round 1: Setting Sail",
     "riddleNumber": 9,
     "category": "Steganography",
     "subtitle": "Smuggler's Cask",
@@ -77,7 +77,7 @@
   },
   "Round 1 - Riddle 10: Kraken's Cipher": {
     "round": 1,
-    "roundName": "Round 1: Qualifiers",
+    "roundName": "Round 1: Setting Sail",
     "riddleNumber": 10,
     "category": "Cryptography",
     "subtitle": "Kraken's Cipher",
@@ -89,7 +89,7 @@
   },
   "Round 2 - Riddle 1: The Governor's Vault": {
     "round": 2,
-    "roundName": "Round 2: Group Stage",
+    "roundName": "Round 2: High Seas",
     "riddleNumber": 1,
     "category": "Web Exploitation",
     "subtitle": "The Governor's Vault",
@@ -103,7 +103,7 @@
   },
   "Round 2 - Riddle 2: The Caribbean Log": {
     "round": 2,
-    "roundName": "Round 2: Group Stage",
+    "roundName": "Round 2: High Seas",
     "riddleNumber": 2,
     "category": "OSINT",
     "subtitle": "The Caribbean Log",
@@ -117,7 +117,7 @@
   },
   "Round 2 - Riddle 3: Siren's Call": {
     "round": 2,
-    "roundName": "Round 2: Group Stage",
+    "roundName": "Round 2: High Seas",
     "riddleNumber": 3,
     "category": "Networking",
     "subtitle": "Siren's Call",
@@ -131,7 +131,7 @@
   },
   "Round 2 - Riddle 4: Cipher Chest": {
     "round": 2,
-    "roundName": "Round 2: Group Stage",
+    "roundName": "Round 2: High Seas",
     "riddleNumber": 4,
     "category": "Cryptography",
     "subtitle": "Cipher Chest",
@@ -145,7 +145,7 @@
   },
   "Round 2 - Riddle 5: Port Royal Infiltration": {
     "round": 2,
-    "roundName": "Round 2: Group Stage",
+    "roundName": "Round 2: High Seas",
     "riddleNumber": 5,
     "category": "Web Exploitation",
     "subtitle": "Port Royal Infiltration",
@@ -157,7 +157,7 @@
   },
   "Round 2 - Riddle 6: Blackbeard's Logbook": {
     "round": 2,
-    "roundName": "Round 2: Group Stage",
+    "roundName": "Round 2: High Seas",
     "riddleNumber": 6,
     "category": "Forensics",
     "subtitle": "Blackbeard's Logbook",
@@ -169,7 +169,7 @@
   },
   "Round 3 - Riddle 1: Sunken Registers": {
     "round": 3,
-    "roundName": "Round 3: Semi-Finals",
+    "roundName": "Round 3: Dead Man's Creek",
     "riddleNumber": 1,
     "category": "Binary Analysis",
     "subtitle": "Sunken Registers",
@@ -183,7 +183,7 @@
   },
   "Round 3 - Riddle 2: Ghost Mechanism": {
     "round": 3,
-    "roundName": "Round 3: Semi-Finals",
+    "roundName": "Round 3: Dead Man's Creek",
     "riddleNumber": 2,
     "category": "Reverse Engineering",
     "subtitle": "Ghost Mechanism",
@@ -197,7 +197,7 @@
   },
   "Round 4 - Riddle 1: Walk the Plank": {
     "round": 4,
-    "roundName": "Round 4: Finals",
+    "roundName": "Round 4: Treasure Island",
     "riddleNumber": 1,
     "category": "Pwn",
     "subtitle": "Walk the Plank",
