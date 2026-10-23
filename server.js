@@ -462,7 +462,9 @@ app.get('/api/teams', (req, res) => {
       teamName: team.teamName,
       score: typeof team.score === 'number' ? team.score : 0,
       solvedChallenges,
-      scoreHistory: team.scoreHistory || []
+      scoreHistory: team.scoreHistory || [],
+      disqualified: Boolean(team.disqualified),
+      violations: team.violations || 0
     };
   });
   res.json(safeTeams);
@@ -491,7 +493,9 @@ app.get('/api/myteam', (req, res) => {
       solvedChallenges,
       hintsUnlocked: myTeam.hintsUnlocked,
       hintsUnlockedCount,
-      nextHintCost
+      nextHintCost,
+      disqualified: Boolean(myTeam.disqualified),
+      violations: myTeam.violations || 0
     }
   });
 });
@@ -501,7 +505,9 @@ app.get('/api/profile', (req, res) => {
   if (!myTeam) return res.status(403).json({ error: 'Not logged in' });
   res.json({
     teamName: myTeam.teamName,
-    isAdmin: isAdminSession(req)
+    isAdmin: isAdminSession(req),
+    disqualified: Boolean(myTeam.disqualified),
+    violations: myTeam.violations || 0
   });
 });
 
@@ -511,6 +517,9 @@ app.post('/api/challenge/flag', (req, res) => {
   if (!ctfConfig.ctfStartTime && !isAdminUser) return res.status(403).json({ error: 'The CTF has not started yet!' });
   const team = getCurrentTeam(req);
   if (!team) return res.status(403).json({ error: 'Not logged in' });
+  if (team.disqualified) {
+    return res.status(403).json({ error: 'Your crew has been disqualified from the tournament for proctoring violations.' });
+  }
   
   const { category, flag } = req.body;
   if (!category || !flag) return res.status(400).json({ error: 'Category and flag required.' });
@@ -560,6 +569,9 @@ app.post('/api/challenge/hint/unlock', (req, res) => {
   if (!ctfConfig.ctfStartTime && !isAdminUser) return res.status(403).json({ error: 'The CTF has not started yet!' });
   const team = getCurrentTeam(req);
   if (!team) return res.status(403).json({ error: 'Not logged in' });
+  if (team.disqualified) {
+    return res.status(403).json({ error: 'Your crew has been disqualified from the tournament for proctoring violations.' });
+  }
   const { category } = req.body;
   if (!category) return res.status(400).json({ error: 'Category required.' });
 
@@ -618,6 +630,74 @@ app.post('/api/challenge/hint/unlock', (req, res) => {
     hintsUnlockedCount: currentCount + 1,
     nextHintCost: (currentCount + 2) * 5
   });
+});
+
+// Proctoring: Screen Departure Violation & Disqualification Endpoint
+app.post('/api/proctor/violation', (req, res) => {
+  const team = getCurrentTeam(req);
+  if (!team) return res.status(403).json({ error: 'Not logged in' });
+  if (isAdminTeam(team) || isAdminSession(req)) {
+    return res.json({ ignored: true, message: 'Admin session exempt from proctoring.' });
+  }
+
+  if (team.disqualified) {
+    return res.json({ disqualified: true, violations: team.violations || 2, message: 'Crew is already disqualified.' });
+  }
+
+  team.violations = (team.violations || 0) + 1;
+  const isSecondViolation = team.violations >= 2;
+
+  if (isSecondViolation) {
+    team.disqualified = true;
+    team.disqualifiedAt = Date.now();
+    team.disqualifiedReason = 'Screen departure violation limit exceeded (2/2).';
+  }
+
+  try {
+    fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
+  } catch (err) {
+    console.error("Error writing teams.json during proctor violation:", err);
+  }
+
+  io.emit('teamsUpdate');
+
+  if (isSecondViolation) {
+    return res.json({
+      disqualified: true,
+      violations: team.violations,
+      message: 'Crew has been disqualified for leaving the screen after receiving a warning.'
+    });
+  } else {
+    return res.json({
+      warning: true,
+      violations: team.violations,
+      message: 'Warning 1 of 1: Screen departure detected. The next departure will disqualify your crew.'
+    });
+  }
+});
+
+// Admin Route: Reinstate Disqualified Crew
+app.post('/api/admin/teams/reinstate', isAdmin, (req, res) => {
+  const { teamId } = req.body;
+  if (!teamId) return res.status(400).json({ error: 'teamId required.' });
+
+  const targetTeam = teams.find(t => t.id === teamId || t.teamName.toLowerCase() === teamId.toLowerCase());
+  if (!targetTeam) return res.status(404).json({ error: 'Team not found.' });
+
+  targetTeam.disqualified = false;
+  targetTeam.violations = 0;
+  delete targetTeam.disqualifiedAt;
+  delete targetTeam.disqualifiedReason;
+
+  try {
+    fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
+  } catch (err) {
+    console.error("Error writing teams.json during reinstate:", err);
+    return res.status(500).json({ error: 'Failed to update teams.' });
+  }
+
+  io.emit('teamsUpdate');
+  return res.json({ message: `Crew ${targetTeam.teamName} reinstated successfully!` });
 });
 
 app.get('/dashboard', (req, res) => {

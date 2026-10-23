@@ -287,6 +287,13 @@
     </div>
     
     <div id="adminChallengesList" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;"></div>
+
+    <!-- Admin Proctoring & Crew Disqualification Control -->
+    <div class="card" style="margin-top: 2.5rem; background: var(--panel-secondary); border: 1px solid var(--border-subtle); padding: 1.5rem; border-radius: 4px;">
+      <h3 style="margin-top: 0; margin-bottom: 0.5rem; font-family: 'Cinzel', serif; color: var(--gold-primary);">Proctoring Surveillance & Disqualified Crews</h3>
+      <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem;">Monitor screen departure violations and reinstate crews who were disqualified during the tournament.</p>
+      <div id="adminCrewsProctorList" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+    </div>
   </section>
 
 
@@ -342,6 +349,76 @@
           ⚠️ <strong>Quartermaster Hint Cost:</strong> Hints carry an escalating score deduction: Hint #1 = -5 pts, Hint #2 = -10 pts, Hint #3 = -15 pts, Hint #4 = -20 pts...
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- 0. FULLSCREEN & PROCTORING NOTICE MODAL (SHOWN BEFORE RULES) -->
+  <div id="fullscreenNoticeModal" class="modal" style="display: none; z-index: 10005; align-items: center; justify-content: center; background: rgba(0,0,0,0.92);">
+    <div class="modal-content" style="max-width: 650px; width: 92%; padding: 2.25rem; text-align: center; border: 2px solid var(--danger); box-shadow: 0 0 50px rgba(166,68,68,0.5);">
+      <div style="font-size: 3rem; margin-bottom: 0.5rem;">⚠️</div>
+      <h2 style="font-family: 'Cinzel', serif; color: var(--danger); font-size: 1.6rem; margin-bottom: 0.5rem; letter-spacing: 0.05em;">
+        STRICT PROCTORING PROTOCOL
+      </h2>
+      <div style="font-size: 0.85rem; color: var(--gold-muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 1.5rem;">
+        [ MANDATORY FULLSCREEN // ANTI-CHEATING SURVEILLANCE ACTIVE ]
+      </div>
+      <div style="background: rgba(166,68,68,0.08); border: 1px solid rgba(166,68,68,0.3); border-radius: 4px; padding: 1.25rem; text-align: left; margin-bottom: 1.5rem; line-height: 1.6; font-size: 0.95rem; color: var(--text-primary);">
+        <p style="margin-top: 0; margin-bottom: 0.75rem;">
+          <strong style="color: var(--gold-primary);">By decree of the Admiralty:</strong> This tournament operates under active proctoring to guarantee fair play:
+        </p>
+        <ul style="padding-left: 1.25rem; margin-bottom: 0; color: var(--text-secondary); font-size: 0.9rem;">
+          <li style="margin-bottom: 0.5rem;"><strong style="color: var(--text-primary);">Mandatory Fullscreen:</strong> You must enter and remain in Fullscreen mode throughout the entire expedition.</li>
+          <li style="margin-bottom: 0.5rem;"><strong style="color: var(--text-primary);">Screen Departure Tracked:</strong> Exiting fullscreen, switching browser tabs, minimizing the window, or clicking outside this screen is strictly logged.</li>
+          <li style="margin-bottom: 0;"><strong style="color: var(--danger);">1 Warning Limit:</strong> If you leave the screen, you will receive <strong style="color: var(--gold-primary);">EXACTLY 1 WARNING</strong>. A second departure will trigger <strong style="color: var(--danger);">IMMEDIATE AND PERMANENT DISQUALIFICATION</strong> of your crew!</li>
+        </ul>
+      </div>
+      <button id="enterFullscreenBtn" type="button" style="width: 100%; padding: 1rem; background: var(--gold-primary); color: var(--bg-primary); font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; letter-spacing: 0.05em; transition: all 0.2s ease;">
+        ENTER FULLSCREEN & READ EXPEDITION RULES →
+      </button>
+    </div>
+  </div>
+
+  <!-- PROCTORING WARNING MODAL (1 OF 1 WARNING) -->
+  <div id="proctorWarningModal" class="modal" style="display: none; z-index: 10010; align-items: center; justify-content: center; background: rgba(0,0,0,0.92);">
+    <div class="modal-content" style="max-width: 600px; width: 92%; padding: 2.25rem; text-align: center; border: 2px solid var(--danger); box-shadow: 0 0 60px rgba(166,68,68,0.7);">
+      <div style="font-size: 3.5rem; margin-bottom: 0.5rem;">🚨</div>
+      <h2 style="font-family: 'Cinzel', serif; color: var(--danger); font-size: 1.7rem; margin-bottom: 0.25rem;">
+        WARNING 1 OF 1: SCREEN DEPARTURE DETECTED!
+      </h2>
+      <div style="font-size: 0.85rem; color: var(--gold-primary); font-family: 'JetBrains Mono', monospace; margin-bottom: 1.25rem;">
+        [ PROCTORING VIOLATION RECORDED ]
+      </div>
+      <div style="background: rgba(0,0,0,0.5); border: 1px solid rgba(166,68,68,0.4); padding: 1.25rem; border-radius: 4px; margin-bottom: 1.5rem; color: var(--text-primary); font-size: 0.95rem; line-height: 1.5; text-align: left;">
+        You attempted to leave the screen, switch windows/tabs, or exit fullscreen. This departure has been formally logged.<br><br>
+        <strong style="color: var(--danger);">CRITICAL NOTICE:</strong> This is your <strong>ONLY</strong> warning. Any further attempt to exit fullscreen or navigate away will result in the <strong>IMMEDIATE & PERMANENT DISQUALIFICATION</strong> of your crew.
+      </div>
+      <button id="resumeFullscreenBtn" type="button" style="width: 100%; padding: 1rem; background: var(--danger); color: #fff; font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; letter-spacing: 0.05em;">
+        RETURN TO FULLSCREEN & RESUME EXPEDITION
+      </button>
+    </div>
+  </div>
+
+  <!-- PERMANENT DISQUALIFICATION LOCK-SCREEN -->
+  <div id="disqualifiedModal" class="modal" style="display: none; z-index: 20000; align-items: center; justify-content: center; background: #0b0806; position: fixed; inset: 0; width: 100vw; height: 100vh;">
+    <div class="modal-content" style="max-width: 650px; width: 92%; padding: 3rem 2rem; text-align: center; border: 3px solid var(--danger); box-shadow: 0 0 100px rgba(166,68,68,0.9); background: rgba(23,17,12,0.95);">
+      <div style="font-size: 4.5rem; margin-bottom: 0.5rem;">☠️</div>
+      <h1 style="font-family: 'Cinzel', serif; color: var(--danger); font-size: 2.2rem; margin-bottom: 0.5rem; letter-spacing: 0.1em;">
+        CREW DISQUALIFIED
+      </h1>
+      <div style="font-size: 0.9rem; color: var(--gold-muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 1.5rem;">
+        [ VIOLATION LIMIT EXCEEDED // BOARDING RIGHTS REVOKED ]
+      </div>
+      <div style="background: rgba(166,68,68,0.12); border: 1px solid var(--danger); padding: 1.5rem; border-radius: 4px; margin-bottom: 2rem; color: var(--text-primary); font-size: 1rem; line-height: 1.6;">
+        <p style="margin-top: 0; margin-bottom: 0.75rem;">
+          Your crew <strong id="disqualifiedCrewName" style="color: var(--gold-primary);"></strong> has been <strong>permanently disqualified</strong> from the Lost Code Expedition for multiple screen departure violations.
+        </p>
+        <p style="margin-bottom: 0; color: var(--text-secondary); font-size: 0.9rem;">
+          Flag submissions, hint unlocks, and tournament participation have been permanently severed by order of the Admiralty.
+        </p>
+      </div>
+      <a href="/logout" style="display: inline-block; padding: 0.85rem 2.5rem; background: transparent; border: 1px solid var(--danger); color: var(--danger); font-family: 'Cinzel', serif; font-weight: 700; text-decoration: none; border-radius: 4px; transition: all 0.2s ease;">
+        ABANDON SHIP (LOGOUT)
+      </a>
     </div>
   </div>
 
@@ -567,14 +644,150 @@
       });
     });
 
-    // Intro Modal Logic
+    // ======================================================
+    // FULLSCREEN PROCTORING & SURVEILLANCE
+    // ======================================================
+    let proctoringArmed = false;
+    let violationInProgress = false;
+    window.isAdminUser = false;
+
+    function enterTournamentFullscreen() {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.warn("Fullscreen request error:", err);
+        });
+      }
+    }
+
+    function armProctoring() {
+      setTimeout(() => {
+        if (!window.isAdminUser) {
+          proctoringArmed = true;
+        }
+      }, 1500);
+    }
+
+    function showProctorWarning(data) {
+      const modal = document.getElementById('proctorWarningModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function lockDisqualified(info) {
+      proctoringArmed = false;
+      const warningModal = document.getElementById('proctorWarningModal');
+      if (warningModal) warningModal.style.display = 'none';
+
+      const modal = document.getElementById('disqualifiedModal');
+      if (modal) modal.style.display = 'flex';
+
+      const nameEl = document.getElementById('disqualifiedCrewName');
+      if (nameEl) {
+        const teamName = (myTeamData && myTeamData.team && myTeamData.team.teamName) || (info && info.teamName) || 'Your Crew';
+        nameEl.textContent = teamName;
+      }
+
+      const submitFlagBtn = document.getElementById('submitFlagBtn');
+      if (submitFlagBtn) {
+        submitFlagBtn.disabled = true;
+        submitFlagBtn.textContent = 'DISQUALIFIED';
+        submitFlagBtn.style.opacity = '0.5';
+        submitFlagBtn.style.cursor = 'not-allowed';
+      }
+      const flagInput = document.getElementById('flagInput');
+      if (flagInput) {
+        flagInput.disabled = true;
+        flagInput.value = 'CREW DISQUALIFIED';
+      }
+      const flagResult = document.getElementById('flagResult');
+      if (flagResult) {
+        flagResult.style.color = 'var(--danger)';
+        flagResult.textContent = '☠️ Crew Disqualified from Competition';
+      }
+    }
+
+    function triggerProctorViolation(reason) {
+      if (!proctoringArmed || window.isAdminUser || violationInProgress) return;
+      violationInProgress = true;
+
+      fetch('/api/proctor/violation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ignored) {
+          violationInProgress = false;
+          return;
+        }
+        if (data.disqualified) {
+          lockDisqualified(data);
+        } else if (data.warning) {
+          showProctorWarning(data);
+        }
+      })
+      .catch(err => {
+        console.error('Proctor violation network error:', err);
+        violationInProgress = false;
+      });
+    }
+
+    // Departure Listeners
+    document.addEventListener('fullscreenchange', () => {
+      if (proctoringArmed && !document.fullscreenElement && !window.isAdminUser) {
+        triggerProctorViolation('Exited fullscreen');
+      }
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (proctoringArmed && document.hidden && !window.isAdminUser) {
+        triggerProctorViolation('Tab switched or minimized');
+      }
+    });
+
+    window.addEventListener('blur', () => {
+      if (proctoringArmed && !window.isAdminUser) {
+        setTimeout(() => {
+          if (!document.hasFocus() && proctoringArmed && !window.isAdminUser) {
+            triggerProctorViolation('Window lost focus');
+          }
+        }, 400);
+      }
+    });
+
+    // Intro & Fullscreen Sequence
     document.addEventListener('DOMContentLoaded', () => {
-      if (!sessionStorage.getItem('lostCodeIntroSeen')) {
-        const introModal = document.getElementById('introModal');
-        const introAgreement = document.getElementById('introAgreement');
-        const introContinueBtn = document.getElementById('introContinueBtn');
-        
-        introModal.style.display = 'flex';
+      const noticeModal = document.getElementById('fullscreenNoticeModal');
+      const enterFullscreenBtn = document.getElementById('enterFullscreenBtn');
+      const resumeFullscreenBtn = document.getElementById('resumeFullscreenBtn');
+      const introModal = document.getElementById('introModal');
+      const introAgreement = document.getElementById('introAgreement');
+      const introContinueBtn = document.getElementById('introContinueBtn');
+
+      if (resumeFullscreenBtn) {
+        resumeFullscreenBtn.addEventListener('click', () => {
+          enterTournamentFullscreen();
+          document.getElementById('proctorWarningModal').style.display = 'none';
+          setTimeout(() => {
+            violationInProgress = false;
+          }, 1500);
+        });
+      }
+
+      if (enterFullscreenBtn) {
+        enterFullscreenBtn.addEventListener('click', () => {
+          enterTournamentFullscreen();
+          if (noticeModal) noticeModal.style.display = 'none';
+          sessionStorage.setItem('lostCodeFullscreenSeen', 'true');
+          if (!sessionStorage.getItem('lostCodeIntroSeen')) {
+            if (introModal) introModal.style.display = 'flex';
+          } else {
+            armProctoring();
+          }
+        });
+      }
+
+      if (introAgreement && introContinueBtn) {
         introAgreement.addEventListener('change', (e) => {
           if (e.target.checked) {
             introContinueBtn.disabled = false;
@@ -590,13 +803,23 @@
             introContinueBtn.style.cursor = 'not-allowed';
           }
         });
-        
+
         introContinueBtn.addEventListener('click', () => {
           if (introAgreement.checked) {
-            introModal.style.display = 'none';
+            if (introModal) introModal.style.display = 'none';
             sessionStorage.setItem('lostCodeIntroSeen', 'true');
+            armProctoring();
           }
         });
+      }
+
+      // Check startup modal sequence
+      if (!sessionStorage.getItem('lostCodeFullscreenSeen')) {
+        if (noticeModal) noticeModal.style.display = 'flex';
+      } else if (!sessionStorage.getItem('lostCodeIntroSeen')) {
+        if (introModal) introModal.style.display = 'flex';
+      } else {
+        armProctoring();
       }
     });
 
@@ -1130,9 +1353,13 @@
         .then(res => res.json())
         .then(data => {
           if (data.error === "Not logged in") { window.location.href = "/"; return; }
+          window.isAdminUser = Boolean(data.isAdmin);
           if (data.isAdmin) {
             const a = document.getElementById('adminNavLi');
             if (a) a.style.display = 'block';
+            proctoringArmed = false;
+          } else if (data.disqualified) {
+            lockDisqualified(data);
           }
         })
         .catch(err => console.error("Profile fetch error:", err));
@@ -1148,6 +1375,7 @@
           const crewCount = document.getElementById('totalTeamsCount');
           if (crewCount) crewCount.textContent = data.length.toLocaleString();
           renderTeams();
+          renderAdminProctorList();
         })
         .catch(err => console.error("Teams fetch error:", err));
     }
@@ -1163,8 +1391,63 @@
         const solvedCount = Array.isArray(team.solvedChallenges) ? team.solvedChallenges.length : (team.solvedChallenges ? Object.keys(team.solvedChallenges).length : 0);
         const div = document.createElement('div');
         div.className = 'team-item';
-        div.innerHTML = `<div><strong>${escapeHTML(team.teamName)}</strong> — Solved: ${solvedCount} Riddles</div><div style="color:var(--gold-primary); font-weight:bold;">${team.score || 0} PTS</div>`;
+        const disqBadge = team.disqualified ? `<span style="color:var(--danger); font-size:11px; margin-left:8px; font-weight:bold;">[ DISQUALIFIED ]</span>` : '';
+        div.innerHTML = `<div><strong>${escapeHTML(team.teamName)}</strong>${disqBadge} — Solved: ${solvedCount} Riddles</div><div style="color:${team.disqualified ? 'var(--danger)' : 'var(--gold-primary)'}; font-weight:bold;">${team.score || 0} PTS</div>`;
         list.appendChild(div);
+      });
+    }
+
+    function reinstateCrew(teamId) {
+      showCustomConfirm("Reinstate Crew", "Reinstate this crew and clear all departure violations?", false, (confirmed) => {
+        if (!confirmed) return;
+        fetch('/api/admin/teams/reinstate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ teamId })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.error) showCustomConfirm("Error", data.error, true, null);
+          else {
+            showToast(data.message || 'Crew reinstated!');
+            fetchTeams();
+          }
+        })
+        .catch(err => showCustomConfirm("Error", err.message, true, null));
+      });
+    }
+
+    function renderAdminProctorList() {
+      const container = document.getElementById('adminCrewsProctorList');
+      if (!container) return;
+      container.innerHTML = '';
+      if (!teamsData || teamsData.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-secondary); font-style:italic;">No registered crews yet.</div>';
+        return;
+      }
+
+      teamsData.forEach(t => {
+        const item = document.createElement('div');
+        item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:0.75rem 1rem; background:rgba(0,0,0,0.3); border:1px solid var(--border-subtle); border-radius:4px; margin-bottom:0.5rem;';
+        
+        const statusHtml = t.disqualified
+          ? `<span style="color:var(--danger); font-weight:bold; font-size:12px;">☠️ DISQUALIFIED (${t.violations || 2}/2 Violations)</span>`
+          : (t.violations > 0 
+              ? `<span style="color:var(--gold-primary); font-weight:bold; font-size:12px;">⚠️ 1/2 Violations (Warning Active)</span>`
+              : `<span style="color:var(--success); font-weight:bold; font-size:12px;">✓ Clean (0 Violations)</span>`);
+
+        const actionBtn = (t.disqualified || t.violations > 0)
+          ? `<button onclick="reinstateCrew('${escapeHTML(t.id)}')" style="padding:0.4rem 0.8rem; background:rgba(201,154,82,0.2); border:1px solid var(--gold-primary); color:var(--gold-primary); cursor:pointer; font-family:'Cinzel',serif; font-size:11px; font-weight:bold; border-radius:3px;">REINSTATE</button>`
+          : `<span style="color:var(--text-secondary); font-size:11px;">Compliant</span>`;
+
+        item.innerHTML = `
+          <div>
+            <strong style="color:var(--text-primary); font-size:1rem;">${escapeHTML(t.teamName)}</strong>
+            <div style="margin-top:2px;">${statusHtml}</div>
+          </div>
+          <div>${actionBtn}</div>
+        `;
+        container.appendChild(item);
       });
     }
 
@@ -1188,6 +1471,10 @@
 
           if (data.team && data.team.id) {
             const team = data.team;
+            if (team.disqualified) {
+              lockDisqualified(team);
+            }
+
             if (scoreDisplay) scoreDisplay.textContent = `Your Crew Score: ${team.score} PTS`;
             if (myTeamInfo) {
               const solvedArr = Array.isArray(team.solvedChallenges) ? team.solvedChallenges : Object.keys(team.solvedChallenges || {});
@@ -1197,11 +1484,20 @@
               
               const hintsCount = team.hintsUnlockedCount || (team.hintsUnlocked ? Object.keys(team.hintsUnlocked).length : 0);
               const nextHintPenalty = team.nextHintCost || (hintsCount + 1) * 5;
+              const violationsCount = team.violations || 0;
+              const standingStatus = team.disqualified
+                ? `<span style="background:var(--danger); color:#fff; font-size:11px; padding:3px 8px; border-radius:3px; font-weight:bold; letter-spacing:0.05em;">DISQUALIFIED</span>`
+                : (violationsCount > 0 
+                    ? `<span style="background:rgba(166,68,68,0.2); border:1px solid var(--danger); color:var(--danger); font-size:11px; padding:3px 8px; border-radius:3px; font-weight:bold;">1 WARNING ACTIVE</span>`
+                    : `<span style="color:var(--success); font-size:11px; font-weight:bold;">CLEAN STANDING (0 VIOLATIONS)</span>`);
 
               myTeamInfo.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; background:rgba(23,17,12,0.6); padding:1.5rem; border:1px solid var(--border-subtle); border-radius:4px;">
                   <div>
-                    <div style="font-size:0.85rem; color:var(--gold-muted); font-family:'Cinzel',serif; letter-spacing:0.1em; margin-bottom:0.25rem;">[ ACTIVE CREW ]</div>
+                    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
+                      <span style="font-size:0.85rem; color:var(--gold-muted); font-family:'Cinzel',serif; letter-spacing:0.1em;">[ ACTIVE CREW ]</span>
+                      ${standingStatus}
+                    </div>
                     <h3 style="font-family:'Cinzel',serif; font-size:2rem; color:var(--gold-primary); margin:0;">${escapeHTML(team.teamName)}</h3>
                     <p style="color:var(--text-secondary); font-size:1.05rem; margin-top:0.4rem;">Total Treasure Bounty: <strong style="color:var(--gold-primary);">${team.score} PTS</strong></p>
                   </div>
@@ -1279,12 +1575,14 @@
       teams.forEach((t, idx) => {
         const div = document.createElement('div');
         div.className = 'standing-item';
+        const disqBadge = t.disqualified ? `<span style="color:var(--danger); font-size:11px; margin-left:8px; font-weight:bold;">[ DISQUALIFIED ]</span>` : '';
         div.innerHTML = `
           <div>
             <span style="color:var(--gold-primary); font-weight:bold; margin-right:12px;">#${idx + 1}</span>
             <span class="team-name">${escapeHTML(t.teamName)}</span>
+            ${disqBadge}
           </div>
-          <div class="team-score">${t.score || 0} PTS</div>
+          <div class="team-score" style="${t.disqualified ? 'color:var(--danger); text-decoration:line-through;' : ''}">${t.score || 0} PTS</div>
         `;
         list.appendChild(div);
       });
