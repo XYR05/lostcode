@@ -22,7 +22,7 @@
     "difficulty": "EASY",
     "points": 200,
     "text": "A familiar car wash hides more than just dirty cars. Somewhere behind the business is a lawyer, and your job is to uncover his real name and phone number using publicly available information.",
-    "hint": "Start with the car wash. Follow the trail through public records and business information. Flag Format: coredump{abc_xyz_123_456}",
+    "hint": "Start with the car wash. Follow the trail through public records and business information. Flag Format: lostcode{abc_xyz_123_456}",
     "resource": "OSINT_1787431176233_OSINT.zip",
     "originalResourceName": "OSINT.zip",
     "hash": "$2b$10$vdMZ0pUAxAxUOodT5glOaeQX4rI0B0WXeZs4i1H3klmBTqx8leLNq"
@@ -152,7 +152,7 @@
     "difficulty": "MEDIUM",
     "points": 400,
     "text": "9 years ago, during the first quarter of the year, a traveler named Clemens visited a restaurant somewhere in the Caribbean. Before leaving, he wrote an online review describing his experience. He described the location as gorgeous and surrounded by the Caribbean Sea, but wasn't impressed with the service or the food considering the price. During his visit, Clemens also purchased a drink. Your task is to identify the restaurant he visited, find the drink he ordered, and determine how much it cost in Dominican pesos.",
-    "hint": "Hint: Don’t focus only on the text—the information linked to the image may lead you to the answer. Flag Format : coredump{restaurantname_drinkname_priceinnumbers}",
+    "hint": "Hint: Don’t focus only on the text—the information linked to the image may lead you to the answer. Flag Format : lostcode{restaurantname_drinkname_priceinnumbers}",
     "resource": "OSINT2_1787684560216_OSINT.zip",
     "originalResourceName": "OSINT.zip",
     "hash": "$2b$10$wAtYiqhHKQ2tL47.MmsKDuOsS2LzD3fBRB9uQk1oYnicBrDOEAMtW"
