@@ -872,7 +872,18 @@ app.get('/logout', (req, res) => {
 
 app.use(express.static('public'));
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\x1b[31m[ERROR]\x1b[0m Port ${PORT} is already in use by another process.`);
+    console.error(`To free port ${PORT}, run: fuser -k ${PORT}/tcp or lsof -ti :${PORT} | xargs kill -9`);
+    process.exit(1);
+  } else {
+    throw err;
+  }
+});
+
 server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
