@@ -1986,3 +1986,243 @@ body::after {
   color: #ffd700;
 }
 
+
+/* ====================================================== */
+/* ADMIN ROUND DECKS & PARTICIPANT ROUND FORMAT           */
+/* ====================================================== */
+
+.admin-round-deck {
+  background: var(--panel-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+.admin-round-deck-header {
+  padding: 1.25rem 1.5rem;
+  background: rgba(23, 17, 12, 0.95);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-round-deck-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  color: var(--gold-primary);
+}
+
+.admin-round-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(201, 154, 82, 0.2);
+  border: 1px solid var(--gold-primary);
+  color: var(--gold-primary);
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.admin-round-quota-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--gold-muted);
+  background: rgba(0,0,0,0.4);
+  padding: 4px 10px;
+  border-radius: 3px;
+  border: 1px solid var(--border-subtle);
+}
+
+.admin-round-challenges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+}
+
+/* Participant Round Decks */
+.participant-rounds-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.participant-round-card {
+  background: var(--panel-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+}
+
+.participant-round-card.is-active {
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 20px rgba(201, 154, 82, 0.15), 0 4px 16px rgba(0,0,0,0.5);
+}
+
+.participant-round-card.is-solved {
+  border-color: rgba(82, 180, 100, 0.4);
+}
+
+.participant-round-card.is-locked {
+  opacity: 0.65;
+  filter: grayscale(0.4);
+  background: rgba(18, 14, 11, 0.85);
+}
+
+.participant-round-card.is-eliminated {
+  border-color: var(--danger);
+  opacity: 0.75;
+}
+
+.participant-round-header {
+  padding: 1rem 1.25rem;
+  background: rgba(23, 17, 12, 0.9);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.participant-round-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.participant-round-title {
+  margin: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  color: var(--gold-primary);
+  letter-spacing: 0.04em;
+}
+
+.round-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.round-status-pill.active {
+  background: rgba(201, 154, 82, 0.2);
+  border: 1px solid var(--gold-primary);
+  color: var(--gold-primary);
+}
+
+.round-status-pill.solved {
+  background: rgba(82, 180, 100, 0.2);
+  border: 1px solid var(--success);
+  color: var(--success);
+}
+
+.round-status-pill.locked {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border-subtle);
+  color: var(--gold-muted);
+}
+
+.round-status-pill.eliminated {
+  background: rgba(166, 68, 68, 0.2);
+  border: 1px solid var(--danger);
+  color: #ff8b8b;
+}
+
+.participant-round-body {
+  padding: 1.25rem;
+}
+
+.allocated-riddle-box {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 1.25rem;
+  margin-top: 0.75rem;
+}
+
+.allocated-riddle-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--gold-primary);
+  margin: 0 0 4px 0;
+}
+
+.allocated-riddle-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.allocated-riddle-desc {
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  margin-bottom: 1rem;
+}
+
+.round-flag-submit-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.round-flag-input {
+  flex: 1;
+  min-width: 240px;
+  padding: 0.7rem 1rem;
+  background: rgba(14, 10, 7, 0.9);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88rem;
+}
+
+.round-flag-input:focus {
+  outline: none;
+  border-color: var(--gold-primary);
+}
+
+.round-flag-submit-btn {
+  padding: 0.7rem 1.4rem;
+  background: var(--gold-primary);
+  color: var(--bg-primary);
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+}
+
+.round-flag-submit-btn:hover {
+  background: #deb26e;
+}

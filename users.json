@@ -11,7 +11,7 @@
     "id": "crew_1_black_pearl",
     "username": "Black Pearl",
     "email": "blackpearl@lostcode",
-    "password": "$2b$10$3.tKr5MhC69U.acCoaNWEOSESiJmBdpqYZ7Mlfv.3rOrWDcXbBuf2",
+    "password": "$2b$10$s4xKr.JDfRg51Xy4l5taOeW9AqilQyFZiYA3A1zE79bLmlVTaaKbq",
     "teamId": "crew_1_black_pearl",
     "solvedChallenges": []
   },
@@ -19,7 +19,7 @@
     "id": "crew_2_flying_dutchman",
     "username": "Flying Dutchman",
     "email": "flyingdutchman@lostcode",
-    "password": "$2b$10$8boxQW251MB79f4ZCeFbEuMuQqLl9KJuNL001hKguSFSyhHK1bjS.",
+    "password": "$2b$10$hRpNISztefdIKxzwOELKhefX2G9iEmk7caTfyBqFRRcDE3JJxHSri",
     "teamId": "crew_2_flying_dutchman",
     "solvedChallenges": []
   },
@@ -27,7 +27,7 @@
     "id": "crew_3_queen_anne_s_revenge",
     "username": "Queen Anne's Revenge",
     "email": "queenannesrevenge@lostcode",
-    "password": "$2b$10$Vy5C6DUfWseYxV.CYZg8WO6AT.kUTzlShKtE5.TX7QNP5YFu0lV22",
+    "password": "$2b$10$x9lEWoYTt0Z6zGcBlu.NqOlGmCAP6Q9oZhYYuwDR.ES31uyHuaCtC",
     "teamId": "crew_3_queen_anne_s_revenge",
     "solvedChallenges": []
   },
@@ -35,7 +35,7 @@
     "id": "crew_4_jolly_roger",
     "username": "Jolly Roger",
     "email": "jollyroger@lostcode",
-    "password": "$2b$10$ssUbVK20xyLAdAnc7FaaUu4hbtB7YiWxvtHSjd1ORDK2W/2ycmW8K",
+    "password": "$2b$10$bsJN6WiTzk4GlRK9x6sRw.cm9kV77HBdNXGwi6MleQ0NnyhtzCmRu",
     "teamId": "crew_4_jolly_roger",
     "solvedChallenges": []
   },
@@ -43,7 +43,7 @@
     "id": "crew_5_the_walrus",
     "username": "The Walrus",
     "email": "thewalrus@lostcode",
-    "password": "$2b$10$IvAoeIQOwFzl500TObkta.8GRA1LMQIjX9/MxfbFw7adpIXy/T1nC",
+    "password": "$2b$10$mNDRNibzv6eee2mLKjgzOu5YkOtz3y7YBvqXhYBo3yrAMG57XoZCy",
     "teamId": "crew_5_the_walrus",
     "solvedChallenges": []
   },
@@ -51,7 +51,7 @@
     "id": "crew_6_the_interceptor",
     "username": "The Interceptor",
     "email": "theinterceptor@lostcode",
-    "password": "$2b$10$5sScRqY09HGmo7QcFGbxnuiWBgZ.JqpmbmoD8LSGWv8YB/uBgUnc.",
+    "password": "$2b$10$2jWJ0VZj0.pEY/iac1Lv5.WDTVO8NYdoY/eA5WqWofmvQaRqJHEmK",
     "teamId": "crew_6_the_interceptor",
     "solvedChallenges": []
   },
@@ -59,7 +59,7 @@
     "id": "crew_7_adventure_galley",
     "username": "Adventure Galley",
     "email": "adventuregalley@lostcode",
-    "password": "$2b$10$zp8Ic7Sf2VTMRs0usqFTEOz1qDR0/gvHIvlLRaqh8L6fJaJuFDysq",
+    "password": "$2b$10$H2jDtJ9DUFMUBnLece8P6OABcMRlPUTz6L45U3p5LA5NaGquh8rgu",
     "teamId": "crew_7_adventure_galley",
     "solvedChallenges": []
   },
@@ -67,7 +67,7 @@
     "id": "crew_8_royal_fortune",
     "username": "Royal Fortune",
     "email": "royalfortune@lostcode",
-    "password": "$2b$10$9hMVDFHb04Ad9ANkJtc9n.LJGObusB.C9KYuJiqe8J2HNHRYXp2a6",
+    "password": "$2b$10$iQfxzEoQtIAuriK.IFkR8O.IJ7jcdovhO/.izUkonYHLPidpVUeAG",
     "teamId": "crew_8_royal_fortune",
     "solvedChallenges": []
   },
@@ -75,7 +75,7 @@
     "id": "crew_9_sea_dog",
     "username": "Sea Dog",
     "email": "seadog@lostcode",
-    "password": "$2b$10$23sl5qy96Dtb9u4Nh/CEh.yhIn4fGzXm9Epmn7qkMGnvNK15jEsS6",
+    "password": "$2b$10$Nt7NDUez6wIIiXgZ7mZjDOXCU4wuPTReTdRxN6f6u66jV8DsgRDEu",
     "teamId": "crew_9_sea_dog",
     "solvedChallenges": []
   },
@@ -83,7 +83,7 @@
     "id": "crew_10_kraken_s_revenge",
     "username": "Kraken's Revenge",
     "email": "krakensrevenge@lostcode",
-    "password": "$2b$10$KLxgdsSi8QImhRy5hvYgtuee2Gj6VMFJjFvbQQEK9A72CEhEtFF1u",
+    "password": "$2b$10$6rP12Ln0qxD9IET9mIpkIeFuHhAtuyVOLhHLS5OAUZQO8Q04TF.vO",
     "teamId": "crew_10_kraken_s_revenge",
     "solvedChallenges": []
   }

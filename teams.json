@@ -20,11 +20,16 @@
   {
     "id": "crew_1_black_pearl",
     "teamName": "Black Pearl",
-    "password": "$2b$10$3.tKr5MhC69U.acCoaNWEOSESiJmBdpqYZ7Mlfv.3rOrWDcXbBuf2",
+    "password": "$2b$10$s4xKr.JDfRg51Xy4l5taOeW9AqilQyFZiYA3A1zE79bLmlVTaaKbq",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
-    "scoreHistory": [],
+    "scoreHistory": [
+      {
+        "timestamp": 1792849035858,
+        "score": 0
+      }
+    ],
     "currentRound": 1,
     "unlockedRounds": [
       1
@@ -40,17 +45,21 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {},
-    "isWinner": false
+    "roundSolves": {}
   },
   {
     "id": "crew_2_flying_dutchman",
     "teamName": "Flying Dutchman",
-    "password": "$2b$10$8boxQW251MB79f4ZCeFbEuMuQqLl9KJuNL001hKguSFSyhHK1bjS.",
+    "password": "$2b$10$hRpNISztefdIKxzwOELKhefX2G9iEmk7caTfyBqFRRcDE3JJxHSri",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
-    "scoreHistory": [],
+    "scoreHistory": [
+      {
+        "timestamp": 1792849035994,
+        "score": 0
+      }
+    ],
     "currentRound": 1,
     "unlockedRounds": [
       1
@@ -66,17 +75,21 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {},
-    "isWinner": false
+    "roundSolves": {}
   },
   {
     "id": "crew_3_queen_anne_s_revenge",
     "teamName": "Queen Anne's Revenge",
-    "password": "$2b$10$Vy5C6DUfWseYxV.CYZg8WO6AT.kUTzlShKtE5.TX7QNP5YFu0lV22",
+    "password": "$2b$10$x9lEWoYTt0Z6zGcBlu.NqOlGmCAP6Q9oZhYYuwDR.ES31uyHuaCtC",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
-    "scoreHistory": [],
+    "scoreHistory": [
+      {
+        "timestamp": 1792849036131,
+        "score": 0
+      }
+    ],
     "currentRound": 1,
     "unlockedRounds": [
       1
@@ -92,18 +105,21 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {},
-    "eliminatedAt": 1792846743533,
-    "isWinner": false
+    "roundSolves": {}
   },
   {
     "id": "crew_4_jolly_roger",
     "teamName": "Jolly Roger",
-    "password": "$2b$10$ssUbVK20xyLAdAnc7FaaUu4hbtB7YiWxvtHSjd1ORDK2W/2ycmW8K",
+    "password": "$2b$10$bsJN6WiTzk4GlRK9x6sRw.cm9kV77HBdNXGwi6MleQ0NnyhtzCmRu",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
-    "scoreHistory": [],
+    "scoreHistory": [
+      {
+        "timestamp": 1792849036267,
+        "score": 0
+      }
+    ],
     "currentRound": 1,
     "unlockedRounds": [
       1
@@ -119,18 +135,21 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {},
-    "eliminatedAt": 1792846743880,
-    "isWinner": false
+    "roundSolves": {}
   },
   {
     "id": "crew_5_the_walrus",
     "teamName": "The Walrus",
-    "password": "$2b$10$IvAoeIQOwFzl500TObkta.8GRA1LMQIjX9/MxfbFw7adpIXy/T1nC",
+    "password": "$2b$10$mNDRNibzv6eee2mLKjgzOu5YkOtz3y7YBvqXhYBo3yrAMG57XoZCy",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
-    "scoreHistory": [],
+    "scoreHistory": [
+      {
+        "timestamp": 1792849036404,
+        "score": 0
+      }
+    ],
     "currentRound": 1,
     "unlockedRounds": [
       1
@@ -146,18 +165,21 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {},
-    "eliminatedAt": 1792846743533,
-    "isWinner": false
+    "roundSolves": {}
   },
   {
     "id": "crew_6_the_interceptor",
     "teamName": "The Interceptor",
-    "password": "$2b$10$5sScRqY09HGmo7QcFGbxnuiWBgZ.JqpmbmoD8LSGWv8YB/uBgUnc.",
+    "password": "$2b$10$2jWJ0VZj0.pEY/iac1Lv5.WDTVO8NYdoY/eA5WqWofmvQaRqJHEmK",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
-    "scoreHistory": [],
+    "scoreHistory": [
+      {
+        "timestamp": 1792849036540,
+        "score": 0
+      }
+    ],
     "currentRound": 1,
     "unlockedRounds": [
       1
@@ -173,18 +195,21 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {},
-    "eliminatedAt": 1792846743880,
-    "isWinner": false
+    "roundSolves": {}
   },
   {
     "id": "crew_7_adventure_galley",
     "teamName": "Adventure Galley",
-    "password": "$2b$10$zp8Ic7Sf2VTMRs0usqFTEOz1qDR0/gvHIvlLRaqh8L6fJaJuFDysq",
+    "password": "$2b$10$H2jDtJ9DUFMUBnLece8P6OABcMRlPUTz6L45U3p5LA5NaGquh8rgu",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
-    "scoreHistory": [],
+    "scoreHistory": [
+      {
+        "timestamp": 1792849036677,
+        "score": 0
+      }
+    ],
     "currentRound": 1,
     "unlockedRounds": [
       1
@@ -200,18 +225,21 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {},
-    "eliminatedAt": 1792846741938,
-    "isWinner": false
+    "roundSolves": {}
   },
   {
     "id": "crew_8_royal_fortune",
     "teamName": "Royal Fortune",
-    "password": "$2b$10$9hMVDFHb04Ad9ANkJtc9n.LJGObusB.C9KYuJiqe8J2HNHRYXp2a6",
+    "password": "$2b$10$iQfxzEoQtIAuriK.IFkR8O.IJ7jcdovhO/.izUkonYHLPidpVUeAG",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
-    "scoreHistory": [],
+    "scoreHistory": [
+      {
+        "timestamp": 1792849036813,
+        "score": 0
+      }
+    ],
     "currentRound": 1,
     "unlockedRounds": [
       1
@@ -227,18 +255,21 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {},
-    "eliminatedAt": 1792846743189,
-    "isWinner": false
+    "roundSolves": {}
   },
   {
     "id": "crew_9_sea_dog",
     "teamName": "Sea Dog",
-    "password": "$2b$10$23sl5qy96Dtb9u4Nh/CEh.yhIn4fGzXm9Epmn7qkMGnvNK15jEsS6",
+    "password": "$2b$10$Nt7NDUez6wIIiXgZ7mZjDOXCU4wuPTReTdRxN6f6u66jV8DsgRDEu",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
-    "scoreHistory": [],
+    "scoreHistory": [
+      {
+        "timestamp": 1792849036950,
+        "score": 0
+      }
+    ],
     "currentRound": 1,
     "unlockedRounds": [
       1
@@ -254,18 +285,21 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {},
-    "eliminatedAt": 1792846741939,
-    "isWinner": false
+    "roundSolves": {}
   },
   {
     "id": "crew_10_kraken_s_revenge",
     "teamName": "Kraken's Revenge",
-    "password": "$2b$10$KLxgdsSi8QImhRy5hvYgtuee2Gj6VMFJjFvbQQEK9A72CEhEtFF1u",
+    "password": "$2b$10$6rP12Ln0qxD9IET9mIpkIeFuHhAtuyVOLhHLS5OAUZQO8Q04TF.vO",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
-    "scoreHistory": [],
+    "scoreHistory": [
+      {
+        "timestamp": 1792849037086,
+        "score": 0
+      }
+    ],
     "currentRound": 1,
     "unlockedRounds": [
       1
@@ -281,8 +315,6 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {},
-    "eliminatedAt": 1792846743189,
-    "isWinner": false
+    "roundSolves": {}
   }
 ]
