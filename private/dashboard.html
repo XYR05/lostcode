@@ -179,88 +179,110 @@
         </div>
       </div>
 
-      <!-- FLOATING CHALLENGE WINDOW (Right-side Modal from Reference 2) -->
+      <!-- FLOATING CHALLENGE WINDOW (Dynamic Left/Right Docking) -->
       <div class="map-challenge-window" id="mapChallengeWindow" style="display: none;">
         <button type="button" class="window-close-btn" onclick="closeChallengeWindow()" aria-label="Close window">&times;</button>
         
-        <!-- Header -->
-        <div class="window-header">
-          <div class="window-title-wrap">
-            <svg class="window-target-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="22" y1="12" x2="18" y2="12"></line>
-              <line x1="6" y1="12" x2="2" y2="12"></line>
-              <line x1="12" y1="6" x2="12" y2="2"></line>
-              <line x1="12" y1="22" x2="12" y2="18"></line>
+        <!-- Round Stage & Group Banner -->
+        <div class="window-stage-banner" id="windowStageBanner">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="window-round-badge" id="windowRoundBadge">①</span>
+              <span class="window-round-name" id="windowRoundName">ROUND 1: SETTING SAIL</span>
+              <span class="window-group-pill" id="windowGroupPill">GROUP A</span>
+            </div>
+            <div id="windowStatusPillWrap">
+              <span class="round-status-pill active" id="windowStatusPill">⚡ ACTIVE OBJECTIVE</span>
+            </div>
+          </div>
+          <div class="window-quota-rule" id="windowQuotaRule">
+            10 Crews • 10 Riddles • 0 Eliminations (All hands advance into the voyage)
+          </div>
+        </div>
+
+        <!-- Locked Island View (displayed when clicking a locked island) -->
+        <div class="window-locked-card" id="windowLockedCard" style="display: none;">
+          <div style="margin-bottom: 0.75rem;">
+            <svg class="svg-padlock-icon" style="width: 38px; height: 38px; color: var(--gold-muted);" viewBox="0 0 24 24">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
-            <h3 id="windowChallengeTitle">WALK THE PLANK</h3>
           </div>
-          <div class="window-subtitle" id="windowChallengeSubtitle">
-            ROUND 4: TREASURE ISLAND // RIDDLE 1 // HARD // 1000 POINTS
-          </div>
-        </div>
-
-        <!-- Riddle Selector Strip (for multi-riddle rounds) -->
-        <div class="window-riddle-selector-strip" id="windowRiddleSelectorStrip" style="display: none;">
-          <!-- Dynamically populated: [ Riddle 1 ✓ ] [ Riddle 2 ] ... -->
-        </div>
-
-        <!-- Captain's Brief (Round 1 only) -->
-        <div class="window-section" id="windowCaptainBriefSection" style="display: none;">
-          <div class="window-section-title">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
-              <line x1="4" y1="22" x2="4" y2="15"></line>
-            </svg>
-            CAPTAIN'S BRIEF
-          </div>
-          <div class="window-text" id="windowChallengeDescription"></div>
-        </div>
-
-        <!-- Quartermaster's Hint Box -->
-        <div class="window-hint-box" id="windowHintBox">
-          <div class="hint-header">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
-            </svg>
-            <span>QUARTERMASTER'S HINT</span>
-          </div>
-          <div id="windowHintContent">
-            <!-- Dynamic hint contents -->
-          </div>
-        </div>
-
-        <!-- Submit Flag Box -->
-        <div class="window-flag-box">
-          <div class="flag-header">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
-              <line x1="4" y1="22" x2="4" y2="15"></line>
-            </svg>
-            <span>SUBMIT FLAG</span>
-          </div>
-          <input type="text" id="windowFlagInput" class="flag-input" placeholder="lostcode{___________________________}" autocomplete="off" />
-          <button type="button" id="windowSubmitFlagBtn" class="window-submit-btn">SUBMIT FLAG</button>
-          <p id="windowFlagResult" style="margin-top: 10px; font-family: 'JetBrains Mono', monospace; font-size: 13px;"></p>
-        </div>
-      </div>
-    </div>
-
-    <!-- 4 TOURNAMENT EXPEDITION ROUND DECKS -->
-    <div class="participant-rounds-wrapper" style="margin-top: 35px; padding: 0 10px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px;">
-        <div>
-          <h3 style="font-family: 'Cinzel', serif; color: var(--gold-primary); font-size: 1.2rem; margin: 0; display: flex; align-items: center; gap: 8px;">
-            <span>⚔️</span> EXPEDITION STAGES & ALLOCATED RIDDLES
-          </h3>
-          <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 0.85rem;">
-            Rounds unlock automatically upon submitting the physical field flag. Subsequent riddles are pre-bound to your crew.
+          <h4 style="font-family: 'Cinzel', serif; color: var(--gold-primary); font-size: 1.15rem; margin: 0 0 6px 0;">
+            WATERS SEALED BY THE ADMIRALTY
+          </h4>
+          <p id="windowLockedMessage" style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; margin: 0 0 1rem 0;">
+            Your crew must solve your allocated physical field riddle in Round 1 before setting sail for these waters.
           </p>
+          <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); padding: 10px 14px; border-radius: 4px; font-size: 0.8rem; color: var(--gold-muted); line-height: 1.5; text-align: left;">
+            <strong>Field Protocol:</strong> Once you locate and paste the physical flag of your active round, these island waters will automatically unlock and reveal your next pre-bound riddle!
+          </div>
         </div>
-      </div>
-      <div id="participantChallengesRoundsContainer" class="participant-rounds-container">
-        <!-- Rendered dynamically by renderParticipantRoundDecks() -->
+
+        <!-- Active Island Challenge Content (displayed when round is unlocked) -->
+        <div id="windowActiveContent">
+          <!-- Challenge Header -->
+          <div class="window-header">
+            <div class="window-title-wrap">
+              <svg class="window-target-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="22" y1="12" x2="18" y2="12"></line>
+                <line x1="6" y1="12" x2="2" y2="12"></line>
+                <line x1="12" y1="6" x2="12" y2="2"></line>
+                <line x1="12" y1="22" x2="12" y2="18"></line>
+              </svg>
+              <h3 id="windowChallengeTitle">THE FORGED MANIFEST</h3>
+            </div>
+            <div class="window-subtitle" id="windowChallengeSubtitle">
+              ROUND 1 // RIDDLE 01 // EASY // 500 POINTS
+            </div>
+          </div>
+
+          <!-- Riddle Selector Strip (for Admin or multi-riddle view) -->
+          <div class="window-riddle-selector-strip" id="windowRiddleSelectorStrip" style="display: none;">
+            <!-- Dynamically populated: [ Riddle 1 ✓ ] [ Riddle 2 ] ... -->
+          </div>
+
+          <!-- Captain's Brief / Physical Field Directive -->
+          <div class="window-section" id="windowCaptainBriefSection">
+            <div class="window-section-title">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                <line x1="4" y1="22" x2="4" y2="15"></line>
+              </svg>
+              CAPTAIN'S FIELD BRIEF
+            </div>
+            <div class="window-text" id="windowChallengeDescription"></div>
+          </div>
+
+          <!-- Quartermaster's Hint Box -->
+          <div class="window-hint-box" id="windowHintBox">
+            <div class="hint-header">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+              </svg>
+              <span>QUARTERMASTER'S HINT</span>
+            </div>
+            <div id="windowHintContent">
+              <!-- Dynamic hint contents -->
+            </div>
+          </div>
+
+          <!-- Submit Flag Box -->
+          <div class="window-flag-box">
+            <div class="flag-header">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                <line x1="4" y1="22" x2="4" y2="15"></line>
+              </svg>
+              <span>SUBMIT PHYSICAL FIELD FLAG</span>
+            </div>
+            <input type="text" id="windowFlagInput" class="flag-input" placeholder="lostcode{answer_found_in_field}" autocomplete="off" />
+            <button type="button" id="windowSubmitFlagBtn" class="window-submit-btn">CLAIM BOUNTY</button>
+            <p id="windowFlagResult" style="margin-top: 10px; font-family: 'JetBrains Mono', monospace; font-size: 13px;"></p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -1151,22 +1173,6 @@
         return;
       }
 
-      const teamUnlocked = (myTeamData && myTeamData.team && Array.isArray(myTeamData.team.unlockedRounds))
-        ? myTeamData.team.unlockedRounds
-        : unlockedRounds;
-      const isUnlocked = teamUnlocked.includes(roundNum) || window.isAdminUser;
-
-      if (!isUnlocked) {
-        const curR = (myTeamData && myTeamData.team && myTeamData.team.currentRound) || 1;
-        showCustomConfirm(
-          "Treacherous Waters!",
-          `Arr! Island ${roundNum} remains sealed by the Admiralty! Your crew must solve your allocated riddle in Round ${curR} before setting sail for these waters.`,
-          true,
-          null
-        );
-        return;
-      }
-
       currentActiveRound = roundNum;
 
       // Visual state on table map
@@ -1179,6 +1185,103 @@
           else el.classList.remove('active-selected');
         }
       }
+
+      // Check unlock status for team
+      const team = myTeamData && myTeamData.team;
+      const curR = team ? (team.currentRound || 1) : 1;
+      const teamUnlocked = (team && Array.isArray(team.unlockedRounds))
+        ? team.unlockedRounds
+        : unlockedRounds;
+      const isUnlocked = teamUnlocked.includes(roundNum) || window.isAdminUser;
+      const allocatedCat = (team && team.allocatedRiddles && team.allocatedRiddles[roundNum]);
+      const solvedArr = team ? (Array.isArray(team.solvedChallenges) ? team.solvedChallenges : Object.keys(team.solvedChallenges || {})) : [];
+      const solvedSet = new Set(solvedArr);
+      const isThisRoundSolved = Boolean(allocatedCat && solvedSet.has(allocatedCat));
+
+      // Stage and Group Definitions
+      const roundDefs = {
+        1: {
+          title: "ROUND 1: SETTING SAIL",
+          badge: "①",
+          quota: "10 Crews • 10 Riddles • 0 Eliminations (All hands advance upon solving)"
+        },
+        2: {
+          title: "ROUND 2: HIGH SEAS",
+          badge: "②",
+          quota: "2 Groups of 5 (Group A & B) • Top 3 per group advance, 2 Walk the Plank!"
+        },
+        3: {
+          title: "ROUND 3: DEAD MAN'S CREEK",
+          badge: "③",
+          quota: "2 Groups of 3 (Group A & B) • Top 1 per group advances, 2 Walk the Plank!"
+        },
+        4: {
+          title: "ROUND 4: TREASURE ISLAND ❌",
+          badge: "④",
+          quota: "1 v 1 Final Showdown • First to solve claims the Lost Code Treasure!"
+        }
+      };
+
+      const curGroup = (roundNum >= 3 ? (team && team.groupRound3) : (team && team.groupRound2)) || 'A';
+
+      // Update Stage Banner Elements
+      const badgeEl = document.getElementById('windowRoundBadge');
+      if (badgeEl) badgeEl.textContent = roundDefs[roundNum].badge;
+
+      const nameEl = document.getElementById('windowRoundName');
+      if (nameEl) nameEl.textContent = roundDefs[roundNum].title;
+
+      const groupEl = document.getElementById('windowGroupPill');
+      if (groupEl) {
+        if (window.isAdminUser) {
+          groupEl.textContent = 'ADMIRALTY FLEET';
+        } else {
+          groupEl.textContent = `GROUP ${curGroup}`;
+        }
+      }
+
+      const quotaEl = document.getElementById('windowQuotaRule');
+      if (quotaEl) quotaEl.textContent = roundDefs[roundNum].quota;
+
+      const statusWrap = document.getElementById('windowStatusPillWrap');
+      if (statusWrap) {
+        if (!isUnlocked && !window.isAdminUser) {
+          statusWrap.innerHTML = `<span class="round-status-pill locked"><svg class="svg-padlock-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> LOCKED WATERS</span>`;
+        } else if (isThisRoundSolved) {
+          statusWrap.innerHTML = `<span class="round-status-pill solved">✓ SOLVED & ADVANCED</span>`;
+        } else {
+          statusWrap.innerHTML = `<span class="round-status-pill active">⚡ ACTIVE OBJECTIVE</span>`;
+        }
+      }
+
+      const lockedCard = document.getElementById('windowLockedCard');
+      const activeContent = document.getElementById('windowActiveContent');
+
+      // Position window with dynamic left/right docking
+      const win = document.getElementById('mapChallengeWindow');
+      if (win) {
+        const isLeftIsland = (roundNum === 1 || roundNum === 3);
+        win.classList.remove('dock-left', 'dock-right');
+        win.classList.add(isLeftIsland ? 'dock-right' : 'dock-left');
+        win.style.display = 'flex';
+      }
+
+      // If locked, show the locked waters card inside the window
+      if (!isUnlocked && !window.isAdminUser) {
+        if (lockedCard) {
+          lockedCard.style.display = 'block';
+          const msgEl = document.getElementById('windowLockedMessage');
+          if (msgEl) {
+            msgEl.textContent = `Your crew must solve your allocated physical field riddle in Round ${Math.max(1, roundNum - 1)} before setting sail for Island ${roundNum}.`;
+          }
+        }
+        if (activeContent) activeContent.style.display = 'none';
+        return;
+      }
+
+      // If unlocked, show active content
+      if (lockedCard) lockedCard.style.display = 'none';
+      if (activeContent) activeContent.style.display = 'block';
 
       // Filter and sort riddles for this round
       const roundCategories = Object.keys(currentChallenges)
@@ -1196,10 +1299,9 @@
       }
 
       // Determine target riddle:
-      // For non-admin, target their allocated riddle!
       let targetCat = null;
-      if (myTeamData && myTeamData.team && myTeamData.team.allocatedRiddles && myTeamData.team.allocatedRiddles[roundNum]) {
-        targetCat = myTeamData.team.allocatedRiddles[roundNum];
+      if (team && team.allocatedRiddles && team.allocatedRiddles[roundNum]) {
+        targetCat = team.allocatedRiddles[roundNum];
       }
       if (!targetCat || !currentChallenges[targetCat]) {
         targetCat = roundCategories.find(k => !checkSolved(k)) || roundCategories[0];
@@ -1230,17 +1332,6 @@
       }
 
       selectWindowRiddle(targetCat);
-
-      // Display floating challenge window with dynamic left/right docking:
-      // Left islands (Round 1 & Round 3) open window on the RIGHT (leaving left islands unobstructed)
-      // Right islands (Round 2 & Round 4) open window on the LEFT (leaving right islands unobstructed)
-      const win = document.getElementById('mapChallengeWindow');
-      if (win) {
-        const isLeftIsland = (roundNum === 1 || roundNum === 3);
-        win.classList.remove('dock-left', 'dock-right');
-        win.classList.add(isLeftIsland ? 'dock-right' : 'dock-left');
-        win.style.display = 'flex';
-      }
     }
 
     function closeChallengeWindow() {
@@ -1286,16 +1377,16 @@
         subEl.textContent = `ROUND ${rNum}: ${roundName.toUpperCase()} // RIDDLE ${riddleNum} // ${diff.toUpperCase()} // ${pts} POINTS`;
       }
 
-      // Captain's Brief: Round 1 ONLY (hidden for Rounds 2, 3, 4 where brief is in preceding flag answer)
+      // Captain's Field Brief & Directions
       const briefSec = document.getElementById('windowCaptainBriefSection');
       const briefDesc = document.getElementById('windowChallengeDescription');
-      const rNum = chall.round || 1;
-      if (rNum === 1 && chall.text && chall.text.trim()) {
-        if (briefSec) briefSec.style.display = 'block';
-        if (briefDesc) briefDesc.textContent = chall.text;
-      } else {
-        if (briefSec) briefSec.style.display = 'none';
-        if (briefDesc) briefDesc.textContent = '';
+      if (briefSec && briefDesc) {
+        briefSec.style.display = 'block';
+        if (chall.text && chall.text.trim()) {
+          briefDesc.textContent = chall.text;
+        } else {
+          briefDesc.textContent = "Physical campus field clue active. Search the field terrain to locate the clue and salvage the answer.";
+        }
       }
 
       // Quartermaster's Hint Box
@@ -1348,23 +1439,29 @@
         flagResult.textContent = "Arr! Complete your crew's charted riddle to unlock these waters.";
         flagResult.style.color = 'var(--gold-muted)';
       } else if (isSolved) {
-        flagInput.value = 'Bounty already claimed by your crew!';
+        flagInput.value = '✓ Bounty claimed by your crew!';
         flagInput.disabled = true;
         submitBtn.disabled = true;
         submitBtn.textContent = 'SOLVED';
         submitBtn.style.opacity = '0.6';
         submitBtn.style.cursor = 'not-allowed';
-        flagResult.textContent = '✓ Bounty Claimed by Crew';
+        const nextRoundNum = (chall.round || 1) + 1;
+        if (nextRoundNum <= 4) {
+          flagResult.textContent = `✓ Bounty Claimed! Next island (${getRoundName(nextRoundNum)}) unlocked on your map.`;
+        } else {
+          flagResult.textContent = `🏆 TOURNAMENT COMPLETED! Grand Lost Treasure Claimed!`;
+        }
         flagResult.style.color = 'var(--success)';
       } else {
         flagInput.value = '';
-        flagInput.placeholder = 'lostcode{___________________________}';
+        flagInput.placeholder = 'lostcode{answer_found_in_field}';
         flagInput.disabled = false;
         submitBtn.disabled = false;
-        submitBtn.textContent = 'SUBMIT FLAG';
+        submitBtn.textContent = 'CLAIM BOUNTY';
         submitBtn.style.opacity = '1';
         submitBtn.style.cursor = 'pointer';
-        flagResult.textContent = '';
+        flagResult.textContent = 'Paste the exact answer found physically in the field to automatically advance.';
+        flagResult.style.color = 'var(--gold-muted)';
       }
     }
 
@@ -1447,7 +1544,6 @@
 
     function renderChallenges() {
       renderAdminChallenges();
-      renderParticipantRoundDecks();
       updateChallengeBoxesFromTeam();
 
       // Refresh opened window if active
@@ -1552,274 +1648,6 @@
 
         adminList.appendChild(deck);
       }
-    }
-
-    function renderParticipantRoundDecks() {
-      const container = document.getElementById('participantChallengesRoundsContainer');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const team = myTeamData && myTeamData.team;
-      const curRound = team ? (team.currentRound || 1) : 1;
-      const teamUnlocked = (team && Array.isArray(team.unlockedRounds)) ? team.unlockedRounds : unlockedRounds;
-      const isTeamEliminated = Boolean(team && team.eliminated);
-      const allocatedRiddles = (team && team.allocatedRiddles) || {};
-      const solvedArr = team ? (Array.isArray(team.solvedChallenges) ? team.solvedChallenges : Object.keys(team.solvedChallenges || {})) : [];
-      const solvedSet = new Set(solvedArr);
-
-      const roundDefs = {
-        1: {
-          title: "ROUND 1: SETTING SAIL",
-          badge: "①",
-          quota: "10 TEAMS • 10 RIDDLES • 0 ELIMINATIONS",
-          desc: "Each crew receives 1 randomly allocated riddle. All 10 crews advance upon solving their physical field clue."
-        },
-        2: {
-          title: "ROUND 2: HIGH SEAS",
-          badge: "②",
-          quota: "2 GROUPS OF 5 TEAMS (GROUP A & B) • 6 RIDDLES",
-          desc: "Pre-bound riddles across Group A and Group B. Top 3 crews from each group advance (6 advance); remaining 2 per group Walk the Plank!"
-        },
-        3: {
-          title: "ROUND 3: DEAD MAN'S CREEK",
-          badge: "③",
-          quota: "2 GROUPS OF 3 TEAMS (GROUP A & B) • 2 RIDDLES",
-          desc: "Surviving crews compete for the final berth. Top 1 crew per group advances (2 finalists); other 2 per group Walk the Plank!"
-        },
-        4: {
-          title: "ROUND 4: TREASURE ISLAND ❌",
-          badge: "④",
-          quota: "1 v 1 FINAL SHOWDOWN • 1 RIDDLE",
-          desc: "Final showdown between Group A Champion and Group B Champion. First to submit plunders the Grand Lost Treasure!"
-        }
-      };
-
-      for (let r = 1; r <= 4; r++) {
-        const roundCard = document.createElement('div');
-        roundCard.className = 'participant-round-card';
-        roundCard.id = `participantRoundCard${r}`;
-
-        const isUnlocked = teamUnlocked.includes(r) || window.isAdminUser;
-        const allocatedCat = allocatedRiddles[r];
-        const isThisRoundSolved = Boolean(allocatedCat && solvedSet.has(allocatedCat));
-        
-        let roundStatusClass = 'is-locked';
-        let statusPillHtml = '';
-
-        if (isTeamEliminated && curRound === r && !window.isAdminUser) {
-          roundStatusClass = 'is-eliminated';
-          statusPillHtml = `<span class="round-status-pill eliminated">☠️ WALKED THE PLANK</span>`;
-        } else if (isThisRoundSolved) {
-          roundStatusClass = 'is-solved';
-          statusPillHtml = `<span class="round-status-pill solved">✓ SOLVED & ADVANCED</span>`;
-        } else if (isUnlocked) {
-          roundStatusClass = 'is-active';
-          statusPillHtml = `<span class="round-status-pill active">⚡ ACTIVE STAGE // ALLOCATED OBJECTIVE</span>`;
-        } else {
-          roundStatusClass = 'is-locked';
-          statusPillHtml = `<span class="round-status-pill locked"><svg class="svg-padlock-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> LOCKED WATERS</span>`;
-        }
-
-        roundCard.classList.add(roundStatusClass);
-
-        // Header
-        const headerDiv = document.createElement('div');
-        headerDiv.className = 'participant-round-header';
-        headerDiv.innerHTML = `
-          <div class="participant-round-title-wrap">
-            <span class="admin-round-badge">${roundDefs[r].badge}</span>
-            <div>
-              <h3 class="participant-round-title">${escapeHTML(roundDefs[r].title)}</h3>
-              <div style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--gold-muted); margin-top:2px;">
-                ${escapeHTML(roundDefs[r].quota)}
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-            ${statusPillHtml}
-            <button type="button" onclick="focusRoundOnMap(${r})" style="padding: 4px 10px; background: rgba(201,154,82,0.15); border: 1px solid var(--border-subtle); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 600; border-radius: 3px; cursor: pointer;">
-              🗺️ Map Island
-            </button>
-          </div>
-        `;
-        roundCard.appendChild(headerDiv);
-
-        // Body
-        const bodyDiv = document.createElement('div');
-        bodyDiv.className = 'participant-round-body';
-
-        if (!isUnlocked && !window.isAdminUser) {
-          bodyDiv.innerHTML = `
-            <div style="padding: 1.5rem; text-align: center; color: var(--text-secondary); background: rgba(0,0,0,0.25); border-radius: 4px;">
-              <div style="margin-bottom: 0.5rem;">
-                <svg class="svg-padlock-icon" style="width: 24px; height: 24px; color: var(--gold-muted);" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-              </div>
-              <div style="font-family: 'Cinzel', serif; color: var(--gold-muted); font-size: 1rem; margin-bottom: 0.4rem;">
-                WATERS SEALED BY THE ADMIRALTY
-              </div>
-              <p style="font-size: 0.85rem; margin: 0; line-height: 1.5; color: var(--text-secondary);">
-                Solve your crew's allocated physical field riddle in Round ${Math.max(1, r - 1)} to automatically unlock Island ${r} and reveal your next pre-bound riddle.
-              </p>
-            </div>
-          `;
-        } else {
-          // If admin or unlocked, show the allocated riddle (or all riddles if admin)
-          const targetKey = allocatedCat || Object.keys(currentChallenges).find(k => (currentChallenges[k].round || 1) === r);
-
-          if (targetKey && currentChallenges[targetKey]) {
-            const ch = currentChallenges[targetKey];
-            const pts = ch.points || 500;
-            const diff = ch.difficulty || 'EASY';
-            const displayName = ch.subtitle || targetKey;
-            const isSolved = solvedSet.has(targetKey);
-            const inputId = `roundFlagInput_${r}`;
-            const btnId = `roundFlagSubmitBtn_${r}`;
-            const resultId = `roundFlagResult_${r}`;
-
-            let hintHtml = '';
-            if (ch.hasHint) {
-              if (ch.hintUnlocked) {
-                hintHtml = `
-                  <div style="background: rgba(201,154,82,0.1); border-left: 3px solid var(--gold-primary); padding: 0.75rem 1rem; border-radius: 3px; margin: 0.75rem 0; font-size: 0.85rem; color: var(--text-primary);">
-                    <strong>💡 Quartermaster's Secret:</strong> ${escapeHTML(ch.hint || '')}
-                  </div>
-                `;
-              } else {
-                hintHtml = `
-                  <div style="margin: 0.75rem 0;">
-                    <button type="button" onclick="openHintUnlockModal('${escapeHTML(targetKey)}', ${ch.nextHintCost || 5})" style="padding: 0.45rem 0.9rem; background: rgba(201,154,82,0.15); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 600; border-radius: 3px; cursor: pointer;">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
-                      Reveal Quartermaster's Hint (-${ch.nextHintCost || 5} PTS)
-                    </button>
-                  </div>
-                `;
-              }
-            }
-
-            bodyDiv.innerHTML = `
-              <div class="allocated-riddle-box">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                  <div>
-                    <span style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--gold-muted); font-weight:600;">YOUR CREW'S CHARTED RIDDLE:</span>
-                    <h4 class="allocated-riddle-title">${escapeHTML(displayName)}</h4>
-                  </div>
-                  <div style="font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--gold-primary); font-weight:700;">
-                    ${pts} PTS • ${escapeHTML(diff)}
-                  </div>
-                </div>
-
-                <div class="allocated-riddle-meta">
-                  Category: ${escapeHTML(ch.category || 'Expedition')} • Solves: ${ch.solves || 0}
-                </div>
-
-                ${ch.text ? `<div class="allocated-riddle-desc">${escapeHTML(ch.text)}</div>` : `<div style="font-size:0.85rem; color:var(--gold-muted); font-style:italic; margin-bottom:0.75rem;">Physical field clue location active. Salvage the answer from the field grounds.</div>`}
-
-                ${hintHtml}
-
-                <div style="border-top: 1px solid var(--border-subtle); padding-top: 1rem; margin-top: 1rem;">
-                  <div style="font-family:'Cinzel',serif; font-size:0.85rem; color:var(--gold-primary); font-weight:bold; margin-bottom:0.4rem; display:flex; align-items:center; gap:6px;">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
-                    FIELD FLAG SUBMISSION:
-                  </div>
-                  <div class="round-flag-submit-form">
-                    <input type="text" id="${inputId}" class="round-flag-input" placeholder="lostcode{answer_found_in_field}" ${isSolved ? 'disabled value="✓ Bounty Claimed by Crew"' : ''} autocomplete="off" />
-                    <button type="button" id="${btnId}" class="round-flag-submit-btn" ${isSolved ? 'disabled style="opacity:0.6; cursor:not-allowed;"' : `onclick="submitInlineFlag('${escapeHTML(targetKey)}', '${inputId}', '${resultId}', '${btnId}')"`}>
-                      ${isSolved ? 'SOLVED' : 'CLAIM BOUNTY'}
-                    </button>
-                  </div>
-                  <p id="${resultId}" style="margin: 6px 0 0 0; font-family:'JetBrains Mono',monospace; font-size:0.8rem; color: ${isSolved ? 'var(--success)' : 'var(--gold-muted)'};">
-                    ${isSolved ? '✓ Bounty claimed and next stage waters unlocked!' : 'Paste the exact answer found physically in the field to automatically advance.'}
-                  </p>
-                </div>
-              </div>
-            `;
-          } else {
-            bodyDiv.innerHTML = `<div style="padding:1rem; color:var(--text-secondary); font-style:italic;">No riddle charted yet for this round.</div>`;
-          }
-        }
-
-        roundCard.appendChild(bodyDiv);
-        container.appendChild(roundCard);
-      }
-    }
-
-    function focusRoundOnMap(roundNum) {
-      showSection('challenges');
-      const mapEl = document.getElementById('treasureTableMap');
-      if (mapEl) {
-        mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      openRoundIsland(roundNum);
-    }
-
-    function submitInlineFlag(category, inputId, resultId, btnId) {
-      const input = document.getElementById(inputId);
-      const btn = document.getElementById(btnId);
-      const result = document.getElementById(resultId);
-      if (!input || !btn || !result) return;
-
-      const flag = input.value.trim();
-      if (!flag) {
-        result.style.color = 'var(--danger)';
-        result.textContent = 'Arr! Enter the physical field answer before submitting.';
-        return;
-      }
-
-      result.style.color = 'var(--gold-muted)';
-      result.textContent = 'Submitting flag to Admiralty...';
-      btn.disabled = true;
-
-      fetch('/api/challenge/flag', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category, flag })
-      })
-      .then(res => {
-        if (!res.ok) {
-          return res.json().then(data => { throw new Error(data.error || 'Submission error'); });
-        }
-        return res.json();
-      })
-      .then(data => {
-        result.textContent = '✓ ' + data.message;
-        result.style.color = 'var(--success)';
-        input.value = '✓ Bounty Claimed by Crew';
-        input.disabled = true;
-        btn.textContent = 'SOLVED';
-        btn.style.opacity = '0.6';
-        btn.style.cursor = 'not-allowed';
-
-        if (myTeamData && myTeamData.team) {
-          if (!Array.isArray(myTeamData.team.solvedChallenges)) myTeamData.team.solvedChallenges = [];
-          if (!myTeamData.team.solvedChallenges.includes(category)) myTeamData.team.solvedChallenges.push(category);
-          if (data.currentRound) myTeamData.team.currentRound = data.currentRound;
-          if (data.unlockedRounds) myTeamData.team.unlockedRounds = data.unlockedRounds;
-          if (data.eliminated) {
-            myTeamData.team.eliminated = true;
-            myTeamData.team.eliminatedReason = data.eliminatedReason;
-            openWalkPlankModal(data.eliminatedReason);
-          }
-          if (data.isWinner) {
-            myTeamData.team.isWinner = true;
-            showToast("🏆 VICTORY! Your crew has claimed the Grand Lost Code Bounty!");
-          }
-        }
-
-        renderRouteMap();
-        fetchMyTeam();
-        fetchChallenges();
-        fetchTeamScores();
-        if (typeof fetchTournamentStatus === 'function') fetchTournamentStatus();
-        showToast("Bounty Claimed! " + data.message);
-      })
-      .catch(err => {
-        btn.disabled = false;
-        result.textContent = err.message;
-        result.style.color = 'var(--danger)';
-        if (err.message && (err.message.includes('Plank') || err.message.includes('eliminated'))) {
-          openWalkPlankModal(err.message);
-        }
-      });
     }
 
     // Quartermaster Hint Unlock Confirmation Modal
@@ -1965,6 +1793,13 @@
         fetchTeamScores();
         if (typeof fetchTournamentStatus === 'function') fetchTournamentStatus();
         showToast("Bounty Claimed! " + data.message);
+
+        // Smooth auto-advance island on map to next round after solve
+        if (data.currentRound && data.currentRound > (currentActiveRound || 1) && !data.eliminated) {
+          setTimeout(() => {
+            openRoundIsland(data.currentRound);
+          }, 1100);
+        }
       })
       .catch(err => {
         submitBtn.disabled = false;
@@ -2367,13 +2202,28 @@
           }
         });
 
+        // Keep status pill in stage banner fresh
+        const isThisRoundSolved = Boolean(team.allocatedRiddles && team.allocatedRiddles[currentActiveRound] && solvedSet.has(team.allocatedRiddles[currentActiveRound]));
+        const teamUnlocked = Array.isArray(team.unlockedRounds) ? team.unlockedRounds : unlockedRounds;
+        const isUnlocked = teamUnlocked.includes(currentActiveRound) || window.isAdminUser;
+        const statusWrap = document.getElementById('windowStatusPillWrap');
+        if (statusWrap) {
+          if (!isUnlocked && !window.isAdminUser) {
+            statusWrap.innerHTML = `<span class="round-status-pill locked"><svg class="svg-padlock-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> LOCKED WATERS</span>`;
+          } else if (isThisRoundSolved) {
+            statusWrap.innerHTML = `<span class="round-status-pill solved">✓ SOLVED & ADVANCED</span>`;
+          } else {
+            statusWrap.innerHTML = `<span class="round-status-pill active">⚡ ACTIVE OBJECTIVE</span>`;
+          }
+        }
+
         // If current window riddle is already solved, lock the input
         if (currentCategory && solvedSet.has(currentCategory)) {
           const flagInput = document.getElementById('windowFlagInput');
           const submitBtn = document.getElementById('windowSubmitFlagBtn');
           const flagResult = document.getElementById('windowFlagResult');
           if (flagInput && submitBtn && flagResult) {
-            flagInput.value = 'Bounty already claimed by your crew!';
+            flagInput.value = '✓ Bounty claimed by your crew!';
             flagInput.disabled = true;
             submitBtn.disabled = true;
             submitBtn.textContent = 'SOLVED';
@@ -2383,11 +2233,6 @@
             flagResult.style.color = 'var(--success)';
           }
         }
-      }
-
-      // Keep participant round decks in sync with team progress
-      if (typeof renderParticipantRoundDecks === 'function') {
-        renderParticipantRoundDecks();
       }
     }
 

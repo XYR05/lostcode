@@ -1480,6 +1480,69 @@ body::after {
   transform: scale(1.08);
 }
 
+/* Stage Banner inside Floating Window */
+.window-stage-banner {
+  background: rgba(23, 17, 12, 0.95);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 12px 14px;
+  border-radius: 4px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(201, 154, 82, 0.3);
+}
+
+.window-round-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(201, 154, 82, 0.25);
+  border: 1px solid var(--gold-primary);
+  color: var(--gold-primary);
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.window-round-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--gold-primary);
+  letter-spacing: 0.05em;
+}
+
+.window-group-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: rgba(82, 140, 201, 0.2);
+  border: 1px solid #528cc9;
+  color: #8bbcef;
+  text-transform: uppercase;
+}
+
+.window-quota-rule {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.76rem;
+  color: var(--gold-muted);
+  margin-top: 5px;
+  line-height: 1.4;
+}
+
+/* Locked Island View Card */
+.window-locked-card {
+  padding: 1.75rem 1.25rem;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px dashed var(--border-subtle);
+  border-radius: 4px;
+  margin: 10px 0 14px 0;
+}
+
 .window-header {
   margin-bottom: 14px;
   padding-right: 36px;
