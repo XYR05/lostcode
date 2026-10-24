@@ -748,10 +748,20 @@
       if (sectionId === 'admin-section') {
         if (typeof fetchAdminChallenges === 'function') fetchAdminChallenges();
         renderAdminRoundControl();
+        if (typeof fetchTournamentStatus === 'function') fetchTournamentStatus();
       }
       if (sectionId === 'challenges-section') {
         renderChallenges();
         renderRouteMap();
+      }
+      if (sectionId === 'scoreboard-section') {
+        fetchTeamScores();
+      }
+      if (sectionId === 'teams-section') {
+        fetchTeams();
+      }
+      if (sectionId === 'team-section') {
+        fetchMyTeam();
       }
       document.body.classList.remove('mobile-menu-open');
     }
@@ -784,7 +794,7 @@
     // ======================================================
     let proctoringArmed = false;
     let violationInProgress = false;
-    window.isAdminUser = false;
+    window.isAdminUser = Boolean(window.isAdminUser);
 
     function enterTournamentFullscreen() {
       if (document.documentElement.requestFullscreen) {
@@ -2341,7 +2351,6 @@
           });
       });
     }
-    });
   </script>
 </body>
 </html>
