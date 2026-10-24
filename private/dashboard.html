@@ -79,197 +79,156 @@
   </section>
 
   <!-- ====================================================== -->
-  <!-- 3. CHALLENGES SECTION (TWO-COLUMN PIRATE GRID)         -->
+  <!-- 3. CHALLENGES SECTION (INTERACTIVE PIRATE TABLE MAP)   -->
   <!-- ====================================================== -->
-  <section id="challenges-section" class="info-section challenges-expedition-section" style="display: none; padding-top: 25px;">
+  <section id="challenges-section" class="info-section challenges-expedition-section" style="display: none; padding: 15px 0 35px 0;">
     
-    <!-- INTERACTIVE TREASURE ROUTE MAP STAGE SELECTOR -->
-    <div class="treasure-route-map" id="treasureRouteMap">
-      <div class="map-header">
-        <div class="map-title-wrap">
-          <span class="map-compass-icon">🧭</span>
-          <div>
-            <h2 class="map-title">CHARTED TREASURE EXPEDITION ROUTE</h2>
-            <p class="map-subtitle">Sail between islands to navigate the fleet's riddles. Uncharted waters await the Admiralty's unlock orders.</p>
-          </div>
-        </div>
-        <div class="map-filter-all-wrap">
-          <button type="button" class="route-all-btn active" data-round="ALL" id="routeAllWatersBtn" onclick="selectRoundFilter('ALL')">
-            <span>⚓</span> ALL CHARTED WATERS (<span id="totalUnlockedCount">0</span>)
-          </button>
-        </div>
+    <!-- Top Action Bar with Flowchart button -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 10px; flex-wrap: wrap; gap: 8px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 24px;">🧭</span>
+        <h2 style="font-family: 'Cinzel', serif; font-size: 1.25rem; color: var(--gold-primary); margin: 0; letter-spacing: 0.08em;">
+          CHARTED EXPEDITION MAP
+        </h2>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--gold-muted); margin-left: 8px;">
+          [ SELECT AN ISLAND TO EMBARK ]
+        </span>
       </div>
-
-      <div class="route-stations-track">
-        <!-- Connecting dashed red line SVG behind stations -->
-        <svg class="route-trail-svg" preserveAspectRatio="none" viewBox="0 0 1000 60">
-          <path d="M 125,30 Q 250,5 375,30 T 625,30 T 875,30" class="trail-dash-line"></path>
+      <button type="button" class="tournament-flow-btn" onclick="openTournamentFlowModal()" title="View Tournament Flow & Rules">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
         </svg>
-
-        <!-- Island Station 1 -->
-        <div class="island-station active" data-round="1" id="islandStation1" onclick="selectRoundFilter(1)">
-          <div class="station-waypoint">
-            <span class="waypoint-badge">①</span>
-            <span class="waypoint-status charted" id="statusBadge1">CHARTED</span>
-          </div>
-          <div class="station-island-thumb">
-            <img src="/1.png" alt="Round 1: Setting Sail" class="island-img" />
-            <div class="station-lock-overlay" id="lockOverlay1" style="display: none;">🔒</div>
-          </div>
-          <div class="station-info">
-            <h4 class="station-title">ROUND 1: SETTING SAIL</h4>
-            <div class="station-meta">10 Crews • 10 Riddles</div>
-            <div class="station-elim"><span class="elim-tag safe">0 Eliminations</span> (All Hands Advance)</div>
-          </div>
-        </div>
-
-        <!-- Island Station 2 -->
-        <div class="island-station locked" data-round="2" id="islandStation2" onclick="selectRoundFilter(2)">
-          <div class="station-waypoint">
-            <span class="waypoint-badge">②</span>
-            <span class="waypoint-status locked" id="statusBadge2">LOCKED</span>
-          </div>
-          <div class="station-island-thumb">
-            <img src="/2.png" alt="Round 2: High Seas" class="island-img" />
-            <div class="station-lock-overlay" id="lockOverlay2">🔒</div>
-          </div>
-          <div class="station-info">
-            <h4 class="station-title">ROUND 2: HIGH SEAS</h4>
-            <div class="station-meta">2 Groups of 5 • 6 Riddles</div>
-            <div class="station-elim"><span class="elim-tag danger">4 Walk the Plank</span> (2 per Group)</div>
-          </div>
-        </div>
-
-        <!-- Island Station 3 -->
-        <div class="island-station locked" data-round="3" id="islandStation3" onclick="selectRoundFilter(3)">
-          <div class="station-waypoint">
-            <span class="waypoint-badge">③</span>
-            <span class="waypoint-status locked" id="statusBadge3">LOCKED</span>
-          </div>
-          <div class="station-island-thumb">
-            <img src="/3.png" alt="Round 3: Dead Man's Creek" class="island-img" />
-            <div class="station-lock-overlay" id="lockOverlay3">🔒</div>
-          </div>
-          <div class="station-info">
-            <h4 class="station-title">ROUND 3: DEAD MAN'S CREEK</h4>
-            <div class="station-meta">2 Groups of 3 • 2 Riddles</div>
-            <div class="station-elim"><span class="elim-tag danger">4 Walk the Plank</span> (2 per Group)</div>
-          </div>
-        </div>
-
-        <!-- Island Station 4 -->
-        <div class="island-station final-treasure-station locked" data-round="4" id="islandStation4" onclick="selectRoundFilter(4)">
-          <div class="station-waypoint">
-            <span class="waypoint-badge">④</span>
-            <span class="treasure-x-badge" title="The Grand Treasure Spot">❌ RED X</span>
-          </div>
-          <div class="station-island-thumb">
-            <img src="/4.png" alt="Round 4: Treasure Island" class="island-img" />
-            <div class="station-lock-overlay" id="lockOverlay4">🔒</div>
-            <div class="red-x-overlay">❌</div>
-          </div>
-          <div class="station-info">
-            <h4 class="station-title">ROUND 4: TREASURE ISLAND</h4>
-            <div class="station-meta">1 v 1 Showdown • 1 Riddle</div>
-            <div class="station-elim"><span class="elim-tag treasure">Grand Lost Treasure</span> (Winner Takes All)</div>
-          </div>
-        </div>
-      </div>
+        <span>TOURNAMENT FLOW</span>
+      </button>
     </div>
 
-    <div class="layout-grid">
+    <!-- THE PIRATE TABLE TREASURE MAP -->
+    <div class="treasure-table-map" id="treasureTableMap">
       
-      <!-- LEFT PANEL: CHALLENGES LIST -->
-      <div class="challenges-panel">
-        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <svg class="panel-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M14.5 17.5L3 6V3h3l11.5 11.5"></path>
-              <path d="M13 19l6-6"></path>
-              <path d="M16 16l4 4"></path>
-              <path d="M19 21l2-2"></path>
-              <path d="M9.5 17.5L21 6V3h-3L6.5 14.5"></path>
-              <path d="M11 19l-6-6"></path>
-              <path d="M8 16l-4 4"></path>
-              <path d="M5 21l-2-2"></path>
-            </svg>
-            <h3 class="panel-title">EXPEDITION RIDDLES</h3>
+      <!-- SVG Red Dotted Trails connecting islands across compass rose -->
+      <svg class="map-dotted-trails-svg" viewBox="0 0 1000 562" preserveAspectRatio="none">
+        <!-- Island 1 to Island 2 (curved above compass rose) -->
+        <path d="M 280,180 Q 480,120 680,225" class="red-trail-path"></path>
+        <!-- Island 1 to Island 3 (down left side) -->
+        <path d="M 280,180 Q 260,265 305,345" class="red-trail-path"></path>
+        <!-- Island 2 to Island 4 (down right side) -->
+        <path d="M 680,225 Q 700,305 680,395" class="red-trail-path"></path>
+        <!-- Island 3 to Island 4 (curved below compass rose) -->
+        <path d="M 305,345 Q 490,440 680,395" class="red-trail-path"></path>
+      </svg>
+
+      <!-- Island 1: Top-Left (Round 1: Setting Sail) -->
+      <div class="map-island-station" id="mapIsland1" onclick="openRoundIsland(1)" title="Round 1: Setting Sail">
+        <img src="/1.png" alt="Round 1: Setting Sail" class="island-sprite" />
+        <div class="island-banner" id="islandBanner1">
+          <span class="banner-badge">①</span>
+          <div class="banner-text">
+            <span class="banner-title">SETTING SAIL</span>
+            <span class="banner-sub" id="bannerSub1">10 TEAMS • 10 RIDDLES • 0 ELIM</span>
           </div>
-          <button type="button" class="tournament-flow-btn" onclick="openTournamentFlowModal()" title="View Tournament Flow & Rules">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-            </svg>
-            <span>TOURNAMENT FLOW</span>
-          </button>
-        </div>
-
-        <div class="tabs-container" id="challengeTabs">
-          <div class="category active" data-round="ALL" onclick="selectRoundFilter('ALL')">ALL (19)</div>
-          <div class="category" data-round="1" onclick="selectRoundFilter(1)">ROUND 1 (10)</div>
-          <div class="category" data-round="2" onclick="selectRoundFilter(2)">ROUND 2 (6)</div>
-          <div class="category" data-round="3" onclick="selectRoundFilter(3)">ROUND 3 (2)</div>
-          <div class="category" data-round="4" onclick="selectRoundFilter(4)">ROUND 4 (1)</div>
-        </div>
-
-        <div class="challenges-list" id="challengeCategoriesContainer">
-          <!-- JS populates challenge cards here -->
         </div>
       </div>
 
-      <!-- RIGHT PANEL: CHALLENGE DETAILS MODAL / PANEL -->
-      <div class="challenge-details" id="challengeModal" style="display: none;">
-        <button class="close-btn" onclick="document.getElementById('challengeModal').style.display='none'" aria-label="Close details">&times;</button>
+      <!-- Island 2: Top-Right (Round 2: High Seas) -->
+      <div class="map-island-station" id="mapIsland2" onclick="openRoundIsland(2)" title="Round 2: High Seas">
+        <img src="/2.png" alt="Round 2: High Seas" class="island-sprite" />
+        <div class="island-banner" id="islandBanner2">
+          <span class="banner-badge">②</span>
+          <div class="banner-text">
+            <span class="banner-title">HIGH SEAS</span>
+            <span class="banner-sub" id="bannerSub2">2 GROUPS OF 5 • 6 RIDDLES</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Island 3: Bottom-Left (Round 3: Dead Man's Creek) -->
+      <div class="map-island-station" id="mapIsland3" onclick="openRoundIsland(3)" title="Round 3: Dead Man's Creek">
+        <img src="/3.png" alt="Round 3: Dead Man's Creek" class="island-sprite" />
+        <div class="island-banner" id="islandBanner3">
+          <span class="banner-badge">③</span>
+          <div class="banner-text">
+            <span class="banner-title">DEAD MAN'S CREEK</span>
+            <span class="banner-sub" id="bannerSub3">2 GROUPS OF 3 • 2 RIDDLES</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Island 4: Bottom-Right (Round 4: Treasure Island) -->
+      <div class="map-island-station final-treasure-island" id="mapIsland4" onclick="openRoundIsland(4)" title="Round 4: Treasure Island ❌">
+        <img src="/4.png" alt="Round 4: Treasure Island" class="island-sprite" />
+        <div class="island-banner" id="islandBanner4">
+          <span class="banner-badge">④</span>
+          <div class="banner-text">
+            <span class="banner-title">TREASURE ISLAND ❌</span>
+            <span class="banner-sub" id="bannerSub4">1 v 1 FINAL SHOWDOWN</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FLOATING CHALLENGE WINDOW (Right-side Modal from Reference 2) -->
+      <div class="map-challenge-window" id="mapChallengeWindow" style="display: none;">
+        <button type="button" class="window-close-btn" onclick="closeChallengeWindow()" aria-label="Close window">&times;</button>
         
-        <div class="detail-header">
-          <div class="detail-header-title">
-            <span id="modalCategoryIcon"></span>
-            <span id="modalTitle" style="text-transform: uppercase;">FORENSICS</span>
+        <!-- Header -->
+        <div class="window-header">
+          <div class="window-title-wrap">
+            <svg class="window-target-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="22" y1="12" x2="18" y2="12"></line>
+              <line x1="6" y1="12" x2="2" y2="12"></line>
+              <line x1="12" y1="6" x2="12" y2="2"></line>
+              <line x1="12" y1="22" x2="12" y2="18"></line>
+            </svg>
+            <h3 id="windowChallengeTitle">WALK THE PLANK</h3>
           </div>
-          <div class="detail-header-subtitle">
-            CTF // <span id="modalDiff">EASY</span> // <span id="modalPoints">100</span> POINTS
+          <div class="window-subtitle" id="windowChallengeSubtitle">
+            ROUND 4: TREASURE ISLAND // RIDDLE 1 // HARD // 1000 POINTS
           </div>
+        </div>
+
+        <!-- Riddle Selector Strip (for multi-riddle rounds) -->
+        <div class="window-riddle-selector-strip" id="windowRiddleSelectorStrip" style="display: none;">
+          <!-- Dynamically populated: [ Riddle 1 ✓ ] [ Riddle 2 ] ... -->
         </div>
 
         <!-- Captain's Brief (Round 1 only) -->
-        <div class="detail-section" id="captainBriefSection">
-          <div class="detail-section-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div class="window-section" id="windowCaptainBriefSection" style="display: none;">
+          <div class="window-section-title">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
               <line x1="4" y1="22" x2="4" y2="15"></line>
             </svg>
             CAPTAIN'S BRIEF
           </div>
-          <div class="detail-text" id="challengeDescription">
-            A file that doesn't look quite right has been left behind...
-          </div>
+          <div class="window-text" id="windowChallengeDescription"></div>
         </div>
 
-        <!-- Quartermaster's Hint (Unlockable with Escalating Penalty) -->
-        <div class="detail-section" id="hintSection">
-          <div class="detail-section-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <!-- Quartermaster's Hint Box -->
+        <div class="window-hint-box" id="windowHintBox">
+          <div class="hint-header">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"></circle>
               <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
             </svg>
-            QUARTERMASTER'S HINT
+            <span>QUARTERMASTER'S HINT</span>
           </div>
-          <div id="challengeHintContent">
-            <!-- Dynamic hint (unlocked or locked) -->
+          <div id="windowHintContent">
+            <!-- Dynamic hint contents -->
           </div>
         </div>
 
-        <!-- Flag Submission -->
-        <div class="detail-section" style="margin-bottom: 0;">
-          <div class="detail-section-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <!-- Submit Flag Box -->
+        <div class="window-flag-box">
+          <div class="flag-header">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
               <line x1="4" y1="22" x2="4" y2="15"></line>
             </svg>
-            SUBMIT FLAG
+            <span>SUBMIT FLAG</span>
           </div>
-          <input type="text" id="flagInput" class="flag-input" placeholder="lostcode{___________________________}" autocomplete="off" />
-          <button id="submitFlagBtn" class="submit-button">SUBMIT FLAG</button>
-          <p id="flagResult" style="margin-top: 15px; font-family: 'JetBrains Mono', monospace; font-size: 13px;"></p>
+          <input type="text" id="windowFlagInput" class="flag-input" placeholder="lostcode{___________________________}" autocomplete="off" />
+          <button type="button" id="windowSubmitFlagBtn" class="window-submit-btn">SUBMIT FLAG</button>
+          <p id="windowFlagResult" style="margin-top: 10px; font-family: 'JetBrains Mono', monospace; font-size: 13px;"></p>
         </div>
       </div>
     </div>
@@ -957,9 +916,25 @@
     // ======================================================
     let currentChallenges = {};
     let currentCategory = '';
+    let currentActiveRound = null;
     let myTeamData = null;
     let unlockedRounds = [1];
-    let selectedRoundFilter = 'ALL';
+
+    function checkSolved(category) {
+      if (!myTeamData || !myTeamData.team) return false;
+      const solved = myTeamData.team.solvedChallenges || [];
+      return Array.isArray(solved) ? solved.includes(category) : Boolean(solved[category]);
+    }
+
+    function getRoundName(roundNum) {
+      switch (roundNum) {
+        case 1: return "Round 1: Setting Sail";
+        case 2: return "Round 2: High Seas";
+        case 3: return "Round 3: Dead Man's Creek";
+        case 4: return "Round 4: Treasure Island";
+        default: return `Round ${roundNum}`;
+      }
+    }
 
     function fetchChallenges() {
       fetch('/api/challenges')
@@ -974,10 +949,35 @@
     }
 
     function renderRouteMap() {
-      const allRounds = [1, 2, 3, 4];
-      let totalUnlockedCount = 0;
+      const roundDefs = {
+        1: { title: 'SETTING SAIL', sub: '10 TEAMS • 10 RIDDLES • 0 ELIM' },
+        2: { title: 'HIGH SEAS', sub: '2 GROUPS OF 5 • 6 RIDDLES' },
+        3: { title: "DEAD MAN'S CREEK", sub: '2 GROUPS OF 3 • 2 RIDDLES' },
+        4: { title: 'TREASURE ISLAND ❌', sub: '1 v 1 FINAL SHOWDOWN' }
+      };
 
-      // Count unlocked challenges
+      [1, 2, 3, 4].forEach(r => {
+        const station = document.getElementById(`mapIsland${r}`);
+        const bannerSub = document.getElementById(`bannerSub${r}`);
+        if (!station) return;
+
+        const isUnlocked = unlockedRounds.includes(r) || window.isAdminUser;
+        if (isUnlocked) {
+          station.classList.remove('is-locked');
+          if (bannerSub) {
+            bannerSub.textContent = roundDefs[r].sub;
+            bannerSub.style.color = '';
+          }
+        } else {
+          station.classList.add('is-locked');
+          if (bannerSub) {
+            bannerSub.innerHTML = '<span style="color: #a64444; font-weight: 700;">🔒 LOCKED WATERS</span>';
+          }
+        }
+      });
+
+      // Update total unlocked challenges count in dashboard overview if element exists
+      let totalUnlockedCount = 0;
       Object.values(currentChallenges).forEach(c => {
         const r = c.round || 1;
         if (unlockedRounds.includes(r) || window.isAdminUser) {
@@ -987,78 +987,214 @@
       const unEl = document.getElementById('totalUnlockedCount');
       if (unEl) unEl.textContent = totalUnlockedCount;
 
-      allRounds.forEach(r => {
-        const station = document.getElementById(`islandStation${r}`);
-        const statusBadge = document.getElementById(`statusBadge${r}`);
-        const lockOverlay = document.getElementById(`lockOverlay${r}`);
-        if (!station) return;
-
-        const isUnlocked = unlockedRounds.includes(r) || window.isAdminUser;
-
-        // Active state
-        if (selectedRoundFilter === String(r)) {
-          station.classList.add('active');
-        } else {
-          station.classList.remove('active');
-        }
-
-        // Locked vs Charted
-        if (isUnlocked) {
-          station.classList.remove('locked');
-          station.classList.add('charted');
-          if (statusBadge) {
-            statusBadge.textContent = 'CHARTED';
-            statusBadge.className = 'waypoint-status charted';
-          }
-          if (lockOverlay) lockOverlay.style.display = 'none';
-        } else {
-          station.classList.add('locked');
-          station.classList.remove('charted');
-          if (statusBadge) {
-            statusBadge.textContent = 'LOCKED';
-            statusBadge.className = 'waypoint-status locked';
-          }
-          if (lockOverlay) lockOverlay.style.display = 'flex';
-        }
-      });
-
-      const allBtn = document.getElementById('routeAllWatersBtn');
-      if (allBtn) {
-        if (selectedRoundFilter === 'ALL') allBtn.classList.add('active');
-        else allBtn.classList.remove('active');
+      // If active island got locked while open (and not admin), close window
+      if (currentActiveRound && !unlockedRounds.includes(currentActiveRound) && !window.isAdminUser) {
+        closeChallengeWindow();
       }
     }
 
-    function selectRoundFilter(roundNum) {
-      if (roundNum !== 'ALL') {
-        const rNum = parseInt(roundNum, 10);
-        const isUnlocked = unlockedRounds.includes(rNum) || window.isAdminUser;
-        if (!isUnlocked) {
-          showCustomConfirm(
-            "Treacherous Waters!",
-            `Arr! Island ${rNum} remains sealed by the Admiralty! Stand by for the Captain's orders before navigating these waters.`,
-            true,
-            null
-          );
-          return;
-        }
-        selectedRoundFilter = String(rNum);
-      } else {
-        selectedRoundFilter = 'ALL';
+    function openRoundIsland(roundNum) {
+      const isUnlocked = unlockedRounds.includes(roundNum) || window.isAdminUser;
+      if (!isUnlocked) {
+        showCustomConfirm(
+          "Treacherous Waters!",
+          `Arr! Round ${roundNum} remains sealed by the Admiralty! Stand by for the Captain's orders before navigating these waters.`,
+          true,
+          null
+        );
+        return;
       }
 
-      // Sync tabs
-      const tabs = document.querySelectorAll('#challengeTabs .category');
-      tabs.forEach(tab => {
-        if (tab.getAttribute('data-round') === String(selectedRoundFilter)) {
-          tab.classList.add('active');
+      currentActiveRound = roundNum;
+
+      // Visual state on table map
+      const mapEl = document.getElementById('treasureTableMap');
+      if (mapEl) mapEl.classList.add('window-open');
+      for (let r = 1; r <= 4; r++) {
+        const el = document.getElementById(`mapIsland${r}`);
+        if (el) {
+          if (r === roundNum) el.classList.add('active-selected');
+          else el.classList.remove('active-selected');
+        }
+      }
+
+      // Filter and sort riddles for this round
+      const roundCategories = Object.keys(currentChallenges)
+        .filter(k => (currentChallenges[k].round || 1) === roundNum)
+        .sort((a, b) => {
+          const nA = currentChallenges[a].riddleNumber || 1;
+          const nB = currentChallenges[b].riddleNumber || 1;
+          return nA - nB;
+        });
+
+      if (roundCategories.length === 0) {
+        showToast(`Arr! No riddles charted yet for Round ${roundNum}.`);
+        closeChallengeWindow();
+        return;
+      }
+
+      // Populate riddle selector strip for multi-riddle rounds
+      const strip = document.getElementById('windowRiddleSelectorStrip');
+      if (strip) {
+        if (roundCategories.length > 1) {
+          strip.style.display = 'flex';
+          strip.innerHTML = '';
+          roundCategories.forEach(catKey => {
+            const ch = currentChallenges[catKey];
+            const rNum = ch.riddleNumber || 1;
+            const isSolved = checkSolved(catKey);
+            const pill = document.createElement('button');
+            pill.type = 'button';
+            pill.className = `riddle-pill ${isSolved ? 'solved' : ''}`;
+            pill.setAttribute('data-category', catKey);
+            pill.innerHTML = `<span>Riddle ${rNum}</span>${isSolved ? '<span class="pill-check">✓</span>' : ''}`;
+            pill.addEventListener('click', () => selectWindowRiddle(catKey));
+            strip.appendChild(pill);
+          });
         } else {
-          tab.classList.remove('active');
+          strip.style.display = 'none';
+          strip.innerHTML = '';
+        }
+      }
+
+      // Select active riddle: prefer first unsolved, else first riddle
+      let targetCat = roundCategories.find(k => !checkSolved(k)) || roundCategories[0];
+      selectWindowRiddle(targetCat);
+
+      // Display floating challenge window
+      const win = document.getElementById('mapChallengeWindow');
+      if (win) {
+        win.style.display = 'flex';
+      }
+    }
+
+    function closeChallengeWindow() {
+      currentActiveRound = null;
+      const win = document.getElementById('mapChallengeWindow');
+      if (win) win.style.display = 'none';
+      const mapEl = document.getElementById('treasureTableMap');
+      if (mapEl) mapEl.classList.remove('window-open');
+      for (let r = 1; r <= 4; r++) {
+        const el = document.getElementById(`mapIsland${r}`);
+        if (el) el.classList.remove('active-selected');
+      }
+    }
+
+    function selectWindowRiddle(category) {
+      currentCategory = category;
+      const chall = currentChallenges[category];
+      if (!chall) return;
+
+      // Update riddle pills active state
+      document.querySelectorAll('#windowRiddleSelectorStrip .riddle-pill').forEach(pill => {
+        if (pill.getAttribute('data-category') === category) {
+          pill.classList.add('active');
+        } else {
+          pill.classList.remove('active');
         }
       });
 
-      renderRouteMap();
-      filterChallenges();
+      // Update header title & subtitle
+      const titleEl = document.getElementById('windowChallengeTitle');
+      if (titleEl) titleEl.textContent = chall.subtitle || category;
+
+      const subEl = document.getElementById('windowChallengeSubtitle');
+      if (subEl) {
+        const rNum = chall.round || 1;
+        const roundName = chall.roundName || getRoundName(rNum);
+        const riddleNum = chall.riddleNumber || 1;
+        const diff = chall.difficulty || 'EASY';
+        const pts = chall.points || 500;
+        subEl.textContent = `ROUND ${rNum}: ${roundName.toUpperCase()} // RIDDLE ${riddleNum} // ${diff.toUpperCase()} // ${pts} POINTS`;
+      }
+
+      // Captain's Brief: Round 1 ONLY (hidden for Rounds 2, 3, 4 where brief is in preceding flag answer)
+      const briefSec = document.getElementById('windowCaptainBriefSection');
+      const briefDesc = document.getElementById('windowChallengeDescription');
+      const rNum = chall.round || 1;
+      if (rNum === 1 && chall.text && chall.text.trim()) {
+        if (briefSec) briefSec.style.display = 'block';
+        if (briefDesc) briefDesc.textContent = chall.text;
+      } else {
+        if (briefSec) briefSec.style.display = 'none';
+        if (briefDesc) briefDesc.textContent = '';
+      }
+
+      // Quartermaster's Hint Box
+      const hintBox = document.getElementById('windowHintBox');
+      const hintContent = document.getElementById('windowHintContent');
+      if (chall.hasHint) {
+        if (hintBox) hintBox.style.display = 'block';
+        if (chall.hintUnlocked) {
+          hintContent.innerHTML = `
+            <div class="hint-unlocked-box">
+              <div style="font-size: 11px; color: var(--gold-primary); margin-bottom: 6px; letter-spacing: 0.1em; font-family: 'Cinzel', serif;">[ UNLOCKED HINT ]</div>
+              <div>${escapeHTML(chall.hint || '')}</div>
+            </div>
+          `;
+        } else {
+          const cost = chall.nextHintCost || 5;
+          hintContent.innerHTML = `
+            <div class="hint-locked-box">
+              <div class="hint-locked-message">
+                The Quartermaster holds a secret for this riddle. Revealing it will deduct <strong>${cost} points</strong> from your crew's treasure.
+              </div>
+              <button type="button" class="hint-unlock-btn" onclick="openHintUnlockModal('${escapeHTML(category)}', ${cost})">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
+                Unlock Hint (-${cost} PTS)
+              </button>
+            </div>
+          `;
+        }
+      } else {
+        if (hintBox) hintBox.style.display = 'none';
+      }
+
+      // Flag Submission Box
+      const isRoundUnlocked = chall.unlocked !== false;
+      const isSolved = checkSolved(category);
+      const flagInput = document.getElementById('windowFlagInput');
+      const submitBtn = document.getElementById('windowSubmitFlagBtn');
+      const flagResult = document.getElementById('windowFlagResult');
+
+      if (!flagInput || !submitBtn || !flagResult) return;
+
+      if (!isRoundUnlocked) {
+        flagInput.value = 'These waters remain locked by the Admiralty!';
+        flagInput.placeholder = '🔒 Locked waters';
+        flagInput.disabled = true;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'WATERS LOCKED';
+        submitBtn.style.opacity = '0.5';
+        submitBtn.style.cursor = 'not-allowed';
+        flagResult.textContent = "🔒 Arr! Await Admiralty orders to chart and unlock this island's waters.";
+        flagResult.style.color = 'var(--gold-muted)';
+      } else if (isSolved) {
+        flagInput.value = 'Bounty already claimed by your crew!';
+        flagInput.disabled = true;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'SOLVED';
+        submitBtn.style.opacity = '0.6';
+        submitBtn.style.cursor = 'not-allowed';
+        flagResult.textContent = '✓ Bounty Claimed by Crew';
+        flagResult.style.color = 'var(--success)';
+      } else {
+        flagInput.value = '';
+        flagInput.placeholder = 'lostcode{___________________________}';
+        flagInput.disabled = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'SUBMIT FLAG';
+        submitBtn.style.opacity = '1';
+        submitBtn.style.cursor = 'pointer';
+        flagResult.textContent = '';
+      }
+    }
+
+    function selectChallenge(category) {
+      if (!currentChallenges[category]) return;
+      const roundNum = currentChallenges[category].round || 1;
+      openRoundIsland(roundNum);
+      selectWindowRiddle(category);
     }
 
     function renderAdminRoundControl() {
@@ -1131,44 +1267,8 @@
       if (ptEl) ptEl.textContent = totalPts.toLocaleString();
     }
 
-    function filterChallenges() {
-      const targetRound = selectedRoundFilter || 'ALL';
-      
-      let firstVisibleCategory = null;
-      document.querySelectorAll('#challengeCategoriesContainer .challenge-card').forEach(card => {
-        const cardRound = card.getAttribute('data-round');
-        if (targetRound === 'ALL' || cardRound === targetRound) {
-          card.style.display = 'flex';
-          if (!firstVisibleCategory) firstVisibleCategory = card.getAttribute('data-category');
-        } else {
-          card.style.display = 'none';
-        }
-      });
-
-      // On desktop, auto-select first visible card if current selection is not visible
-      if (window.innerWidth > 1080 && firstVisibleCategory) {
-        const currentCard = document.querySelector(`.challenge-card[data-category="${currentCategory}"]`);
-        if (!currentCard || currentCard.style.display === 'none') {
-          selectChallenge(firstVisibleCategory);
-        }
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const tabs = document.querySelectorAll('#challengeTabs .category');
-      tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          const r = tab.getAttribute('data-round');
-          selectRoundFilter(r);
-        });
-      });
-    });
-
     function renderChallenges() {
-      const catContainer = document.getElementById('challengeCategoriesContainer');
       const adminList = document.getElementById('adminChallengesList');
-      
-      if (catContainer) catContainer.innerHTML = '';
       if (adminList) adminList.innerHTML = '';
       
       const allCategories = Object.keys(currentChallenges).sort((a, b) => {
@@ -1181,44 +1281,16 @@
         const nB = cB.riddleNumber || 1;
         return nA - nB;
       });
-      let firstCategory = null;
       
       for (const category of allCategories) {
         if (!currentChallenges[category]) continue;
         const info = currentChallenges[category];
-        if (!firstCategory) firstCategory = category;
-        
         const pts = info.points || 500;
         const diff = info.difficulty || 'EASY';
         const roundNum = info.round || 1;
         const riddleNum = info.riddleNumber || 1;
         const roundTag = `ROUND ${roundNum} // RIDDLE ${String(riddleNum).padStart(2, '0')}`;
         const displayName = info.subtitle || category;
-        
-        const isUnlocked = info.unlocked !== false;
-        if (catContainer) {
-          const div = document.createElement('div');
-          div.className = 'challenge-card' + (!isUnlocked ? ' locked-water-card' : '');
-          if (category === currentCategory) div.classList.add('selected');
-          div.setAttribute('data-category', category);
-          div.setAttribute('data-points', pts);
-          div.setAttribute('data-diff', diff);
-          div.setAttribute('data-round', String(roundNum));
-          div.innerHTML = `
-            <div class="c-icon-wrapper">${getCategoryIcon(info.category || category)}</div>
-            <div class="c-info">
-              <div class="c-round-tag">${escapeHTML(roundTag)} ${!isUnlocked ? '<span style="color:var(--danger); margin-left:4px;">[LOCKED WATERS]</span>' : ''}</div>
-              <div class="c-title">${escapeHTML(displayName)}</div>
-              <div class="c-subtitle">${escapeHTML(info.category || 'Riddle')} • ${pts} PTS • ${diff}</div>
-            </div>
-            <div class="c-solves">${!isUnlocked ? '🔒 LOCKED' : (info.solves || 0) + ' SOLVES'}</div>
-            <div class="c-arrow">&gt;</div>
-          `;
-          div.addEventListener('click', () => {
-            selectChallenge(category);
-          });
-          catContainer.appendChild(div);
-        }
         
         if (adminList) {
           const div = document.createElement('div');
@@ -1239,131 +1311,12 @@
         }
       }
       
-      filterChallenges();
       updateChallengeBoxesFromTeam();
 
-      // Default select on initial render
-      if (!currentCategory && firstCategory) {
-        selectChallenge(firstCategory);
-      } else if (currentCategory && currentChallenges[currentCategory]) {
-        selectChallenge(currentCategory);
+      // Refresh opened window if active
+      if (currentActiveRound && currentCategory && currentChallenges[currentCategory]) {
+        selectWindowRiddle(currentCategory);
       }
-    }
-
-    function selectChallenge(category) {
-      currentCategory = category;
-      const chall = currentChallenges[category];
-      if (!chall) return;
-
-      // Update card active classes
-      document.querySelectorAll('#challengeCategoriesContainer .challenge-card').forEach(card => {
-        if (card.getAttribute('data-category') === category) {
-          card.classList.add('selected');
-        } else {
-          card.classList.remove('selected');
-        }
-      });
-
-      const modal = document.getElementById('challengeModal');
-      const modalTitle = document.getElementById('modalTitle');
-      const modalDiff = document.getElementById('modalDiff');
-      const modalPoints = document.getElementById('modalPoints');
-      const modalIcon = document.getElementById('modalCategoryIcon');
-
-      modalTitle.textContent = chall.subtitle || category;
-      modalDiff.textContent = chall.difficulty || 'EASY';
-      modalPoints.textContent = chall.points || 500;
-      if (modalIcon) modalIcon.innerHTML = getCategoryIcon(chall.category || category);
-
-      const isRoundUnlocked = chall.unlocked !== false;
-      const subEl = document.querySelector('.detail-header-subtitle');
-      if (subEl) {
-        subEl.innerHTML = `
-          ROUND ${chall.round || 1}: ${escapeHTML(chall.roundName || 'Setting Sail')} // RIDDLE ${chall.riddleNumber || 1} // <span id="modalDiff">${chall.difficulty || 'EASY'}</span> // <span id="modalPoints">${chall.points || 500}</span> POINTS
-        `;
-      }
-
-      // Brief (Round 1 only; hidden for Rounds 2, 3, 4 where brief is in the previous flag answer)
-      const briefSection = document.getElementById('captainBriefSection');
-      const roundNum = chall.round || 1;
-      if (roundNum === 1 && chall.text && chall.text.trim()) {
-        if (briefSection) briefSection.style.display = 'block';
-        document.getElementById('challengeDescription').textContent = chall.text;
-      } else {
-        if (briefSection) briefSection.style.display = 'none';
-        document.getElementById('challengeDescription').textContent = '';
-      }
-
-      // Hint (Quartermaster's Secret)
-      const hintSection = document.getElementById('hintSection');
-      const hintContent = document.getElementById('challengeHintContent');
-      if (chall.hasHint) {
-        hintSection.style.display = 'block';
-        if (chall.hintUnlocked) {
-          hintContent.innerHTML = `
-            <div class="hint-unlocked-box">
-              <div style="font-size: 11px; color: var(--gold-primary); margin-bottom: 6px; letter-spacing: 0.1em; font-family: 'Cinzel', serif;">[ UNLOCKED HINT ]</div>
-              <div>${escapeHTML(chall.hint || '')}</div>
-            </div>
-          `;
-        } else {
-          const cost = chall.nextHintCost || 5;
-          hintContent.innerHTML = `
-            <div class="hint-locked-box">
-              <div class="hint-locked-message">
-                The Quartermaster holds a secret for this riddle. Revealing it will deduct <strong>${cost} points</strong> from your crew's treasure.
-              </div>
-              <button type="button" class="hint-unlock-btn" onclick="openHintUnlockModal('${escapeHTML(category)}', ${cost})">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
-                Unlock Hint (-${cost} PTS)
-              </button>
-            </div>
-          `;
-        }
-      } else {
-        hintSection.style.display = 'none';
-      }
-
-      // Single-Submitter Check: Lock if already claimed by crew
-      const solvedChallenges = (myTeamData && myTeamData.team && myTeamData.team.solvedChallenges) || [];
-      const isSolved = Array.isArray(solvedChallenges) 
-        ? solvedChallenges.includes(category) 
-        : Boolean(solvedChallenges[category]);
-
-      const flagInput = document.getElementById('flagInput');
-      const submitFlagBtn = document.getElementById('submitFlagBtn');
-      const flagResult = document.getElementById('flagResult');
-
-      if (!isRoundUnlocked) {
-        flagInput.value = 'These waters remain locked by the Admiralty!';
-        flagInput.placeholder = '🔒 Locked waters';
-        flagInput.disabled = true;
-        submitFlagBtn.disabled = true;
-        submitFlagBtn.textContent = 'WATERS LOCKED';
-        submitFlagBtn.style.opacity = '0.5';
-        submitFlagBtn.style.cursor = 'not-allowed';
-        flagResult.textContent = "🔒 Arr! Await Admiralty orders to chart and unlock this island's waters.";
-        flagResult.style.color = 'var(--gold-muted)';
-      } else if (isSolved) {
-        flagInput.value = 'Bounty already claimed by your crew!';
-        flagInput.disabled = true;
-        submitFlagBtn.disabled = true;
-        submitFlagBtn.textContent = 'SOLVED';
-        submitFlagBtn.style.opacity = '0.6';
-        submitFlagBtn.style.cursor = 'not-allowed';
-        flagResult.textContent = '✓ Bounty Claimed by Crew';
-        flagResult.style.color = 'var(--success)';
-      } else {
-        flagInput.value = '';
-        flagInput.disabled = false;
-        submitFlagBtn.disabled = false;
-        submitFlagBtn.textContent = 'SUBMIT FLAG';
-        submitFlagBtn.style.opacity = '1';
-        submitFlagBtn.style.cursor = 'pointer';
-        flagResult.textContent = '';
-      }
-
-      modal.style.display = 'flex';
     }
 
     // Quartermaster Hint Unlock Confirmation Modal
@@ -1422,7 +1375,7 @@
           fetchMyTeam();
           fetchTeamScores();
           if (currentCategory === hintTargetCategory) {
-            selectChallenge(currentCategory);
+            selectWindowRiddle(currentCategory);
           }
           showToast(data.message || `Hint revealed! ${data.cost} points deducted.`);
         }
@@ -1435,59 +1388,92 @@
       });
     }
 
-    // Flag Submission
-    document.addEventListener('DOMContentLoaded', () => {
-      const submitFlagBtn = document.getElementById('submitFlagBtn');
-      const flagInput = document.getElementById('flagInput');
-      const flagResult = document.getElementById('flagResult');
+    // Flag Submission for Table Map Challenge Window
+    function submitWindowFlag() {
+      const flagInput = document.getElementById('windowFlagInput');
+      const submitBtn = document.getElementById('windowSubmitFlagBtn');
+      const flagResult = document.getElementById('windowFlagResult');
+      if (!flagInput || !submitBtn || !flagResult || !currentCategory) return;
 
-      if (submitFlagBtn && flagInput) {
-        submitFlagBtn.addEventListener('click', () => {
-          const flag = flagInput.value.trim();
-          if (!flag) {
-            flagResult.style.color = 'var(--danger)';
-            flagResult.textContent = 'Please enter a flag to submit.';
-            return;
+      const flag = flagInput.value.trim();
+      if (!flag) {
+        flagResult.style.color = 'var(--danger)';
+        flagResult.textContent = 'Arr! Enter a flag before claiming the bounty.';
+        return;
+      }
+
+      flagResult.style.color = 'var(--gold-muted)';
+      flagResult.textContent = 'Submitting flag to captain...';
+      submitBtn.disabled = true;
+
+      fetch('/api/challenge/flag', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category: currentCategory, flag })
+      })
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(data => { throw new Error(data.error || 'Submission error'); });
+        }
+        return res.json();
+      })
+      .then(data => {
+        flagResult.textContent = data.message;
+        flagResult.style.color = "var(--success)";
+        flagInput.value = 'Bounty already claimed by your crew!';
+        flagInput.disabled = true;
+        submitBtn.textContent = 'SOLVED';
+        submitBtn.style.opacity = '0.6';
+        submitBtn.style.cursor = 'not-allowed';
+
+        if (myTeamData && myTeamData.team) {
+          if (!Array.isArray(myTeamData.team.solvedChallenges)) {
+            myTeamData.team.solvedChallenges = [];
           }
-          flagResult.style.color = 'var(--gold-muted)';
-          flagResult.textContent = 'Submitting flag to captain...';
+          if (!myTeamData.team.solvedChallenges.includes(currentCategory)) {
+            myTeamData.team.solvedChallenges.push(currentCategory);
+          }
+        }
 
-          fetch('/api/challenge/flag', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ category: currentCategory, flag })
-          })
-          .then(res => {
-            if (!res.ok) {
-              return res.json().then(data => { throw new Error(data.error || 'Submission error'); });
-            }
-            return res.json();
-          })
-          .then(data => {
-            flagResult.textContent = data.message;
-            flagResult.style.color = "var(--success)";
-            flagInput.value = 'Bounty already claimed by your crew!';
-            flagInput.disabled = true;
-            submitFlagBtn.disabled = true;
-            submitFlagBtn.textContent = 'SOLVED';
-            submitFlagBtn.style.opacity = '0.6';
-            submitFlagBtn.style.cursor = 'not-allowed';
-            fetchMyTeam();
-            fetchTeamScores();
-            const solvedBox = document.querySelector(`.challenge-card[data-category="${currentCategory}"]`);
-            if (solvedBox) solvedBox.classList.add('solved');
-            showToast("Bounty Claimed! " + data.message);
-          })
-          .catch(err => {
-            flagResult.textContent = err.message;
-            flagResult.style.color = "var(--danger)";
-          });
-        });
+        const currentPill = document.querySelector(`#windowRiddleSelectorStrip .riddle-pill[data-category="${currentCategory}"]`);
+        if (currentPill) {
+          currentPill.classList.add('solved');
+          if (!currentPill.querySelector('.pill-check')) {
+            const check = document.createElement('span');
+            check.className = 'pill-check';
+            check.textContent = '✓';
+            currentPill.appendChild(check);
+          }
+        }
 
-        flagInput.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') submitFlagBtn.click();
+        fetchMyTeam();
+        fetchTeamScores();
+        showToast("Bounty Claimed! " + data.message);
+      })
+      .catch(err => {
+        submitBtn.disabled = false;
+        flagResult.textContent = err.message;
+        flagResult.style.color = "var(--danger)";
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const windowSubmitBtn = document.getElementById('windowSubmitFlagBtn');
+      const windowFlagInp = document.getElementById('windowFlagInput');
+      if (windowSubmitBtn && windowFlagInp) {
+        windowSubmitBtn.addEventListener('click', submitWindowFlag);
+        windowFlagInp.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') submitWindowFlag();
         });
       }
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeChallengeWindow();
+          closeHintUnlockModal();
+          closeTournamentFlowModal();
+        }
+      });
     });
 
     // ======================================================
@@ -1823,14 +1809,42 @@
       const solvedArr = Array.isArray(team.solvedChallenges) ? team.solvedChallenges : Object.keys(team.solvedChallenges || {});
       const solvedSet = new Set(solvedArr);
       
-      document.querySelectorAll('#challengeCategoriesContainer .challenge-card').forEach(box => {
-        const cat = box.getAttribute('data-category');
-        if (solvedSet.has(cat)) {
-          box.classList.add('solved');
-        } else {
-          box.classList.remove('solved');
+      // Update pills in floating challenge window if open
+      if (currentActiveRound) {
+        document.querySelectorAll('#windowRiddleSelectorStrip .riddle-pill').forEach(pill => {
+          const cat = pill.getAttribute('data-category');
+          if (solvedSet.has(cat)) {
+            pill.classList.add('solved');
+            if (!pill.querySelector('.pill-check')) {
+              const check = document.createElement('span');
+              check.className = 'pill-check';
+              check.textContent = '✓';
+              pill.appendChild(check);
+            }
+          } else {
+            pill.classList.remove('solved');
+            const check = pill.querySelector('.pill-check');
+            if (check) check.remove();
+          }
+        });
+
+        // If current window riddle is already solved, lock the input
+        if (currentCategory && solvedSet.has(currentCategory)) {
+          const flagInput = document.getElementById('windowFlagInput');
+          const submitBtn = document.getElementById('windowSubmitFlagBtn');
+          const flagResult = document.getElementById('windowFlagResult');
+          if (flagInput && submitBtn && flagResult) {
+            flagInput.value = 'Bounty already claimed by your crew!';
+            flagInput.disabled = true;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'SOLVED';
+            submitBtn.style.opacity = '0.6';
+            submitBtn.style.cursor = 'not-allowed';
+            flagResult.textContent = '✓ Bounty Claimed by Crew';
+            flagResult.style.color = 'var(--success)';
+          }
         }
-      });
+      }
     }
 
     // Scoreboard Tabs & Graph
