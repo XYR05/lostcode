@@ -1189,7 +1189,8 @@ body::after {
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1), filter 0.2s ease, opacity 0.25s ease;
+  will-change: transform, filter;
 }
 
 #mapIsland1 {
@@ -1225,22 +1226,22 @@ body::after {
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.65));
-  transition: transform 0.3s ease, filter 0.3s ease;
+  transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-/* Hover Bounce Animation */
+/* Hover Bounce Animation - Snappy & Smooth */
 .map-island-station:hover {
-  animation: islandHoverBounce 1.2s infinite ease-in-out;
-  filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 20px rgba(201, 154, 82, 0.65));
+  animation: islandHoverBounce 0.75s infinite cubic-bezier(0.4, 0, 0.6, 1);
+  filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 18px rgba(201, 154, 82, 0.65));
   z-index: 25;
 }
 
 @keyframes islandHoverBounce {
   0%, 100% {
-    transform: translate(-50%, -50%) scale(1.05);
+    transform: translate(-50%, -50%) scale(1.04);
   }
   50% {
-    transform: translate(-50%, -58%) scale(1.09);
+    transform: translate(-50%, -56%) scale(1.07);
   }
 }
 
@@ -1344,11 +1345,10 @@ body::after {
 }
 
 /* ====================================================== */
-/* FLOATING CHALLENGE WINDOW (RIGHT-SIDE OVER MAP)        */
+/* FLOATING CHALLENGE WINDOW (DYNAMIC LEFT/RIGHT DOCKING) */
 /* ====================================================== */
 .map-challenge-window {
   position: absolute;
-  right: 3%;
   top: 50%;
   transform: translateY(-50%);
   width: 47%;
@@ -1362,15 +1362,42 @@ body::after {
   padding: 24px;
   z-index: 50;
   backdrop-filter: blur(10px);
-  animation: windowSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
 }
 
-@keyframes windowSlideIn {
+/* Default / Right Dock: For islands on the LEFT (Round 1 & Round 3) */
+.map-challenge-window,
+.map-challenge-window.dock-right {
+  right: 3%;
+  left: auto;
+  animation: windowSlideInRight 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes windowSlideInRight {
   from {
     opacity: 0;
     transform: translateY(-50%) translateX(35px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+/* Left Dock: For islands on the RIGHT (Round 2 & Round 4) */
+.map-challenge-window.dock-left {
+  left: 3%;
+  right: auto;
+  animation: windowSlideInLeft 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes windowSlideInLeft {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-35px);
   }
   to {
     opacity: 1;
@@ -1617,7 +1644,9 @@ body::after {
     aspect-ratio: auto;
     min-height: 600px;
   }
-  .map-challenge-window {
+  .map-challenge-window,
+  .map-challenge-window.dock-right,
+  .map-challenge-window.dock-left {
     width: 92%;
     right: 4%;
     left: 4%;

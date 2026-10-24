@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lost Code // CoreDump 2.0</title>
-  <link rel="stylesheet" href="/dashboard-styles.css?v=21" />
+  <link rel="stylesheet" href="/dashboard-styles.css?v=22" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="/socket.io/socket.io.js"></script>
 </head>
@@ -1061,9 +1061,14 @@
       let targetCat = roundCategories.find(k => !checkSolved(k)) || roundCategories[0];
       selectWindowRiddle(targetCat);
 
-      // Display floating challenge window
+      // Display floating challenge window with dynamic left/right docking:
+      // Left islands (Round 1 & Round 3) open window on the RIGHT (leaving left islands unobstructed)
+      // Right islands (Round 2 & Round 4) open window on the LEFT (leaving right islands unobstructed)
       const win = document.getElementById('mapChallengeWindow');
       if (win) {
+        const isLeftIsland = (roundNum === 1 || roundNum === 3);
+        win.classList.remove('dock-left', 'dock-right');
+        win.classList.add(isLeftIsland ? 'dock-right' : 'dock-left');
         win.style.display = 'flex';
       }
     }
@@ -1071,7 +1076,10 @@
     function closeChallengeWindow() {
       currentActiveRound = null;
       const win = document.getElementById('mapChallengeWindow');
-      if (win) win.style.display = 'none';
+      if (win) {
+        win.style.display = 'none';
+        win.classList.remove('dock-left', 'dock-right');
+      }
       const mapEl = document.getElementById('treasureTableMap');
       if (mapEl) mapEl.classList.remove('window-open');
       for (let r = 1; r <= 4; r++) {
