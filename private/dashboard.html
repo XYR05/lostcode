@@ -312,6 +312,46 @@
       </div>
     </div>
 
+    <!-- Admiralty Tournament Roster & Bracket Monitor -->
+    <div class="tournament-bracket-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.25rem; background: rgba(23,17,12,0.95); border-bottom: 1px solid var(--border-subtle); flex-wrap: wrap; gap: 10px;">
+        <div>
+          <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); display: flex; align-items: center; gap: 8px;">
+            <span>⚔️</span> Admiralty Tournament Roster & Bracket Monitor
+          </h3>
+          <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 0.85rem;">
+            Live 10-crew tracking: Group A & B, pre-bound riddle chains, active rounds, and elimination state.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button type="button" onclick="seedDefaultTournamentCrews()" style="padding: 0.6rem 1.2rem; background: rgba(201, 154, 82, 0.2); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.8rem; border-radius: 4px; cursor: pointer;">
+            🏴‍☠️ Seed 10 Default Crews
+          </button>
+          <button type="button" onclick="fetchTournamentStatus()" style="padding: 0.6rem 1rem; background: rgba(82, 140, 201, 0.2); border: 1px solid #528cc9; color: #8bbcef; font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.8rem; border-radius: 4px; cursor: pointer;">
+            🔄 Refresh Bracket
+          </button>
+        </div>
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="tournament-bracket-table">
+          <thead>
+            <tr>
+              <th>CREW NAME</th>
+              <th>GROUP</th>
+              <th>CURRENT ROUND</th>
+              <th>ALLOCATED RIDDLE</th>
+              <th>SOLVES</th>
+              <th>TREASURE</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody id="tournamentRosterTableBody">
+            <!-- Dynamically populated by renderTournamentBracket() -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; margin-top: 2rem;">
       <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary);">Active Challenges</h3>
       
@@ -420,6 +460,28 @@
           ⚠️ <strong>Quartermaster Hint Cost:</strong> Hints carry an escalating score deduction: Hint #1 = -5 pts, Hint #2 = -10 pts, Hint #3 = -15 pts, Hint #4 = -20 pts...
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- WALKED THE PLANK ELIMINATION MODAL -->
+  <div id="walkPlankModal" class="walk-plank-modal-overlay" style="display: none;">
+    <div class="walk-plank-modal">
+      <div class="walk-plank-skull-wrap">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+      </div>
+      <h2 class="walk-plank-title">WALKED THE PLANK!</h2>
+      <div class="walk-plank-subtitle">YOUR CREW'S EXPEDITION HAS ENDED IN TREACHEROUS SEAS</div>
+      <div class="walk-plank-reason-box" id="walkPlankReasonText">
+        Your crew was outpaced by rival pirates. The qualifying berths have been claimed!
+      </div>
+      <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.5rem; line-height: 1.5;">
+        You can still inspect the Leaderboard, review your crew's solved manifest, and observe the remaining pirate crews showdown.
+      </p>
+      <button type="button" class="walk-plank-btn" onclick="closeWalkPlankModal()">Acknowledge Fate</button>
     </div>
   </div>
 
@@ -956,12 +1018,16 @@
         4: { title: 'TREASURE ISLAND ❌', sub: '1 v 1 FINAL SHOWDOWN' }
       };
 
+      const teamUnlocked = (myTeamData && myTeamData.team && Array.isArray(myTeamData.team.unlockedRounds))
+        ? myTeamData.team.unlockedRounds
+        : unlockedRounds;
+
       [1, 2, 3, 4].forEach(r => {
         const station = document.getElementById(`mapIsland${r}`);
         const bannerSub = document.getElementById(`bannerSub${r}`);
         if (!station) return;
 
-        const isUnlocked = unlockedRounds.includes(r) || window.isAdminUser;
+        const isUnlocked = teamUnlocked.includes(r) || window.isAdminUser;
         if (isUnlocked) {
           station.classList.remove('is-locked');
           if (bannerSub) {
@@ -971,7 +1037,7 @@
         } else {
           station.classList.add('is-locked');
           if (bannerSub) {
-            bannerSub.innerHTML = '<span style="color: #a64444; font-weight: 700;">🔒 LOCKED WATERS</span>';
+            bannerSub.innerHTML = '<span class="svg-padlock-badge"><svg class="svg-padlock-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> LOCKED WATERS</span>';
           }
         }
       });
@@ -980,7 +1046,7 @@
       let totalUnlockedCount = 0;
       Object.values(currentChallenges).forEach(c => {
         const r = c.round || 1;
-        if (unlockedRounds.includes(r) || window.isAdminUser) {
+        if (teamUnlocked.includes(r) || window.isAdminUser) {
           totalUnlockedCount++;
         }
       });
@@ -988,17 +1054,27 @@
       if (unEl) unEl.textContent = totalUnlockedCount;
 
       // If active island got locked while open (and not admin), close window
-      if (currentActiveRound && !unlockedRounds.includes(currentActiveRound) && !window.isAdminUser) {
+      if (currentActiveRound && !teamUnlocked.includes(currentActiveRound) && !window.isAdminUser) {
         closeChallengeWindow();
       }
     }
 
     function openRoundIsland(roundNum) {
-      const isUnlocked = unlockedRounds.includes(roundNum) || window.isAdminUser;
+      if (myTeamData && myTeamData.team && myTeamData.team.eliminated && !window.isAdminUser) {
+        openWalkPlankModal(myTeamData.team.eliminatedReason);
+        return;
+      }
+
+      const teamUnlocked = (myTeamData && myTeamData.team && Array.isArray(myTeamData.team.unlockedRounds))
+        ? myTeamData.team.unlockedRounds
+        : unlockedRounds;
+      const isUnlocked = teamUnlocked.includes(roundNum) || window.isAdminUser;
+
       if (!isUnlocked) {
+        const curR = (myTeamData && myTeamData.team && myTeamData.team.currentRound) || 1;
         showCustomConfirm(
           "Treacherous Waters!",
-          `Arr! Round ${roundNum} remains sealed by the Admiralty! Stand by for the Captain's orders before navigating these waters.`,
+          `Arr! Island ${roundNum} remains sealed by the Admiralty! Your crew must solve your allocated riddle in Round ${curR} before setting sail for these waters.`,
           true,
           null
         );
@@ -1033,10 +1109,20 @@
         return;
       }
 
-      // Populate riddle selector strip for multi-riddle rounds
+      // Determine target riddle:
+      // For non-admin, target their allocated riddle!
+      let targetCat = null;
+      if (myTeamData && myTeamData.team && myTeamData.team.allocatedRiddles && myTeamData.team.allocatedRiddles[roundNum]) {
+        targetCat = myTeamData.team.allocatedRiddles[roundNum];
+      }
+      if (!targetCat || !currentChallenges[targetCat]) {
+        targetCat = roundCategories.find(k => !checkSolved(k)) || roundCategories[0];
+      }
+
+      // Strip: only show riddle pill strip if admin, or if round has multiple riddles for admin inspection
       const strip = document.getElementById('windowRiddleSelectorStrip');
       if (strip) {
-        if (roundCategories.length > 1) {
+        if (window.isAdminUser && roundCategories.length > 1) {
           strip.style.display = 'flex';
           strip.innerHTML = '';
           roundCategories.forEach(catKey => {
@@ -1057,8 +1143,6 @@
         }
       }
 
-      // Select active riddle: prefer first unsolved, else first riddle
-      let targetCat = roundCategories.find(k => !checkSolved(k)) || roundCategories[0];
       selectWindowRiddle(targetCat);
 
       // Display floating challenge window with dynamic left/right docking:
@@ -1169,13 +1253,13 @@
 
       if (!isRoundUnlocked) {
         flagInput.value = 'These waters remain locked by the Admiralty!';
-        flagInput.placeholder = '🔒 Locked waters';
+        flagInput.placeholder = 'Locked waters — Advance previous round';
         flagInput.disabled = true;
         submitBtn.disabled = true;
         submitBtn.textContent = 'WATERS LOCKED';
         submitBtn.style.opacity = '0.5';
         submitBtn.style.cursor = 'not-allowed';
-        flagResult.textContent = "🔒 Arr! Await Admiralty orders to chart and unlock this island's waters.";
+        flagResult.textContent = "Arr! Complete your crew's charted riddle to unlock these waters.";
         flagResult.style.color = 'var(--gold-muted)';
       } else if (isSolved) {
         flagInput.value = 'Bounty already claimed by your crew!';
@@ -1231,11 +1315,11 @@
               </div>
             </div>
             <div style="margin-top: 10px; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace;">
-              STATUS: <strong style="color: ${isUnlocked ? 'var(--success)' : 'var(--danger)'};">${isUnlocked ? '🔓 CHARTED / OPEN' : '🔒 LOCKED WATERS'}</strong>
+              STATUS: <strong style="color: ${isUnlocked ? 'var(--success)' : 'var(--danger)'};">${isUnlocked ? 'CHARTED / OPEN' : 'LOCKED WATERS'}</strong>
             </div>
           </div>
           <button type="button" class="admin-round-toggle-btn ${isUnlocked ? 'btn-lock' : 'btn-unlock'}" onclick="toggleRoundLock(${r.round}, ${!isUnlocked})">
-            ${isUnlocked ? '🔒 Lock Waters' : '🔓 Chart & Open Waters'}
+            ${isUnlocked ? 'Lock Waters' : 'Chart & Open Waters'}
           </button>
         `;
         container.appendChild(card);
@@ -1441,6 +1525,17 @@
           if (!myTeamData.team.solvedChallenges.includes(currentCategory)) {
             myTeamData.team.solvedChallenges.push(currentCategory);
           }
+          if (data.currentRound) myTeamData.team.currentRound = data.currentRound;
+          if (data.unlockedRounds) myTeamData.team.unlockedRounds = data.unlockedRounds;
+          if (data.eliminated) {
+            myTeamData.team.eliminated = true;
+            myTeamData.team.eliminatedReason = data.eliminatedReason;
+            openWalkPlankModal(data.eliminatedReason);
+          }
+          if (data.isWinner) {
+            myTeamData.team.isWinner = true;
+            showToast("🏆 VICTORY! Your crew has claimed the Grand Lost Code Bounty!");
+          }
         }
 
         const currentPill = document.querySelector(`#windowRiddleSelectorStrip .riddle-pill[data-category="${currentCategory}"]`);
@@ -1454,14 +1549,19 @@
           }
         }
 
+        renderRouteMap();
         fetchMyTeam();
         fetchTeamScores();
+        if (typeof fetchTournamentStatus === 'function') fetchTournamentStatus();
         showToast("Bounty Claimed! " + data.message);
       })
       .catch(err => {
         submitBtn.disabled = false;
         flagResult.textContent = err.message;
         flagResult.style.color = "var(--danger)";
+        if (err.message && (err.message.includes('Plank') || err.message.includes('eliminated'))) {
+          openWalkPlankModal(err.message);
+        }
       });
     }
 
@@ -1756,6 +1856,7 @@
         .then(r => r.json())
         .then(data => {
           myTeamData = data;
+          renderRouteMap();
           const scoreDisplay = document.getElementById('teamScoreDisplay');
           const myTeamInfo = document.getElementById('myTeamInfo');
 
@@ -1763,6 +1864,10 @@
             const team = data.team;
             if (team.disqualified) {
               lockDisqualified(team);
+            }
+
+            if (team.eliminated) {
+              // Crew has walked the plank
             }
 
             if (scoreDisplay) scoreDisplay.textContent = `Your Crew Score: ${team.score} PTS`;
@@ -1775,21 +1880,36 @@
               const hintsCount = team.hintsUnlockedCount || (team.hintsUnlocked ? Object.keys(team.hintsUnlocked).length : 0);
               const nextHintPenalty = team.nextHintCost || (hintsCount + 1) * 5;
               const violationsCount = team.violations || 0;
-              const standingStatus = team.disqualified
-                ? `<span style="background:var(--danger); color:#fff; font-size:11px; padding:3px 8px; border-radius:3px; font-weight:bold; letter-spacing:0.05em;">DISQUALIFIED</span>`
-                : (violationsCount > 0 
-                    ? `<span style="background:rgba(166,68,68,0.2); border:1px solid var(--danger); color:var(--danger); font-size:11px; padding:3px 8px; border-radius:3px; font-weight:bold;">1 WARNING ACTIVE</span>`
-                    : `<span style="color:var(--success); font-size:11px; font-weight:bold;">CLEAN STANDING (0 VIOLATIONS)</span>`);
+              
+              let standingStatus = '';
+              if (team.disqualified) {
+                standingStatus = `<span style="background:var(--danger); color:#fff; font-size:11px; padding:3px 8px; border-radius:3px; font-weight:bold; letter-spacing:0.05em;">DISQUALIFIED</span>`;
+              } else if (team.eliminated) {
+                standingStatus = `<span style="background:rgba(166,68,68,0.25); border:1px solid #c94444; color:#ff8b8b; font-size:11px; padding:3px 8px; border-radius:3px; font-weight:bold; letter-spacing:0.05em;">☠️ WALKED THE PLANK (ROUND ${team.eliminatedRound || 2})</span>`;
+              } else if (team.isWinner) {
+                standingStatus = `<span style="background:rgba(255,215,0,0.25); border:1px solid #ffd700; color:#ffd700; font-size:11px; padding:3px 8px; border-radius:3px; font-weight:bold; letter-spacing:0.05em;">🏆 TOURNAMENT CHAMPION</span>`;
+              } else if (violationsCount > 0) {
+                standingStatus = `<span style="background:rgba(166,68,68,0.2); border:1px solid var(--danger); color:var(--danger); font-size:11px; padding:3px 8px; border-radius:3px; font-weight:bold;">1 WARNING ACTIVE</span>`;
+              } else {
+                standingStatus = `<span style="color:var(--success); font-size:11px; font-weight:bold;">CLEAN STANDING (0 VIOLATIONS)</span>`;
+              }
+
+              const curR = team.currentRound || 1;
+              const curGroup = (curR >= 3 ? team.groupRound3 : team.groupRound2) || 'A';
+              const assignedRiddleKey = (team.allocatedRiddles && team.allocatedRiddles[curR]) || 'Pending Assignment';
 
               myTeamInfo.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; background:rgba(23,17,12,0.6); padding:1.5rem; border:1px solid var(--border-subtle); border-radius:4px;">
                   <div>
                     <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
-                      <span style="font-size:0.85rem; color:var(--gold-muted); font-family:'Cinzel',serif; letter-spacing:0.1em;">[ ACTIVE CREW ]</span>
+                      <span style="font-size:0.85rem; color:var(--gold-muted); font-family:'Cinzel',serif; letter-spacing:0.1em;">[ ACTIVE CREW // GROUP ${curGroup} ]</span>
                       ${standingStatus}
                     </div>
                     <h3 style="font-family:'Cinzel',serif; font-size:2rem; color:var(--gold-primary); margin:0;">${escapeHTML(team.teamName)}</h3>
-                    <p style="color:var(--text-secondary); font-size:1.05rem; margin-top:0.4rem;">Total Treasure Bounty: <strong style="color:var(--gold-primary);">${team.score} PTS</strong></p>
+                    <p style="color:var(--text-secondary); font-size:1.05rem; margin-top:0.4rem;">Total Treasure Bounty: <strong style="color:var(--gold-primary);">${team.score} PTS</strong> • Current Station: <strong style="color:var(--gold-primary);">Round ${curR}</strong></p>
+                    <div style="font-size:0.82rem; font-family:'JetBrains Mono',monospace; color:var(--gold-muted); margin-top:0.2rem;">
+                      Active Charted Riddle: <span style="color:var(--text-primary);">${escapeHTML(assignedRiddleKey)}</span>
+                    </div>
                   </div>
                   <div style="text-align:right;">
                     <div style="font-size:0.9rem; color:var(--text-secondary);">Hints Unlocked: <strong style="color:var(--gold-primary);">${hintsCount}</strong></div>
@@ -2087,14 +2207,22 @@
       const adminWipeBtn = document.getElementById('adminWipeDataBtn');
       if (adminWipeBtn) {
         adminWipeBtn.addEventListener('click', () => {
-          showCustomConfirm("Wipe All Records?", "Are you sure you want to WIPE all scores, solves, and hints? This cannot be undone!", false, (res) => {
+          showCustomConfirm("Wipe All Records?", "Are you sure you want to WIPE all scores, solves, and tournament rounds? This cannot be undone!", false, (res) => {
             if (!res) return;
             fetch('/api/admin/wipe', { method: 'POST' }).then(r=>r.json()).then(d => {
               if (d.error) showCustomConfirm("Error", d.error, true, null);
-              else showCustomConfirm("Expedition Reset", d.message, true, null);
+              else {
+                showCustomConfirm("Expedition Reset", d.message, true, null);
+                if (typeof fetchTournamentStatus === 'function') fetchTournamentStatus();
+              }
             });
           });
         });
+      }
+
+      // Initial tournament fetch for admins
+      if (window.isAdminUser) {
+        fetchTournamentStatus();
       }
 
       // Sockets
@@ -2120,6 +2248,99 @@
       });
       socket.on('challengesUpdate', () => { fetchChallenges(); });
       socket.on('teamsUpdate', () => { fetchTeamScores(); fetchTeams(); fetchMyTeam(); });
+      socket.on('tournamentUpdate', () => {
+        fetchMyTeam();
+        fetchChallenges();
+        if (typeof fetchTournamentStatus === 'function') fetchTournamentStatus();
+      });
+      socket.on('tournamentWinner', (data) => {
+        showCustomConfirm("🏆 Tournament Champion!", `${data.winner} has conquered the Final Treasure and won the Lost Code Championship!`, true, null);
+      });
+    });
+
+    function openWalkPlankModal(reason) {
+      const modal = document.getElementById('walkPlankModal');
+      const reasonEl = document.getElementById('walkPlankReasonText');
+      if (reasonEl && reason) {
+        reasonEl.textContent = reason;
+      }
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeWalkPlankModal() {
+      const modal = document.getElementById('walkPlankModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function fetchTournamentStatus() {
+      fetch('/api/tournament/status')
+        .then(r => r.json())
+        .then(data => {
+          renderTournamentBracket(data.teams || [], data.winner);
+        })
+        .catch(err => console.error("Error fetching tournament status:", err));
+    }
+
+    function renderTournamentBracket(teamsList, winner) {
+      const tbody = document.getElementById('tournamentRosterTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (teamsList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-secondary); padding: 1.5rem;">No crews registered yet. Click "Seed 10 Default Crews" to provision the tournament roster.</td></tr>`;
+        return;
+      }
+
+      teamsList.forEach(t => {
+        const curR = t.currentRound || 1;
+        const group = (curR >= 3 ? t.groupRound3 : t.groupRound2) || 'A';
+        const groupClass = (group === 'A') ? 'badge-group-a' : 'badge-group-b';
+        const allocated = (t.allocatedRiddles && t.allocatedRiddles[curR]) || 'None';
+        const solvesCount = Object.keys(t.roundSolves || {}).length;
+
+        let statusHtml = '';
+        if (t.isWinner) {
+          statusHtml = `<span class="status-tag status-winner">🏆 CHAMPION</span>`;
+        } else if (t.eliminated) {
+          statusHtml = `<span class="status-tag status-eliminated">☠️ WALKED PLANK (R${t.eliminatedRound || 2})</span>`;
+        } else {
+          statusHtml = `<span class="status-tag status-active">⚓ ADVANCED (R${curR})</span>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-family:'Cinzel',serif; font-weight:700; color:var(--gold-primary);">${escapeHTML(t.teamName)}</td>
+          <td><span class="badge-group-pill ${groupClass}">GROUP ${escapeHTML(group)}</span></td>
+          <td><span style="font-weight:700; color:var(--text-primary);">Round ${curR}</span></td>
+          <td style="font-size:0.78rem; color:var(--text-secondary); max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHTML(allocated)}">${escapeHTML(allocated)}</td>
+          <td><span style="color:var(--gold-primary); font-weight:700;">${solvesCount} / 4</span></td>
+          <td><span style="font-weight:700; color:var(--gold-primary);">${t.score || 0}</span></td>
+          <td>${statusHtml}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function seedDefaultTournamentCrews() {
+      showCustomConfirm("Seed 10 Crews?", "Provision the 10 iconic tournament pirate crews with pre-bound riddle chains and balanced Group A/B slots?", false, (confirmed) => {
+        if (!confirmed) return;
+        fetch('/api/admin/tournament/seed-teams', { method: 'POST' })
+          .then(r => r.json())
+          .then(data => {
+            if (data.error) {
+              showCustomConfirm("Error", data.error, true, null);
+            } else {
+              showCustomConfirm("Admiralty Roster Seeded", data.message, true, null);
+              fetchTournamentStatus();
+              fetchTeams();
+              fetchTeamScores();
+            }
+          })
+          .catch(err => {
+            showCustomConfirm("Error", err.message, true, null);
+          });
+      });
+    }
     });
   </script>
 </body>

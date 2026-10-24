@@ -115,6 +115,14 @@ app.post('/api/admin/wipe', (req, res) => {
       team.score = 0;
       team.solvedChallenges = [];
       team.hintsUnlocked = {};
+      team.currentRound = 1;
+      team.unlockedRounds = [1];
+      team.eliminated = false;
+      team.eliminatedRound = null;
+      team.eliminatedReason = null;
+      team.roundSolves = {};
+      team.isWinner = false;
+      delete team.wonAt;
   });
   users.forEach(user => {
       user.solvedChallenges = [];
@@ -122,8 +130,9 @@ app.post('/api/admin/wipe', (req, res) => {
   fs.writeFileSync(path.join(__dirname, 'teams.json'), JSON.stringify(teams, null, 2));
   fs.writeFileSync(path.join(__dirname, 'users.json'), JSON.stringify(users, null, 2));
   io.emit('teamsUpdate');
+  io.emit('tournamentUpdate');
   
-  res.json({ message: 'All scores and solves have been securely wiped.' });
+  res.json({ message: 'All scores, solves, and tournament rounds have been securely reset to Round 1.' });
 });
 
 
@@ -139,6 +148,108 @@ const validateNoTags = (str, fieldName) => {
 };
 
 // -----------------------
+// Tournament Engine Utilities: Riddle Allocations & Group Binding
+// -----------------------
+function getRiddlesByRound() {
+  const flagsFilePath = path.join(__dirname, 'private', 'flags.json');
+  if (!fs.existsSync(flagsFilePath)) return { 1: [], 2: [], 3: [], 4: [] };
+  const flagsData = JSON.parse(fs.readFileSync(flagsFilePath, 'utf8'));
+  const grouped = { 1: [], 2: [], 3: [], 4: [] };
+  Object.keys(flagsData).forEach(k => {
+    const r = flagsData[k].round || 1;
+    if (grouped[r]) {
+      grouped[r].push({
+        key: k,
+        riddleNumber: flagsData[k].riddleNumber || 1,
+        subtitle: flagsData[k].subtitle || k,
+        points: flagsData[k].points || 500,
+        text: flagsData[k].text || ''
+      });
+    }
+  });
+  for (const r in grouped) {
+    grouped[r].sort((a, b) => a.riddleNumber - b.riddleNumber);
+  }
+  return grouped;
+}
+
+function allocateRiddlesForTeamIndex(teamIndex) {
+  const riddles = getRiddlesByRound();
+
+  // Group assignment: 5 teams in Group A, 5 in Group B
+  // Alternate: 0, 2, 4, 6, 8 => Group A; 1, 3, 5, 7, 9 => Group B
+  const groupRound2 = (teamIndex % 2 === 0) ? 'A' : 'B';
+
+  // Round 1 (10 riddles): exactly 1 unique riddle per team
+  const r1List = riddles[1] || [];
+  const r1Key = r1List.length > 0 ? r1List[teamIndex % r1List.length].key : null;
+
+  // Round 2 (6 riddles): deterministic distribution across the 10 teams
+  const r2List = riddles[2] || [];
+  const r2Key = r2List.length > 0 ? r2List[teamIndex % r2List.length].key : null;
+
+  // Round 3 (2 riddles): Group A gets Riddle 1, Group B gets Riddle 2
+  const r3List = riddles[3] || [];
+  let r3Key = null;
+  if (r3List.length > 0) {
+    r3Key = (groupRound2 === 'A') ? r3List[0].key : (r3List[1] ? r3List[1].key : r3List[0].key);
+  }
+
+  // Round 4 (1 riddle): 1v1 Final Showdown
+  const r4List = riddles[4] || [];
+  const r4Key = r4List.length > 0 ? r4List[0].key : null;
+
+  return {
+    allocatedRiddles: {
+      "1": r1Key,
+      "2": r2Key,
+      "3": r3Key,
+      "4": r4Key
+    },
+    groupRound2: groupRound2,
+    groupRound3: groupRound2
+  };
+}
+
+function ensureTeamTournamentAttributes(team, index) {
+  if (isAdminTeam(team)) return false;
+  let changed = false;
+
+  if (!team.currentRound) {
+    team.currentRound = 1;
+    changed = true;
+  }
+  if (!Array.isArray(team.unlockedRounds) || team.unlockedRounds.length === 0) {
+    team.unlockedRounds = [1];
+    changed = true;
+  }
+  if (!team.allocatedRiddles || typeof team.allocatedRiddles !== 'object') {
+    const alloc = allocateRiddlesForTeamIndex(index);
+    team.allocatedRiddles = alloc.allocatedRiddles;
+    team.groupRound2 = alloc.groupRound2;
+    team.groupRound3 = alloc.groupRound3;
+    changed = true;
+  }
+  if (!team.groupRound2) {
+    team.groupRound2 = (index % 2 === 0) ? 'A' : 'B';
+    team.groupRound3 = team.groupRound2;
+    changed = true;
+  }
+  if (!team.roundSolves || typeof team.roundSolves !== 'object') {
+    team.roundSolves = {};
+    changed = true;
+  }
+  if (team.eliminated === undefined) {
+    team.eliminated = false;
+    team.eliminatedRound = null;
+    team.eliminatedReason = null;
+    changed = true;
+  }
+
+  return changed;
+}
+
+// -----------------------
 // Load Teams
 // -----------------------
 const teamsFilePath = path.join(__dirname, 'teams.json');
@@ -150,6 +261,25 @@ try {
   }
 } catch (err) {
   console.error("Error reading teams.json:", err);
+}
+
+// Ensure existing teams have tournament progression attributes
+let teamsUpdatedOnBoot = false;
+let nonAdminBootIndex = 0;
+teams.forEach(team => {
+  if (!isAdminTeam(team)) {
+    if (ensureTeamTournamentAttributes(team, nonAdminBootIndex)) {
+      teamsUpdatedOnBoot = true;
+    }
+    nonAdminBootIndex++;
+  }
+});
+if (teamsUpdatedOnBoot) {
+  try {
+    fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
+  } catch (e) {
+    console.error("Error saving updated teams on boot:", e);
+  }
 }
 
 // -----------------------
@@ -215,6 +345,8 @@ app.post('/api/register', (req, res) => {
 
   const hashedPassword = bcrypt.hashSync(password, 10);
   const newTeamId = 'team_' + Date.now();
+  const nonAdminCount = teams.filter(t => !isAdminTeam(t)).length;
+  const alloc = allocateRiddlesForTeamIndex(nonAdminCount);
 
   const newTeam = {
     id: newTeamId,
@@ -223,7 +355,16 @@ app.post('/api/register', (req, res) => {
     score: 0,
     solvedChallenges: [],
     hintsUnlocked: {},
-    scoreHistory: [{ timestamp: Date.now(), score: 0 }]
+    scoreHistory: [{ timestamp: Date.now(), score: 0 }],
+    currentRound: 1,
+    unlockedRounds: [1],
+    allocatedRiddles: alloc.allocatedRiddles,
+    groupRound2: alloc.groupRound2,
+    groupRound3: alloc.groupRound3,
+    eliminated: false,
+    eliminatedRound: null,
+    eliminatedReason: null,
+    roundSolves: {}
   };
 
   const newUser = {
@@ -289,7 +430,8 @@ app.get('/api/challenges', (req, res) => {
 
   const userTeam = getCurrentTeam(req);
   const isAdminUser = isAdminSession(req);
-  const unlockedRounds = Array.isArray(ctfConfig.unlockedRounds) ? ctfConfig.unlockedRounds : [1];
+  const globalUnlockedRounds = Array.isArray(ctfConfig.unlockedRounds) ? ctfConfig.unlockedRounds : [1];
+  const teamUnlockedRounds = (userTeam && Array.isArray(userTeam.unlockedRounds)) ? userTeam.unlockedRounds : globalUnlockedRounds;
 
   const hintsUnlockedCount = (userTeam && userTeam.hintsUnlocked) ? Object.keys(userTeam.hintsUnlocked).length : 0;
   const nextHintCost = (hintsUnlockedCount + 1) * 5;
@@ -306,13 +448,14 @@ app.get('/api/challenges', (req, res) => {
     });
 
     const roundNum = flagsData[key].round || 1;
-    const isRoundUnlocked = isAdminUser || unlockedRounds.includes(roundNum);
+    const isRoundUnlocked = isAdminUser || teamUnlockedRounds.includes(roundNum);
+    const isAllocatedToTeam = Boolean(isAdminUser || (userTeam && userTeam.allocatedRiddles && userTeam.allocatedRiddles[roundNum] === key));
 
     const hasHint = Boolean(flagsData[key].hint && flagsData[key].hint.trim());
     const isHintUnlocked = Boolean(userTeam && userTeam.hintsUnlocked && userTeam.hintsUnlocked[key]);
 
     safeData[key] = { 
-      text: isRoundUnlocked ? flagsData[key].text : "🔒 These waters are locked by the Admiralty. Awaiting orders to advance.", 
+      text: isRoundUnlocked ? flagsData[key].text : "These waters remain sealed by the Admiralty. Advance your crew to unlock this riddle.", 
       subtitle: flagsData[key].subtitle || "",
       points: flagsData[key].points || 500,
       difficulty: flagsData[key].difficulty || "EASY",
@@ -328,7 +471,8 @@ app.get('/api/challenges', (req, res) => {
       originalResourceName: isRoundUnlocked ? flagsData[key].originalResourceName : null,
       solves: solvesCount,
       nextHintCost: nextHintCost,
-      unlocked: isRoundUnlocked
+      unlocked: isRoundUnlocked,
+      allocatedToTeam: isAllocatedToTeam
     };
   }
   res.json(safeData);
@@ -505,7 +649,16 @@ app.get('/api/teams', (req, res) => {
       solvedChallenges,
       scoreHistory: team.scoreHistory || [],
       disqualified: Boolean(team.disqualified),
-      violations: team.violations || 0
+      violations: team.violations || 0,
+      currentRound: team.currentRound || 1,
+      unlockedRounds: team.unlockedRounds || [1],
+      groupRound2: team.groupRound2 || 'A',
+      groupRound3: team.groupRound3 || 'A',
+      eliminated: Boolean(team.eliminated),
+      eliminatedRound: team.eliminatedRound || null,
+      eliminatedReason: team.eliminatedReason || null,
+      isWinner: Boolean(team.isWinner),
+      roundSolves: team.roundSolves || {}
     };
   });
   res.json(safeTeams);
@@ -536,7 +689,17 @@ app.get('/api/myteam', (req, res) => {
       hintsUnlockedCount,
       nextHintCost,
       disqualified: Boolean(myTeam.disqualified),
-      violations: myTeam.violations || 0
+      violations: myTeam.violations || 0,
+      currentRound: myTeam.currentRound || 1,
+      unlockedRounds: myTeam.unlockedRounds || [1],
+      allocatedRiddles: myTeam.allocatedRiddles || {},
+      groupRound2: myTeam.groupRound2 || 'A',
+      groupRound3: myTeam.groupRound3 || 'A',
+      eliminated: Boolean(myTeam.eliminated),
+      eliminatedRound: myTeam.eliminatedRound || null,
+      eliminatedReason: myTeam.eliminatedReason || null,
+      roundSolves: myTeam.roundSolves || {},
+      isWinner: Boolean(myTeam.isWinner)
     }
   });
 });
@@ -548,7 +711,127 @@ app.get('/api/profile', (req, res) => {
     teamName: myTeam.teamName,
     isAdmin: isAdminSession(req),
     disqualified: Boolean(myTeam.disqualified),
-    violations: myTeam.violations || 0
+    violations: myTeam.violations || 0,
+    eliminated: Boolean(myTeam.eliminated),
+    currentRound: myTeam.currentRound || 1
+  });
+});
+
+// Tournament Status API
+app.get('/api/tournament/status', (req, res) => {
+  const activeTeams = teams.filter(t => !isAdminTeam(t)).map(t => ({
+    id: t.id,
+    teamName: t.teamName,
+    score: t.score || 0,
+    currentRound: t.currentRound || 1,
+    unlockedRounds: t.unlockedRounds || [1],
+    allocatedRiddles: t.allocatedRiddles || {},
+    groupRound2: t.groupRound2 || 'A',
+    groupRound3: t.groupRound3 || 'A',
+    eliminated: Boolean(t.eliminated),
+    eliminatedRound: t.eliminatedRound || null,
+    eliminatedReason: t.eliminatedReason || null,
+    roundSolves: t.roundSolves || {},
+    isWinner: Boolean(t.isWinner)
+  }));
+
+  res.json({
+    teams: activeTeams,
+    winner: activeTeams.find(t => t.isWinner) || null
+  });
+});
+
+// Admin Endpoint: Provision / Seed 10 Tournament Pirate Crews
+app.post('/api/admin/tournament/seed-teams', isAdmin, (req, res) => {
+  const crewNames = [
+    "Black Pearl",
+    "Flying Dutchman",
+    "Queen Anne's Revenge",
+    "Jolly Roger",
+    "The Walrus",
+    "The Interceptor",
+    "Adventure Galley",
+    "Royal Fortune",
+    "Sea Dog",
+    "Kraken's Revenge"
+  ];
+
+  // Preserve admin team
+  const adminTeam = teams.find(t => isAdminTeam(t)) || {
+    id: "team_admin_1",
+    teamName: "lostcode",
+    password: bcrypt.hashSync("lostcode123", 10),
+    score: 0,
+    solvedChallenges: [],
+    hintsUnlocked: {},
+    scoreHistory: []
+  };
+
+  const adminUser = users.find(u => u.id === 'user_admin_1') || {
+    id: "user_admin_1",
+    username: "lostcode",
+    email: "lostcode@lostcode",
+    password: adminTeam.password,
+    teamId: "team_admin_1",
+    solvedChallenges: []
+  };
+
+  const newTeams = [adminTeam];
+  const newUsers = [adminUser];
+
+  crewNames.forEach((name, i) => {
+    const teamId = `crew_${i + 1}_${name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+    const alloc = allocateRiddlesForTeamIndex(i);
+    const defaultPw = bcrypt.hashSync("ahoy123", 10);
+
+    const team = {
+      id: teamId,
+      teamName: name,
+      password: defaultPw,
+      score: 0,
+      solvedChallenges: [],
+      hintsUnlocked: {},
+      scoreHistory: [{ timestamp: Date.now(), score: 0 }],
+      currentRound: 1,
+      unlockedRounds: [1],
+      allocatedRiddles: alloc.allocatedRiddles,
+      groupRound2: alloc.groupRound2,
+      groupRound3: alloc.groupRound3,
+      eliminated: false,
+      eliminatedRound: null,
+      eliminatedReason: null,
+      roundSolves: {}
+    };
+
+    const user = {
+      id: teamId,
+      username: name,
+      email: `${name.toLowerCase().replace(/[^a-z0-9]/g, '')}@lostcode`,
+      password: defaultPw,
+      teamId: teamId,
+      solvedChallenges: []
+    };
+
+    newTeams.push(team);
+    newUsers.push(user);
+  });
+
+  teams = newTeams;
+  users = newUsers;
+
+  fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
+  fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+
+  io.emit('teamsUpdate');
+  io.emit('tournamentUpdate');
+
+  res.json({
+    message: 'Successfully seeded 10 pirate crews with pre-bound tournament riddle chains (Password: ahoy123)!',
+    crews: teams.filter(t => !isAdminTeam(t)).map(t => ({
+      name: t.teamName,
+      group: t.groupRound2,
+      round1Riddle: t.allocatedRiddles["1"]
+    }))
   });
 });
 
@@ -561,6 +844,13 @@ app.post('/api/challenge/flag', (req, res) => {
   if (team.disqualified) {
     return res.status(403).json({ error: 'Your crew has been disqualified from the tournament for proctoring violations.' });
   }
+
+  // Elimination check
+  if (!isAdminUser && team.eliminated) {
+    return res.status(403).json({
+      error: team.eliminatedReason || "Arr! Your crew has Walked the Plank and cannot submit further flags."
+    });
+  }
   
   const { category, flag } = req.body;
   if (!category || !flag) return res.status(400).json({ error: 'Category and flag required.' });
@@ -571,9 +861,9 @@ app.post('/api/challenge/flag', (req, res) => {
   if (!challengeObj) return res.status(404).json({ error: 'Challenge not found for this category.' });
 
   const challengeRound = challengeObj.round || 1;
-  const unlockedRounds = Array.isArray(ctfConfig.unlockedRounds) ? ctfConfig.unlockedRounds : [1];
+  const unlockedRounds = (team.unlockedRounds && Array.isArray(team.unlockedRounds)) ? team.unlockedRounds : (ctfConfig.unlockedRounds || [1]);
   if (!isAdminUser && !unlockedRounds.includes(challengeRound)) {
-    return res.status(403).json({ error: "These waters remain locked by the Admiralty! Await captain's orders before charting this course." });
+    return res.status(403).json({ error: "These waters remain locked by the Admiralty! Solve your active round to chart this course." });
   }
 
   if (!Array.isArray(team.solvedChallenges)) {
@@ -582,6 +872,17 @@ app.post('/api/challenge/flag', (req, res) => {
   
   if (team.solvedChallenges.includes(category)) {
     return res.status(400).json({ error: 'This challenge has already been solved by your team.' });
+  }
+
+  // For non-admin teams, enforce active allocated riddle
+  if (!isAdminUser && team.allocatedRiddles) {
+    const curRound = team.currentRound || 1;
+    const assignedCat = team.allocatedRiddles[curRound];
+    if (assignedCat && category !== assignedCat) {
+      return res.status(403).json({
+        error: `Arr! Your crew is currently charted for Round ${curRound}. You must submit the flag for your allocated riddle: "${assignedCat}".`
+      });
+    }
   }
 
   const storedHash = challengeObj.hash;
@@ -598,6 +899,98 @@ app.post('/api/challenge/flag', (req, res) => {
     team.scoreHistory = [{ timestamp: Date.now() - 1000, score: team.score - pointsEarned }];
   }
   team.scoreHistory.push({ timestamp: Date.now(), score: team.score });
+
+  if (!team.roundSolves) team.roundSolves = {};
+  const currentRoundNum = challengeRound;
+  team.roundSolves[currentRoundNum] = Date.now();
+
+  let advanceMessage = `Correct flag! ${pointsEarned} points added to your crew.`;
+
+  // Advance tournament rounds and apply group elimination engine
+  if (!isAdminUser) {
+    if (currentRoundNum === 1) {
+      // Round 1 -> Advance to Round 2 (All 10 teams advance)
+      team.currentRound = 2;
+      if (!Array.isArray(team.unlockedRounds)) team.unlockedRounds = [1];
+      if (!team.unlockedRounds.includes(2)) {
+        team.unlockedRounds.push(2);
+        team.unlockedRounds.sort((a, b) => a - b);
+      }
+      advanceMessage = `Bounty Claimed! Round 1 completed. High Seas (Round 2) unlocked! Chart your course to Island 2.`;
+    } else if (currentRoundNum === 2) {
+      // Round 2 -> Top 3 from team's group advance to Round 3
+      const group = team.groupRound2 || 'A';
+      // Find all teams in this group that have solved Round 2
+      const solvedInGroup = teams.filter(t => !isAdminTeam(t) && t.groupRound2 === group && t.roundSolves && t.roundSolves[2]);
+      const groupRank = solvedInGroup.length;
+
+      if (groupRank <= 3) {
+        team.currentRound = 3;
+        if (!team.unlockedRounds.includes(3)) {
+          team.unlockedRounds.push(3);
+          team.unlockedRounds.sort((a, b) => a - b);
+        }
+        team.groupRound3 = group;
+        advanceMessage = `Bounty Claimed! Crew finished #${groupRank} in Group ${group}! Dead Man's Creek (Round 3) unlocked!`;
+
+        // If this was the 3rd team in the group to solve Round 2:
+        // Automatically eliminate the remaining 2 teams in this group who haven't solved Round 2!
+        if (groupRank === 3) {
+          teams.forEach(t => {
+            if (!isAdminTeam(t) && t.groupRound2 === group && (!t.roundSolves || !t.roundSolves[2]) && !t.eliminated) {
+              t.eliminated = true;
+              t.eliminatedRound = 2;
+              t.eliminatedAt = Date.now();
+              t.eliminatedReason = `Walked the Plank in Round 2: Top 3 spots in Group ${group} have been claimed! Your crew was outpaced.`;
+            }
+          });
+        }
+      } else {
+        // Outpaced
+        team.eliminated = true;
+        team.eliminatedRound = 2;
+        team.eliminatedAt = Date.now();
+        team.eliminatedReason = `Walked the Plank in Round 2: Top 3 spots in Group ${group} were already claimed!`;
+        advanceMessage = `Flag correct, but the top 3 spots in Group ${group} have already been claimed! Your crew has Walked the Plank.`;
+      }
+    } else if (currentRoundNum === 3) {
+      // Round 3 -> Top 1 from team's group advances to Round 4 (1v1 Final Showdown)
+      const group = team.groupRound3 || team.groupRound2 || 'A';
+      const solvedInGroup = teams.filter(t => !isAdminTeam(t) && t.groupRound3 === group && t.roundSolves && t.roundSolves[3]);
+      const groupRank = solvedInGroup.length;
+
+      if (groupRank === 1) {
+        team.currentRound = 4;
+        if (!team.unlockedRounds.includes(4)) {
+          team.unlockedRounds.push(4);
+          team.unlockedRounds.sort((a, b) => a - b);
+        }
+        advanceMessage = `Bounty Claimed! Finalist berth secured for Group ${group}! Treasure Island (Round 4) unlocked for the 1v1 Final Showdown!`;
+
+        // Automatically eliminate the other 2 teams in this group
+        teams.forEach(t => {
+          if (!isAdminTeam(t) && t.groupRound3 === group && t.id !== team.id && !t.eliminated) {
+            t.eliminated = true;
+            t.eliminatedRound = 3;
+            t.eliminatedAt = Date.now();
+            t.eliminatedReason = `Walked the Plank in Round 3: ${team.teamName} claimed the sole finalist spot for Group ${group}!`;
+          }
+        });
+      } else {
+        team.eliminated = true;
+        team.eliminatedRound = 3;
+        team.eliminatedAt = Date.now();
+        team.eliminatedReason = `Walked the Plank in Round 3: Finalist berth for Group ${group} was already claimed!`;
+        advanceMessage = `Flag correct, but the finalist berth for Group ${group} was already claimed! Your crew has Walked the Plank.`;
+      }
+    } else if (currentRoundNum === 4) {
+      // Round 4 -> Grand Champion!
+      team.isWinner = true;
+      team.wonAt = Date.now();
+      advanceMessage = `VICTORY! ${team.teamName} has uncovered the Final Treasure and won the CoreDump 2.0 Lost Code Championship!`;
+      io.emit('tournamentWinner', { winner: team.teamName, score: team.score });
+    }
+  }
   
   try {
     fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
@@ -607,7 +1000,16 @@ app.post('/api/challenge/flag', (req, res) => {
   }
   
   io.emit('teamsUpdate');
-  return res.json({ message: `Correct flag! ${pointsEarned} points added to your team.` });
+  io.emit('tournamentUpdate');
+  return res.json({
+    message: advanceMessage,
+    currentRound: team.currentRound,
+    unlockedRounds: team.unlockedRounds,
+    eliminated: team.eliminated,
+    eliminatedReason: team.eliminatedReason,
+    isWinner: Boolean(team.isWinner),
+    pointsEarned: pointsEarned
+  });
 });
 
 // Unlock Hint with Escalating Deduction (-5, -10, -15...)

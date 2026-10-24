@@ -6,6 +6,283 @@
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
-    "scoreHistory": []
+    "scoreHistory": [],
+    "currentRound": 1,
+    "unlockedRounds": [
+      1
+    ],
+    "eliminated": false,
+    "eliminatedRound": null,
+    "eliminatedReason": null,
+    "roundSolves": {},
+    "isWinner": false
+  },
+  {
+    "id": "crew_1_black_pearl",
+    "teamName": "Black Pearl",
+    "password": "$2b$10$3.tKr5MhC69U.acCoaNWEOSESiJmBdpqYZ7Mlfv.3rOrWDcXbBuf2",
+    "score": 0,
+    "solvedChallenges": [],
+    "hintsUnlocked": {},
+    "scoreHistory": [],
+    "currentRound": 1,
+    "unlockedRounds": [
+      1
+    ],
+    "allocatedRiddles": {
+      "1": "Round 1 - Riddle 1: The Forged Manifest",
+      "2": "Round 2 - Riddle 1: The Governor's Vault",
+      "3": "Round 3 - Riddle 1: Sunken Registers",
+      "4": "Round 4 - Riddle 1: Walk the Plank"
+    },
+    "groupRound2": "A",
+    "groupRound3": "A",
+    "eliminated": false,
+    "eliminatedRound": null,
+    "eliminatedReason": null,
+    "roundSolves": {},
+    "isWinner": false
+  },
+  {
+    "id": "crew_2_flying_dutchman",
+    "teamName": "Flying Dutchman",
+    "password": "$2b$10$8boxQW251MB79f4ZCeFbEuMuQqLl9KJuNL001hKguSFSyhHK1bjS.",
+    "score": 0,
+    "solvedChallenges": [],
+    "hintsUnlocked": {},
+    "scoreHistory": [],
+    "currentRound": 1,
+    "unlockedRounds": [
+      1
+    ],
+    "allocatedRiddles": {
+      "1": "Round 1 - Riddle 2: Follow the Trail",
+      "2": "Round 2 - Riddle 2: The Caribbean Log",
+      "3": "Round 3 - Riddle 2: Ghost Mechanism",
+      "4": "Round 4 - Riddle 1: Walk the Plank"
+    },
+    "groupRound2": "B",
+    "groupRound3": "B",
+    "eliminated": false,
+    "eliminatedRound": null,
+    "eliminatedReason": null,
+    "roundSolves": {},
+    "isWinner": false
+  },
+  {
+    "id": "crew_3_queen_anne_s_revenge",
+    "teamName": "Queen Anne's Revenge",
+    "password": "$2b$10$Vy5C6DUfWseYxV.CYZg8WO6AT.kUTzlShKtE5.TX7QNP5YFu0lV22",
+    "score": 0,
+    "solvedChallenges": [],
+    "hintsUnlocked": {},
+    "scoreHistory": [],
+    "currentRound": 1,
+    "unlockedRounds": [
+      1
+    ],
+    "allocatedRiddles": {
+      "1": "Round 1 - Riddle 3: Message in a Bottle",
+      "2": "Round 2 - Riddle 3: Siren's Call",
+      "3": "Round 3 - Riddle 1: Sunken Registers",
+      "4": "Round 4 - Riddle 1: Walk the Plank"
+    },
+    "groupRound2": "A",
+    "groupRound3": "A",
+    "eliminated": false,
+    "eliminatedRound": null,
+    "eliminatedReason": null,
+    "roundSolves": {},
+    "eliminatedAt": 1792846743533,
+    "isWinner": false
+  },
+  {
+    "id": "crew_4_jolly_roger",
+    "teamName": "Jolly Roger",
+    "password": "$2b$10$ssUbVK20xyLAdAnc7FaaUu4hbtB7YiWxvtHSjd1ORDK2W/2ycmW8K",
+    "score": 0,
+    "solvedChallenges": [],
+    "hintsUnlocked": {},
+    "scoreHistory": [],
+    "currentRound": 1,
+    "unlockedRounds": [
+      1
+    ],
+    "allocatedRiddles": {
+      "1": "Round 1 - Riddle 4: Dead Man's Switch",
+      "2": "Round 2 - Riddle 4: Cipher Chest",
+      "3": "Round 3 - Riddle 2: Ghost Mechanism",
+      "4": "Round 4 - Riddle 1: Walk the Plank"
+    },
+    "groupRound2": "B",
+    "groupRound3": "B",
+    "eliminated": false,
+    "eliminatedRound": null,
+    "eliminatedReason": null,
+    "roundSolves": {},
+    "eliminatedAt": 1792846743880,
+    "isWinner": false
+  },
+  {
+    "id": "crew_5_the_walrus",
+    "teamName": "The Walrus",
+    "password": "$2b$10$IvAoeIQOwFzl500TObkta.8GRA1LMQIjX9/MxfbFw7adpIXy/T1nC",
+    "score": 0,
+    "solvedChallenges": [],
+    "hintsUnlocked": {},
+    "scoreHistory": [],
+    "currentRound": 1,
+    "unlockedRounds": [
+      1
+    ],
+    "allocatedRiddles": {
+      "1": "Round 1 - Riddle 5: The Bovine Cipher",
+      "2": "Round 2 - Riddle 5: Port Royal Infiltration",
+      "3": "Round 3 - Riddle 1: Sunken Registers",
+      "4": "Round 4 - Riddle 1: Walk the Plank"
+    },
+    "groupRound2": "A",
+    "groupRound3": "A",
+    "eliminated": false,
+    "eliminatedRound": null,
+    "eliminatedReason": null,
+    "roundSolves": {},
+    "eliminatedAt": 1792846743533,
+    "isWinner": false
+  },
+  {
+    "id": "crew_6_the_interceptor",
+    "teamName": "The Interceptor",
+    "password": "$2b$10$5sScRqY09HGmo7QcFGbxnuiWBgZ.JqpmbmoD8LSGWv8YB/uBgUnc.",
+    "score": 0,
+    "solvedChallenges": [],
+    "hintsUnlocked": {},
+    "scoreHistory": [],
+    "currentRound": 1,
+    "unlockedRounds": [
+      1
+    ],
+    "allocatedRiddles": {
+      "1": "Round 1 - Riddle 6: Sailor's Compass",
+      "2": "Round 2 - Riddle 6: Blackbeard's Logbook",
+      "3": "Round 3 - Riddle 2: Ghost Mechanism",
+      "4": "Round 4 - Riddle 1: Walk the Plank"
+    },
+    "groupRound2": "B",
+    "groupRound3": "B",
+    "eliminated": false,
+    "eliminatedRound": null,
+    "eliminatedReason": null,
+    "roundSolves": {},
+    "eliminatedAt": 1792846743880,
+    "isWinner": false
+  },
+  {
+    "id": "crew_7_adventure_galley",
+    "teamName": "Adventure Galley",
+    "password": "$2b$10$zp8Ic7Sf2VTMRs0usqFTEOz1qDR0/gvHIvlLRaqh8L6fJaJuFDysq",
+    "score": 0,
+    "solvedChallenges": [],
+    "hintsUnlocked": {},
+    "scoreHistory": [],
+    "currentRound": 1,
+    "unlockedRounds": [
+      1
+    ],
+    "allocatedRiddles": {
+      "1": "Round 1 - Riddle 7: Ghost Signal",
+      "2": "Round 2 - Riddle 1: The Governor's Vault",
+      "3": "Round 3 - Riddle 1: Sunken Registers",
+      "4": "Round 4 - Riddle 1: Walk the Plank"
+    },
+    "groupRound2": "A",
+    "groupRound3": "A",
+    "eliminated": false,
+    "eliminatedRound": null,
+    "eliminatedReason": null,
+    "roundSolves": {},
+    "eliminatedAt": 1792846741938,
+    "isWinner": false
+  },
+  {
+    "id": "crew_8_royal_fortune",
+    "teamName": "Royal Fortune",
+    "password": "$2b$10$9hMVDFHb04Ad9ANkJtc9n.LJGObusB.C9KYuJiqe8J2HNHRYXp2a6",
+    "score": 0,
+    "solvedChallenges": [],
+    "hintsUnlocked": {},
+    "scoreHistory": [],
+    "currentRound": 1,
+    "unlockedRounds": [
+      1
+    ],
+    "allocatedRiddles": {
+      "1": "Round 1 - Riddle 8: The Quarterdeck",
+      "2": "Round 2 - Riddle 2: The Caribbean Log",
+      "3": "Round 3 - Riddle 2: Ghost Mechanism",
+      "4": "Round 4 - Riddle 1: Walk the Plank"
+    },
+    "groupRound2": "B",
+    "groupRound3": "B",
+    "eliminated": false,
+    "eliminatedRound": null,
+    "eliminatedReason": null,
+    "roundSolves": {},
+    "eliminatedAt": 1792846743189,
+    "isWinner": false
+  },
+  {
+    "id": "crew_9_sea_dog",
+    "teamName": "Sea Dog",
+    "password": "$2b$10$23sl5qy96Dtb9u4Nh/CEh.yhIn4fGzXm9Epmn7qkMGnvNK15jEsS6",
+    "score": 0,
+    "solvedChallenges": [],
+    "hintsUnlocked": {},
+    "scoreHistory": [],
+    "currentRound": 1,
+    "unlockedRounds": [
+      1
+    ],
+    "allocatedRiddles": {
+      "1": "Round 1 - Riddle 9: Smuggler's Cask",
+      "2": "Round 2 - Riddle 3: Siren's Call",
+      "3": "Round 3 - Riddle 1: Sunken Registers",
+      "4": "Round 4 - Riddle 1: Walk the Plank"
+    },
+    "groupRound2": "A",
+    "groupRound3": "A",
+    "eliminated": false,
+    "eliminatedRound": null,
+    "eliminatedReason": null,
+    "roundSolves": {},
+    "eliminatedAt": 1792846741939,
+    "isWinner": false
+  },
+  {
+    "id": "crew_10_kraken_s_revenge",
+    "teamName": "Kraken's Revenge",
+    "password": "$2b$10$KLxgdsSi8QImhRy5hvYgtuee2Gj6VMFJjFvbQQEK9A72CEhEtFF1u",
+    "score": 0,
+    "solvedChallenges": [],
+    "hintsUnlocked": {},
+    "scoreHistory": [],
+    "currentRound": 1,
+    "unlockedRounds": [
+      1
+    ],
+    "allocatedRiddles": {
+      "1": "Round 1 - Riddle 10: Kraken's Cipher",
+      "2": "Round 2 - Riddle 4: Cipher Chest",
+      "3": "Round 3 - Riddle 2: Ghost Mechanism",
+      "4": "Round 4 - Riddle 1: Walk the Plank"
+    },
+    "groupRound2": "B",
+    "groupRound3": "B",
+    "eliminated": false,
+    "eliminatedRound": null,
+    "eliminatedReason": null,
+    "roundSolves": {},
+    "eliminatedAt": 1792846743189,
+    "isWinner": false
   }
 ]
