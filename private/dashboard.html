@@ -2138,6 +2138,7 @@
                       ${standingStatus}
                     </div>
                     <h3 style="font-family:'Cinzel',serif; font-size:2rem; color:var(--gold-primary); margin:0;">${escapeHTML(team.teamName)}</h3>
+                    ${team.tagline ? `<div style="font-family:'Rajdhani',sans-serif; font-size:0.95rem; color:var(--text-secondary); font-style:italic; margin-top:2px;">"${escapeHTML(team.tagline)}"</div>` : ''}
                     <p style="color:var(--text-secondary); font-size:1.05rem; margin-top:0.4rem;">Total Treasure Bounty: <strong style="color:var(--gold-primary);">${team.score} PTS</strong> • Current Station: <strong style="color:var(--gold-primary);">Round ${curR}</strong></p>
                     <div style="font-size:0.82rem; font-family:'JetBrains Mono',monospace; color:var(--gold-muted); margin-top:0.2rem;">
                       Active Charted Riddle: <span style="color:var(--text-primary);">${escapeHTML(assignedRiddleKey)}</span>

@@ -329,66 +329,7 @@ function isAdminSession(req) {
 // -----------------------
 
 app.post('/api/register', (req, res) => {
-  const { teamName, password } = req.body;
-  const crewName = (teamName || '').trim();
-
-  const tagError = validateNoTags(crewName, "Crew name");
-  if (tagError) return res.status(400).json({ error: tagError });
-
-  if (!crewName || !password) {
-    return res.status(400).json({ error: 'Crew name and password required.' });
-  }
-
-  if (teams.find(t => t.teamName.toLowerCase() === crewName.toLowerCase())) {
-    return res.status(400).json({ error: 'Crew / Team name already in use.' });
-  }
-
-  const hashedPassword = bcrypt.hashSync(password, 10);
-  const newTeamId = 'team_' + Date.now();
-  const nonAdminCount = teams.filter(t => !isAdminTeam(t)).length;
-  const alloc = allocateRiddlesForTeamIndex(nonAdminCount);
-
-  const newTeam = {
-    id: newTeamId,
-    teamName: crewName,
-    password: hashedPassword,
-    score: 0,
-    solvedChallenges: [],
-    hintsUnlocked: {},
-    scoreHistory: [{ timestamp: Date.now(), score: 0 }],
-    currentRound: 1,
-    unlockedRounds: [1],
-    allocatedRiddles: alloc.allocatedRiddles,
-    groupRound2: alloc.groupRound2,
-    groupRound3: alloc.groupRound3,
-    eliminated: false,
-    eliminatedRound: null,
-    eliminatedReason: null,
-    roundSolves: {}
-  };
-
-  const newUser = {
-    id: newTeamId,
-    username: crewName,
-    email: `${crewName.toLowerCase().replace(/[^a-z0-9]/g, '')}@lostcode`,
-    password: hashedPassword,
-    teamId: newTeamId,
-    solvedChallenges: []
-  };
-
-  teams.push(newTeam);
-  users.push(newUser);
-
-  try {
-    fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
-    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
-  } catch (err) {
-    console.error("Error writing files:", err);
-    return res.status(500).json({ error: 'Internal server error.' });
-  }
-
-  io.emit('teamsUpdate');
-  res.json({ message: 'Crew enlisted successfully! Board the ship with your crew name and password.' });
+  return res.status(403).json({ error: 'Public registration is closed. Contact the Admiralty to receive your official crew credentials.' });
 });
 
 app.post('/api/login', (req, res) => {
@@ -645,6 +586,7 @@ app.get('/api/teams', (req, res) => {
     return {
       id: team.id,
       teamName: team.teamName,
+      tagline: team.tagline || '',
       score: typeof team.score === 'number' ? team.score : 0,
       solvedChallenges,
       scoreHistory: team.scoreHistory || [],
@@ -683,6 +625,7 @@ app.get('/api/myteam', (req, res) => {
     team: {
       id: myTeam.id,
       teamName: myTeam.teamName,
+      tagline: myTeam.tagline || '',
       score: myTeam.score,
       solvedChallenges,
       hintsUnlocked: myTeam.hintsUnlocked,
@@ -744,17 +687,30 @@ app.get('/api/tournament/status', (req, res) => {
 // Admin Endpoint: Provision / Seed 10 Tournament Pirate Crews
 app.post('/api/admin/tournament/seed-teams', isAdmin, (req, res) => {
   const crewNames = [
-    "Black Pearl",
-    "Flying Dutchman",
-    "Queen Anne's Revenge",
-    "Jolly Roger",
-    "The Walrus",
-    "The Interceptor",
-    "Adventure Galley",
-    "Royal Fortune",
-    "Sea Dog",
-    "Kraken's Revenge"
+    "BUCCANEERS",
+    "CUTTHROATS",
+    "CORSAIRS",
+    "KRAKENS",
+    "SCALLYWAGS",
+    "PRIVATEERS",
+    "BLACKFLAGS",
+    "PLUNDERERS",
+    "DREADSAILS",
+    "SEARAVENS"
   ];
+
+  const crewTaglines = {
+    "BUCCANEERS": "Ruthless pirate adventurers",
+    "CUTTHROATS": "Fearless and dangerous",
+    "CORSAIRS": "Elite sea raiders",
+    "KRAKENS": "Mythical forces of the deep",
+    "SCALLYWAGS": "Mischievous pirates",
+    "PRIVATEERS": "Strategic naval raiders",
+    "BLACKFLAGS": "Rogue pirates of the seas",
+    "PLUNDERERS": "Seekers of hidden treasure",
+    "DREADSAILS": "Ghostly ships of the ocean",
+    "SEARAVENS": "Dark and cunning voyagers"
+  };
 
   // Preserve admin team
   const adminTeam = teams.find(t => isAdminTeam(t)) || {
@@ -787,6 +743,7 @@ app.post('/api/admin/tournament/seed-teams', isAdmin, (req, res) => {
     const team = {
       id: teamId,
       teamName: name,
+      tagline: crewTaglines[name] || "Pirate Crew",
       password: defaultPw,
       score: 0,
       solvedChallenges: [],
