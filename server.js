@@ -187,6 +187,7 @@ function getTeamRoundTimer(team, rKey) {
       startedAt: Date.now(),
       durationMinutes: duration,
       hintPenaltiesMinutes: 0,
+      bonusMinutes: 0,
       solved: false,
       solvedAt: null,
       finalSolveSeconds: null
@@ -196,29 +197,32 @@ function getTeamRoundTimer(team, rKey) {
   const tState = team.roundTimers[rKey];
   const allocatedSec = (tState.durationMinutes || duration) * 60;
   const penaltySec = (tState.hintPenaltiesMinutes || 0) * 60;
+  const bonusSec = (tState.bonusMinutes || 0) * 60;
 
   if (tState.solved && tState.solvedAt) {
     const elapsedSec = Math.max(0, Math.floor((tState.solvedAt - tState.startedAt) / 1000));
-    const remainingSec = Math.max(0, allocatedSec - penaltySec - elapsedSec);
+    const remainingSec = Math.max(0, allocatedSec + bonusSec - penaltySec - elapsedSec);
     return {
       startedAt: tState.startedAt,
       durationMinutes: tState.durationMinutes,
       hintPenaltiesMinutes: tState.hintPenaltiesMinutes || 0,
       penaltyMinutes: tState.hintPenaltiesMinutes || 0,
+      bonusMinutes: tState.bonusMinutes || 0,
       solved: true,
       solvedAt: tState.solvedAt,
       elapsedSeconds: elapsedSec,
       remainingSeconds: remainingSec,
-      solveTimeSeconds: tState.finalSolveSeconds || (elapsedSec + penaltySec)
+      solveTimeSeconds: tState.finalSolveSeconds || Math.max(0, elapsedSec + penaltySec - bonusSec)
     };
   } else {
     const elapsedSec = Math.max(0, Math.floor((Date.now() - tState.startedAt) / 1000));
-    const remainingSec = Math.max(0, allocatedSec - penaltySec - elapsedSec);
+    const remainingSec = Math.max(0, allocatedSec + bonusSec - penaltySec - elapsedSec);
     return {
       startedAt: tState.startedAt,
       durationMinutes: tState.durationMinutes,
       hintPenaltiesMinutes: tState.hintPenaltiesMinutes || 0,
       penaltyMinutes: tState.hintPenaltiesMinutes || 0,
+      bonusMinutes: tState.bonusMinutes || 0,
       solved: false,
       solvedAt: null,
       elapsedSeconds: elapsedSec,
@@ -2409,6 +2413,82 @@ app.post('/api/admin/teams/reinstate', isAdmin, (req, res) => {
   io.emit('teamsUpdate');
   io.emit('tournamentUpdate');
   return res.json({ success: true, message: `Crew ${targetTeam.teamName} reinstated successfully!` });
+});
+
+// Admin Route: Reverse or Adjust Time for Individual Crew
+app.post('/api/admin/teams/reverse-time', (req, res) => {
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Admiralty authority required.' });
+  const { teamId, round, action, minutes } = req.body || {};
+  if (!teamId) return res.status(400).json({ error: 'teamId required.' });
+
+  const targetTeam = teams.find(t => t.id === teamId || t.teamName.toLowerCase() === teamId.toLowerCase());
+  if (!targetTeam) return res.status(404).json({ error: 'Team not found.' });
+
+  const rKey = String(round || targetTeam.currentRound || 1);
+  if (!targetTeam.roundTimers) targetTeam.roundTimers = {};
+  if (!targetTeam.roundTimers[rKey]) {
+    getTeamRoundTimer(targetTeam, rKey);
+  }
+
+  const tState = targetTeam.roundTimers[rKey];
+  let logMessage = '';
+
+  if (action === 'refund_hints') {
+    const prevPen = tState.hintPenaltiesMinutes || 0;
+    tState.hintPenaltiesMinutes = 0;
+    targetTeam.totalHintPenaltyMinutes = Math.max(0, (targetTeam.totalHintPenaltyMinutes || 0) - prevPen);
+    logMessage = `Reversed hint deductions for ${targetTeam.teamName} in Round ${rKey}: refunded ${prevPen} minutes.`;
+  } else if (action === 'add_time' || action === 'reverse_time') {
+    const minsToAdd = parseInt(minutes, 10) || 5;
+    tState.bonusMinutes = (tState.bonusMinutes || 0) + minsToAdd;
+    logMessage = `Reversed elapsed time for ${targetTeam.teamName} in Round ${rKey}: added +${minsToAdd} minutes.`;
+  } else if (action === 'deduct_time') {
+    const minsToDeduct = parseInt(minutes, 10) || 5;
+    tState.hintPenaltiesMinutes = (tState.hintPenaltiesMinutes || 0) + minsToDeduct;
+    targetTeam.totalHintPenaltyMinutes = (targetTeam.totalHintPenaltyMinutes || 0) + minsToDeduct;
+    logMessage = `Deducted ${minsToDeduct} minutes for ${targetTeam.teamName} in Round ${rKey}.`;
+  } else if (action === 'reset_clock') {
+    const dur = tState.durationMinutes || (ctfConfig.roundDurations && ctfConfig.roundDurations[rKey]) || 30;
+    tState.startedAt = Date.now();
+    tState.hintPenaltiesMinutes = 0;
+    tState.bonusMinutes = 0;
+    tState.solved = false;
+    tState.solvedAt = null;
+    tState.finalSolveSeconds = null;
+    logMessage = `Reset Round ${rKey} clock for ${targetTeam.teamName} to fresh ${dur} minutes.`;
+  } else {
+    const deltaMins = parseInt(minutes, 10);
+    if (isNaN(deltaMins)) return res.status(400).json({ error: 'Invalid adjustment minutes.' });
+    if (deltaMins >= 0) {
+      tState.bonusMinutes = (tState.bonusMinutes || 0) + deltaMins;
+      logMessage = `Adjusted clock for ${targetTeam.teamName} in Round ${rKey}: added +${deltaMins} minutes.`;
+    } else {
+      const pen = Math.abs(deltaMins);
+      tState.hintPenaltiesMinutes = (tState.hintPenaltiesMinutes || 0) + pen;
+      targetTeam.totalHintPenaltyMinutes = (targetTeam.totalHintPenaltyMinutes || 0) + pen;
+      logMessage = `Adjusted clock for ${targetTeam.teamName} in Round ${rKey}: deducted -${pen} minutes.`;
+    }
+  }
+
+  try {
+    fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
+  } catch (err) {
+    console.error("Error writing teams.json during time adjustment:", err);
+    return res.status(500).json({ error: 'Failed to update teams.' });
+  }
+
+  const updatedTimer = getTeamRoundTimer(targetTeam, rKey);
+  io.emit('teamsUpdate');
+  io.emit('tournamentUpdate');
+
+  return res.json({
+    success: true,
+    message: logMessage,
+    teamId: targetTeam.id,
+    teamName: targetTeam.teamName,
+    round: rKey,
+    timer: updatedTimer
+  });
 });
 
 app.get('/dashboard', (req, res) => {

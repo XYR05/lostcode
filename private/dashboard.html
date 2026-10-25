@@ -75,6 +75,10 @@
         <div class="stat-value" id="activeRoundStageCount">ROUND 1</div>
         <div class="stat-label">EXPEDITION STAGE</div>
       </div>
+      <div class="stat-card" id="userLiveTimerStatCard">
+        <div class="stat-value" id="userLiveTimerValue" style="color: var(--gold-primary); font-family: 'JetBrains Mono', monospace;">--:--</div>
+        <div class="stat-label" id="userLiveTimerLabel">CREW REVERSE COUNTDOWN</div>
+      </div>
     </div>
   </section>
 
@@ -94,12 +98,18 @@
           [ SELECT AN ISLAND TO EMBARK ]
         </span>
       </div>
-      <button type="button" class="tournament-flow-btn" onclick="openTournamentFlowModal()" title="View Tournament Flow & Rules">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-        </svg>
-        <span>TOURNAMENT FLOW & RULES</span>
-      </button>
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <div id="mapExpeditionClockBadge" style="display: flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(201,154,82,0.12); border: 1px solid var(--gold-primary); border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--gold-primary);">
+          <span>⏱ REVERSE CLOCK:</span>
+          <span id="mapLiveTimerSpan" style="font-weight: 700;">--:--</span>
+        </div>
+        <button type="button" class="tournament-flow-btn" onclick="openTournamentFlowModal()" title="View Tournament Flow & Rules">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span>TOURNAMENT FLOW & RULES</span>
+        </button>
+      </div>
     </div>
 
     <!-- THE PIRATE TABLE TREASURE MAP -->
@@ -564,12 +574,74 @@
           Exactly <strong id="hintModalPenaltyPoints" style="color: #fff; font-size: 1rem; text-decoration: underline;">5</strong> minutes will be deducted immediately from your crew's active round clock!
         </div>
         <div style="font-size: 0.78rem; color: #ff9d9d; margin-top: 6px; font-style: italic;">
-          (This time penalty affects your entire crew and cannot be reversed or refunded!)
+          (This time penalty immediately reduces your crew's clock. Only Admiralty Command can reverse time for your crew!)
         </div>
       </div>
       <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px;">
         <button class="modal-cancel-btn" onclick="closeHintUnlockModal()" style="padding: 8px 18px; background: transparent; border: 1px solid var(--border-subtle); color: var(--text-secondary); font-family: 'Cinzel', serif; font-size: 0.85rem; border-radius: 4px; cursor: pointer;">Keep Secrets</button>
         <button class="modal-confirm-btn" id="confirmUnlockHintBtn" onclick="confirmHintUnlock()" style="padding: 8px 18px; background: var(--gold-primary); border: 1px solid var(--gold-primary); color: #17110c; font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700; border-radius: 4px; cursor: pointer;">Deduct Time & Reveal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIRALTY CHRONOMETER: REVERSE / ADJUST TIME MODAL -->
+  <div id="reverseTimeModal" class="modal" style="display: none; z-index: 10003;">
+    <div class="modal-content" style="max-width: 520px; text-align: left; background: var(--panel-bg); border: 1px solid var(--gold-primary); box-shadow: 0 10px 40px rgba(0,0,0,0.85); padding: 1.75rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px; margin-bottom: 1rem;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold-primary)" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <h3 class="modal-title" style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); font-size: 1.2rem;">Admiralty Chronometer</h3>
+        </div>
+        <button class="close-btn" style="position: static; font-size: 1.4rem;" onclick="closeReverseTimeModal()">&times;</button>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <div style="font-family: 'Cinzel', serif; font-size: 1.15rem; color: #fff; font-weight: 700;" id="revModalTeamName">BLACKFLAGS</div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--gold-muted); margin-top: 2px;" id="revModalRoundInfo">Round 1 • Active Clock</div>
+      </div>
+
+      <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px; margin-bottom: 1.25rem; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;">
+        <div>
+          <span style="color: var(--text-secondary);">Active Clock:</span><br/>
+          <strong id="revModalClockDisplay" style="color: var(--gold-primary); font-size: 1.1rem;">--:--</strong>
+        </div>
+        <div>
+          <span style="color: var(--text-secondary);">Hint Penalties:</span><br/>
+          <strong id="revModalHintPenaltyDisplay" style="color: #ff8b8b; font-size: 1.1rem;">0m</strong>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <div style="font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--gold-primary); font-weight: 700; margin-bottom: 8px; letter-spacing: 0.05em;">QUICK TIME REVERSAL ACTIONS</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+          <button type="button" onclick="executeReverseTimeAction('refund_hints')" style="padding: 9px 10px; background: rgba(46, 139, 87, 0.2); border: 1px solid #2e8b57; color: #4ade80; font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; border-radius: 4px; cursor: pointer;">
+            ↺ Refund All Hints
+          </button>
+          <button type="button" onclick="executeReverseTimeAction('reset_clock')" style="padding: 9px 10px; background: rgba(201, 154, 82, 0.15); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; border-radius: 4px; cursor: pointer;">
+            🔄 Full Clock Reset
+          </button>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px;">
+          <button type="button" onclick="executeReverseTimeAction('add_time', 5)" style="padding: 7px 4px; background: rgba(201,154,82,0.1); border: 1px solid var(--border-subtle); color: var(--gold-primary); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; border-radius: 3px; cursor: pointer;">+5m Time</button>
+          <button type="button" onclick="executeReverseTimeAction('add_time', 10)" style="padding: 7px 4px; background: rgba(201,154,82,0.1); border: 1px solid var(--border-subtle); color: var(--gold-primary); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; border-radius: 3px; cursor: pointer;">+10m Time</button>
+          <button type="button" onclick="executeReverseTimeAction('deduct_time', 5)" style="padding: 7px 4px; background: rgba(166,68,68,0.1); border: 1px solid rgba(166,68,68,0.4); color: #ff8b8b; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; border-radius: 3px; cursor: pointer;">-5m Deduct</button>
+          <button type="button" onclick="executeReverseTimeAction('deduct_time', 10)" style="padding: 7px 4px; background: rgba(166,68,68,0.1); border: 1px solid rgba(166,68,68,0.4); color: #ff8b8b; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; border-radius: 3px; cursor: pointer;">-10m Deduct</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1.25rem; padding: 10px; background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: 4px;">
+        <label style="display: block; font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--gold-muted); margin-bottom: 6px;">CUSTOM MINUTE ADJUSTMENT (+/- mins):</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="number" id="customReverseMinutesInput" placeholder="+5 or -5" style="flex: 1; padding: 6px 10px; background: rgba(10,8,5,0.9); border: 1px solid var(--gold-secondary); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; border-radius: 3px;" />
+          <button type="button" onclick="executeCustomReverseTime()" style="padding: 6px 14px; background: var(--gold-primary); border: 1px solid var(--gold-primary); color: #17110c; font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; border-radius: 3px; cursor: pointer;">Apply</button>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end;">
+        <button type="button" onclick="closeReverseTimeModal()" style="padding: 6px 16px; background: transparent; border: 1px solid var(--border-subtle); color: var(--text-secondary); font-family: 'Cinzel', serif; font-size: 0.8rem; border-radius: 3px; cursor: pointer;">Close</button>
       </div>
     </div>
   </div>
@@ -3215,6 +3287,102 @@
       });
     }
 
+    let currentReverseTimeTeamId = null;
+    let currentReverseTimeRound = 1;
+
+    function openReverseTimeModal(teamId, teamName, roundNum) {
+      currentReverseTimeTeamId = teamId;
+      currentReverseTimeRound = roundNum || 1;
+      const nameEl = document.getElementById('revModalTeamName');
+      const roundEl = document.getElementById('revModalRoundInfo');
+      const clockEl = document.getElementById('revModalClockDisplay');
+      const penEl = document.getElementById('revModalHintPenaltyDisplay');
+      if (nameEl) nameEl.textContent = teamName || teamId;
+      if (roundEl) roundEl.textContent = `Round ${currentReverseTimeRound} • Active Clock`;
+      
+      const teamObj = (currentStandingsTeams || []).find(t => t.id === teamId);
+      if (teamObj) {
+        const clock = getTeamClockDetails(teamObj);
+        if (clockEl) clockEl.textContent = clock.text;
+        const penMin = (teamObj.timer && teamObj.timer.hintPenaltiesMinutes) || 0;
+        if (penEl) penEl.textContent = `${penMin} mins`;
+      } else {
+        if (clockEl) clockEl.textContent = '--:--';
+        if (penEl) penEl.textContent = '0m';
+      }
+
+      const m = document.getElementById('reverseTimeModal');
+      if (m) m.style.display = 'flex';
+    }
+
+    function closeReverseTimeModal() {
+      const m = document.getElementById('reverseTimeModal');
+      if (m) m.style.display = 'none';
+    }
+
+    function executeReverseTimeAction(action, minutes) {
+      if (!currentReverseTimeTeamId) return;
+      fetch('/api/admin/teams/reverse-time', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          teamId: currentReverseTimeTeamId,
+          round: currentReverseTimeRound,
+          action,
+          minutes
+        })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          if (typeof showToast === 'function') showToast(data.message || 'Time adjusted successfully!', 'success');
+          else alert(data.message);
+          closeReverseTimeModal();
+          fetchTournamentStatus();
+          fetchTeamScores();
+          fetchMyTeam();
+        } else {
+          if (typeof showToast === 'function') showToast(data.error || 'Failed to adjust time', 'error');
+          else alert(data.error);
+        }
+      })
+      .catch(err => {
+        console.error("Error reversing time:", err);
+        if (typeof showToast === 'function') showToast("Network error adjusting time.", 'error');
+      });
+    }
+
+    function executeCustomReverseTime() {
+      const inp = document.getElementById('customReverseMinutesInput');
+      if (!inp) return;
+      const mins = parseInt(inp.value, 10);
+      if (isNaN(mins)) {
+        if (typeof showToast === 'function') showToast('Please enter a valid number of minutes (e.g. 5 or -5).', 'error');
+        return;
+      }
+      executeReverseTimeAction('custom', mins);
+    }
+
+    function startUserLiveCountdown() {
+      if (window._userCountdownInterval) clearInterval(window._userCountdownInterval);
+      const updateClocks = () => {
+        if (!myTeamData || !myTeamData.team) return;
+        const clock = getTeamClockDetails(myTeamData.team);
+        const statVal = document.getElementById('userLiveTimerValue');
+        const mapSpan = document.getElementById('mapLiveTimerSpan');
+        if (statVal && statVal.textContent !== clock.text) {
+          statVal.textContent = clock.text;
+          statVal.style.color = clock.color;
+        }
+        if (mapSpan && mapSpan.textContent !== clock.text) {
+          mapSpan.textContent = clock.text;
+          mapSpan.style.color = clock.color;
+        }
+      };
+      updateClocks();
+      window._userCountdownInterval = setInterval(updateClocks, 1000);
+    }
+
     function renderAdminProctorList() {
       const container = document.getElementById('adminCrewsProctorList');
       if (!container) return;
@@ -3345,6 +3513,7 @@
               `;
             }
           }
+          startUserLiveCountdown();
           updateChallengeBoxesFromTeam();
         })
         .catch(err => console.error("MyTeam fetch error:", err));
@@ -3501,14 +3670,17 @@
 
       const durMin = (timer && timer.durationMinutes) || (curR === 1 ? 30 : (curR === 2 ? 25 : (curR === 3 ? 20 : 15)));
       const penMin = (timer && (timer.hintPenaltiesMinutes || timer.penaltyMinutes)) || 0;
-      const penNote = penMin > 0 ? ` (-${penMin}m hint)` : '';
+      const bonusMin = (timer && timer.bonusMinutes) || 0;
+      let penNote = '';
+      if (penMin > 0) penNote += ` (-${penMin}m hint)`;
+      if (bonusMin > 0) penNote += ` (+${bonusMin}m rev)`;
 
       if (!timer || !timer.startedAt) {
         return {
           statusType: 'waiting',
           roundLabel: `ROUND ${curR}`,
           label: 'READY',
-          text: `${durMin}m 00s (Ready)`,
+          text: `${durMin + bonusMin - penMin}m 00s (Ready)`,
           color: 'var(--text-secondary)',
           isLive: false
         };
@@ -3517,7 +3689,8 @@
       const elapsedSec = Math.max(0, Math.floor((Date.now() - timer.startedAt) / 1000));
       const allocatedSec = durMin * 60;
       const penaltySec = penMin * 60;
-      const remSec = Math.max(0, allocatedSec - penaltySec - elapsedSec);
+      const bonusSec = bonusMin * 60;
+      const remSec = Math.max(0, allocatedSec + bonusSec - penaltySec - elapsedSec);
       const isExpired = remSec <= 0;
       const m = Math.floor(remSec / 60);
       const s = remSec % 60;
@@ -4064,20 +4237,21 @@
             const m = Math.floor(rem / 60);
             const s = rem % 60;
             const pen = t.timer.hintPenaltiesMinutes > 0 ? ` (-${t.timer.hintPenaltiesMinutes}m)` : '';
+            const bon = t.timer.bonusMinutes > 0 ? ` (+${t.timer.bonusMinutes}m)` : '';
             const isZero = rem <= 0;
-            timerDisplay = `<span style="color:${isZero ? 'var(--danger)' : 'var(--gold-primary)'}; font-family:'JetBrains Mono',monospace; font-weight:700;">⏱ ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}${pen}</span>`;
+            timerDisplay = `<span style="color:${isZero ? 'var(--danger)' : 'var(--gold-primary)'}; font-family:'JetBrains Mono',monospace; font-weight:700;">⏱ ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}${pen}${bon}</span>`;
           }
         } else {
           timerDisplay = `<span style="color:var(--text-secondary); font-size:0.8rem;">--:--</span>`;
         }
 
-        // Actions: REINITIATE TEAM
-        let actionsHtml = '';
+        // Actions: REINITIATE TEAM & REVERSE TIME
+        let actionsHtml = `<div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">`;
         if (t.disqualified || t.violations > 0) {
-          actionsHtml = `<button type="button" onclick="reinstateCrew('${escapeHTML(t.id)}')" style="padding:0.35rem 0.75rem; background:rgba(201,154,82,0.18); border:1px solid var(--gold-primary); color:var(--gold-primary); font-family:'Cinzel',serif; font-size:0.75rem; font-weight:700; border-radius:3px; cursor:pointer;">REINITIATE TEAM</button>`;
-        } else {
-          actionsHtml = `<span style="color:var(--text-secondary); font-size:0.75rem;">Active</span>`;
+          actionsHtml += `<button type="button" onclick="reinstateCrew('${escapeHTML(t.id)}')" style="padding:0.35rem 0.65rem; background:rgba(201,154,82,0.18); border:1px solid var(--gold-primary); color:var(--gold-primary); font-family:'Cinzel',serif; font-size:0.75rem; font-weight:700; border-radius:3px; cursor:pointer;">REINITIATE</button>`;
         }
+        actionsHtml += `<button type="button" onclick="openReverseTimeModal('${escapeHTML(t.id)}', '${escapeHTML(t.teamName)}', ${curR})" style="padding:0.35rem 0.65rem; background:rgba(201,154,82,0.1); border:1px solid var(--gold-primary); color:var(--gold-primary); font-family:'Cinzel',serif; font-size:0.75rem; font-weight:600; border-radius:3px; cursor:pointer;" title="Reverse or adjust round timer for this crew">⏱ REVERSE TIME</button>`;
+        actionsHtml += `</div>`;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `

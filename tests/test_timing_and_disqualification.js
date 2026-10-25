@@ -198,7 +198,42 @@ async function runTests() {
     assert.strictEqual(dupRes.status, 400, 'Duplicate submission must be rejected with 400');
     console.log('[PASS] Duplicate submission correctly blocked.');
 
-    console.log('\n>>> ALL 10 TIMING & DISQUALIFICATION TESTS PASSED SUCCESSFULLY! <<<');
+    // 11. Test Reverse Time for Individual Person / Crew
+    // A) Refund Hint Penalties
+    const revRefundRes = await fetch(`${baseUrl}/api/admin/teams/reverse-time`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Cookie': adminCookie },
+      body: JSON.stringify({ teamId, round: 1, action: 'refund_hints' })
+    });
+    const revRefundData = await revRefundRes.json();
+    assert.strictEqual(revRefundData.success, true, 'Reverse time refund_hints must succeed');
+    assert.strictEqual(revRefundData.timer.penaltyMinutes, 0, 'Penalty minutes must be 0 after refund');
+    console.log('[PASS] Admin reversed hint penalties: 5 minutes refunded back to crew clock.');
+
+    // B) Add / Reverse Time (+5 minutes)
+    const revAddRes = await fetch(`${baseUrl}/api/admin/teams/reverse-time`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Cookie': adminCookie },
+      body: JSON.stringify({ teamId, round: 1, action: 'add_time', minutes: 5 })
+    });
+    const revAddData = await revAddRes.json();
+    assert.strictEqual(revAddData.success, true, 'Reverse time add_time must succeed');
+    assert.strictEqual(revAddData.timer.bonusMinutes, 5, 'Bonus minutes must be 5');
+    console.log('[PASS] Admin added +5 minutes (reversed elapsed time) for individual crew.');
+
+    // C) Full Clock Reset
+    const revResetRes = await fetch(`${baseUrl}/api/admin/teams/reverse-time`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Cookie': adminCookie },
+      body: JSON.stringify({ teamId, round: 1, action: 'reset_clock' })
+    });
+    const revResetData = await revResetRes.json();
+    assert.strictEqual(revResetData.success, true, 'Reverse time reset_clock must succeed');
+    assert.strictEqual(revResetData.timer.bonusMinutes, 0, 'Bonus minutes reset to 0');
+    assert.strictEqual(revResetData.timer.penaltyMinutes, 0, 'Penalty minutes reset to 0');
+    console.log('[PASS] Admin reset round clock to full fresh duration.');
+
+    console.log('\n>>> ALL 11 TIMING, REVERSE TIME & DISQUALIFICATION TESTS PASSED SUCCESSFULLY! <<<');
   } finally {
     server.close();
   }

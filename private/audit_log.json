@@ -1,5 +1,75 @@
 [
   {
+    "id": "audit_1792962830878_i5lm",
+    "timestamp": "2026-10-25T21:13:50.878Z",
+    "action": "TEST_AUDIT",
+    "admin": "admin@lostcode",
+    "reason": "Automated test audit event",
+    "details": {
+      "test": true
+    }
+  },
+  {
+    "id": "audit_1792962829051_q1i2",
+    "timestamp": "2026-10-25T21:13:49.051Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
+    "id": "audit_1792962816382_5go4",
+    "timestamp": "2026-10-25T21:13:36.382Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
+    "id": "audit_1792962624707_2j3s",
+    "timestamp": "2026-10-25T21:10:24.707Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 4 successfully activated to Live state",
+    "details": {
+      "round": 4
+    }
+  },
+  {
+    "id": "audit_1792962449794_j608",
+    "timestamp": "2026-10-25T21:07:29.794Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 2 successfully activated to Live state",
+    "details": {
+      "round": 2
+    }
+  },
+  {
+    "id": "audit_1792962441730_96ff",
+    "timestamp": "2026-10-25T21:07:21.730Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
+    "id": "audit_1792962301866_sh16",
+    "timestamp": "2026-10-25T21:05:01.866Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
     "id": "audit_1792959024832_uldd",
     "timestamp": "2026-10-25T20:10:24.832Z",
     "action": "TEST_AUDIT",
