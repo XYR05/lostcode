@@ -1910,6 +1910,80 @@ body::after {
   color: #ffffff;
 }
 
+/* ====================================================== */
+/* ADMIN DROPDOWN ACCORDION SECTIONS                      */
+/* ====================================================== */
+.admin-dropdown-section {
+  background: var(--panel-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-dropdown-section:hover {
+  border-color: rgba(201, 154, 82, 0.4);
+}
+
+.admin-dropdown-header {
+  padding: 1.15rem 1.35rem;
+  background: rgba(23, 17, 12, 0.95);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease;
+}
+
+.admin-dropdown-header:hover {
+  background: rgba(35, 26, 18, 0.98);
+}
+
+.admin-dropdown-title-wrap {
+  flex: 1;
+  min-width: 260px;
+}
+
+.admin-dropdown-tag {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: rgba(201, 154, 82, 0.1);
+  color: var(--gold-primary);
+  border: 1px solid rgba(201, 154, 82, 0.25);
+  text-transform: uppercase;
+}
+
+.admin-dropdown-chevron {
+  width: 20px;
+  height: 20px;
+  stroke: var(--gold-primary);
+  fill: none;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.admin-dropdown-section.is-collapsed .admin-dropdown-chevron {
+  transform: rotate(-90deg);
+}
+
+.admin-dropdown-body {
+  border-top: 1px solid var(--border-subtle);
+  transition: opacity 0.2s ease;
+}
+
+.admin-dropdown-section.is-collapsed .admin-dropdown-body {
+  display: none;
+}
+
 @media (max-width: 900px) {
   .route-stations-track {
     grid-template-columns: repeat(2, 1fr);

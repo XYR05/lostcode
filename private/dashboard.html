@@ -367,6 +367,13 @@
         <p style="color: var(--text-secondary); margin: 0.4rem 0 0 0; font-size: 0.92rem;">Manage tournament rounds, configure challenge riddles, and monitor team progression.</p>
       </div>
       <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+        <select id="adminSectionSelector" onchange="filterAdminSections(this.value)" style="padding: 0.65rem 1rem; border: 1px solid var(--gold-primary); background: rgba(201,154,82,0.12); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 700; border-radius: 4px; cursor: pointer;">
+          <option value="ALL">Show: All Sections</option>
+          <option value="roundControlDeck">Tournament Round Controls</option>
+          <option value="tournamentRosterSection">Tournament Roster & Standings</option>
+          <option value="riddleBankSection">Challenge Riddle Bank</option>
+          <option value="assignmentMatrixSection">Team-to-Riddle Assignment Matrix</option>
+        </select>
         <button id="adminStartCtfBtn" style="padding: 0.65rem 1.4rem; border: 1px solid var(--gold-primary); background: var(--gold-primary); color: #17110c; font-family: 'Cinzel', serif; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 0.85rem; letter-spacing: 0.05em; transition: all 0.2s ease;">Start Tournament</button>
         <button id="adminToggleProctorBtn" type="button" onclick="toggleProctoring()" style="padding: 0.65rem 1.1rem; border: 1px solid var(--gold-primary); background: rgba(201,154,82,0.12); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 700; border-radius: 4px; cursor: pointer;">Fullscreen Proctor: ON</button>
         <button type="button" onclick="fetchTournamentStatus()" style="padding: 0.65rem 1.1rem; border: 1px solid var(--border-subtle); background: rgba(201,154,82,0.08); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 700; border-radius: 4px; cursor: pointer;">Refresh Teams</button>
@@ -375,10 +382,10 @@
       </div>
     </div>
     
-    <!-- Tournament Round Controls -->
-    <div id="roundControlDeck">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 0.75rem;">
-        <div>
+    <!-- 1. Tournament Round Controls -->
+    <div id="roundControlDeck" class="admin-dropdown-section">
+      <div class="admin-dropdown-header" onclick="toggleAdminSection('roundControlDeck')">
+        <div class="admin-dropdown-title-wrap">
           <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); display: flex; align-items: center; gap: 8px;">
             Tournament Round Controls
           </h3>
@@ -386,46 +393,60 @@
             Rounds remain locked until activated by an administrator. Activating a round opens access to its assigned challenges for participants.
           </p>
         </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span class="admin-dropdown-tag">4 Rounds</span>
+          <svg class="admin-dropdown-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"></path></svg>
+        </div>
       </div>
-      <div class="admin-rounds-grid" id="adminRoundsGridContainer">
-        <!-- Rendered dynamically by renderAdminRoundControl() -->
-      </div>
-    </div>
-
-    <!-- Tournament Roster & Standings Monitor -->
-    <div class="tournament-bracket-card">
-      <div style="padding: 1.25rem; background: rgba(23,17,12,0.95); border-bottom: 1px solid var(--border-subtle);">
-        <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); display: flex; align-items: center; gap: 8px;">
-          Tournament Roster & Standings Monitor
-        </h3>
-        <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 0.85rem;">
-          Live 10-team tracking: Groups A & B, assigned riddles, active round status, and qualification state.
-        </p>
-      </div>
-      <div style="overflow-x: auto;">
-        <table class="tournament-bracket-table">
-          <thead>
-            <tr>
-              <th>TEAM NAME</th>
-              <th>GROUP</th>
-              <th>CURRENT ROUND</th>
-              <th>ASSIGNED RIDDLE</th>
-              <th>SOLVES</th>
-              <th>SCORE</th>
-              <th>STATUS</th>
-            </tr>
-          </thead>
-          <tbody id="tournamentRosterTableBody">
-            <!-- Dynamically populated by renderTournamentBracket() -->
-          </tbody>
-        </table>
+      <div class="admin-dropdown-body">
+        <div class="admin-rounds-grid" id="adminRoundsGridContainer">
+          <!-- Rendered dynamically by renderAdminRoundControl() -->
+        </div>
       </div>
     </div>
 
-    <!-- Riddle Bank Suite -->
-    <div id="riddleBankSection" class="card" style="margin-top: 2rem; background: var(--panel-secondary); border: 1px solid var(--border-subtle); padding: 1.5rem; border-radius: 4px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 1.25rem;">
-        <div>
+    <!-- 2. Tournament Roster & Standings Monitor -->
+    <div id="tournamentRosterSection" class="admin-dropdown-section tournament-bracket-card" style="margin-top: 1.5rem;">
+      <div class="admin-dropdown-header" onclick="toggleAdminSection('tournamentRosterSection')">
+        <div class="admin-dropdown-title-wrap">
+          <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); display: flex; align-items: center; gap: 8px;">
+            Tournament Roster & Standings Monitor
+          </h3>
+          <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 0.85rem;">
+            Live 10-team tracking: Groups A & B, assigned riddles, active round status, and qualification state.
+          </p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span class="admin-dropdown-tag">10 Teams</span>
+          <svg class="admin-dropdown-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"></path></svg>
+        </div>
+      </div>
+      <div class="admin-dropdown-body" style="padding: 0;">
+        <div style="overflow-x: auto;">
+          <table class="tournament-bracket-table">
+            <thead>
+              <tr>
+                <th>TEAM NAME</th>
+                <th>GROUP</th>
+                <th>CURRENT ROUND</th>
+                <th>ASSIGNED RIDDLE</th>
+                <th>SOLVES</th>
+                <th>SCORE</th>
+                <th>STATUS</th>
+              </tr>
+            </thead>
+            <tbody id="tournamentRosterTableBody">
+              <!-- Dynamically populated by renderTournamentBracket() -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Riddle Bank Suite -->
+    <div id="riddleBankSection" class="admin-dropdown-section card" style="margin-top: 1.5rem; background: var(--panel-secondary); border: 1px solid var(--border-subtle); padding: 0; border-radius: 4px;">
+      <div class="admin-dropdown-header" onclick="toggleAdminSection('riddleBankSection')">
+        <div class="admin-dropdown-title-wrap">
           <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); display: flex; align-items: center; gap: 8px;">
             Challenge Riddle Bank
           </h3>
@@ -434,41 +455,46 @@
           </p>
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
-          <select id="riddleBankRoundFilter" onchange="filterRiddleBank()" style="padding: 0.6rem 1rem; background: var(--panel-bg); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.82rem; border-radius: 4px; cursor: pointer;">
-            <option value="ALL">All Rounds</option>
-            <option value="1">Round 1 (Qualifying)</option>
-            <option value="2">Round 2 (Group Stage)</option>
-            <option value="3">Round 3 (Semifinals)</option>
-            <option value="4">Round 4 (Finals)</option>
-          </select>
-          <button type="button" onclick="openNewRiddleModal()" style="padding: 0.6rem 1.2rem; background: var(--gold-primary); border: none; color: var(--bg-primary); font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.82rem; border-radius: 4px; cursor: pointer;">
-            + New Riddle
-          </button>
+          <div onclick="event.stopPropagation()" style="display: flex; gap: 10px; align-items: center;">
+            <select id="riddleBankRoundFilter" onchange="filterRiddleBank()" style="padding: 0.5rem 0.8rem; background: var(--panel-bg); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.8rem; border-radius: 4px; cursor: pointer;">
+              <option value="ALL">All Rounds</option>
+              <option value="1">Round 1 (Qualifying)</option>
+              <option value="2">Round 2 (Group Stage)</option>
+              <option value="3">Round 3 (Semifinals)</option>
+              <option value="4">Round 4 (Finals)</option>
+            </select>
+            <button type="button" onclick="openNewRiddleModal()" style="padding: 0.5rem 1rem; background: var(--gold-primary); border: none; color: var(--bg-primary); font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.8rem; border-radius: 4px; cursor: pointer;">
+              + New Riddle
+            </button>
+          </div>
+          <svg class="admin-dropdown-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"></path></svg>
         </div>
       </div>
-      <div style="overflow-x: auto;">
-        <table class="admin-riddle-table">
-          <thead>
-            <tr>
-              <th>TITLE / CODE</th>
-              <th>TARGET ROUND</th>
-              <th>POINTS</th>
-              <th>STATUS</th>
-              <th>ANSWER RULE</th>
-              <th>ACTIONS</th>
-            </tr>
-          </thead>
-          <tbody id="riddleBankTableBody">
-            <!-- Rendered by renderRiddleBank() -->
-          </tbody>
-        </table>
+      <div class="admin-dropdown-body" style="padding: 1.25rem;">
+        <div style="overflow-x: auto;">
+          <table class="admin-riddle-table">
+            <thead>
+              <tr>
+                <th>TITLE / CODE</th>
+                <th>TARGET ROUND</th>
+                <th>POINTS</th>
+                <th>STATUS</th>
+                <th>ANSWER RULE</th>
+                <th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="riddleBankTableBody">
+              <!-- Rendered by renderRiddleBank() -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
-    <!-- Team-to-Riddle Assignment Matrix -->
-    <div id="assignmentMatrixSection" class="card" style="margin-top: 2rem; background: var(--panel-secondary); border: 1px solid var(--border-subtle); padding: 1.5rem; border-radius: 4px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 1.25rem;">
-        <div>
+    <!-- 4. Team-to-Riddle Assignment Matrix -->
+    <div id="assignmentMatrixSection" class="admin-dropdown-section card" style="margin-top: 1.5rem; background: var(--panel-secondary); border: 1px solid var(--border-subtle); padding: 0; border-radius: 4px;">
+      <div class="admin-dropdown-header" onclick="toggleAdminSection('assignmentMatrixSection')">
+        <div class="admin-dropdown-title-wrap">
           <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); display: flex; align-items: center; gap: 8px;">
             Team-to-Riddle Assignment Matrix
           </h3>
@@ -477,33 +503,38 @@
           </p>
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
-          <select id="matrixRoundFilter" onchange="renderAssignmentMatrix()" style="padding: 0.6rem 1rem; background: var(--panel-bg); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.82rem; border-radius: 4px; cursor: pointer;">
-            <option value="1">Round 1 (10 Teams - 10 Riddles)</option>
-            <option value="2">Round 2 (2 Groups of 5 - 3 Slots Each)</option>
-            <option value="3">Round 3 (2 Groups of 3 - 1 Slot Each)</option>
-            <option value="4">Round 4 (Finals - 1 Shared Riddle)</option>
-          </select>
-          <button type="button" onclick="validateRoundModal(document.getElementById('matrixRoundFilter').value)" style="padding: 0.6rem 1.2rem; background: rgba(201, 154, 82, 0.08); border: 1px solid var(--border-subtle); color: var(--gold-primary); font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.82rem; border-radius: 4px; cursor: pointer;">
-            Validate Checklist
-          </button>
+          <div onclick="event.stopPropagation()" style="display: flex; gap: 10px; align-items: center;">
+            <select id="matrixRoundFilter" onchange="renderAssignmentMatrix()" style="padding: 0.5rem 0.8rem; background: var(--panel-bg); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.8rem; border-radius: 4px; cursor: pointer;">
+              <option value="1">Round 1 (10 Teams - 10 Riddles)</option>
+              <option value="2">Round 2 (2 Groups of 5 - 3 Slots Each)</option>
+              <option value="3">Round 3 (2 Groups of 3 - 1 Slot Each)</option>
+              <option value="4">Round 4 (Finals - 1 Shared Riddle)</option>
+            </select>
+            <button type="button" onclick="validateRoundModal(document.getElementById('matrixRoundFilter').value)" style="padding: 0.5rem 1rem; background: rgba(201, 154, 82, 0.08); border: 1px solid var(--border-subtle); color: var(--gold-primary); font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.8rem; border-radius: 4px; cursor: pointer;">
+              Validate Checklist
+            </button>
+          </div>
+          <svg class="admin-dropdown-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"></path></svg>
         </div>
       </div>
-      <div style="overflow-x: auto;">
-        <table class="admin-matrix-table">
-          <thead>
-            <tr>
-              <th>TEAM</th>
-              <th>GROUP</th>
-              <th>QUALIFYING SLOT</th>
-              <th>ASSIGNED RIDDLE</th>
-              <th>STATUS</th>
-              <th>ACTIONS</th>
-            </tr>
-          </thead>
-          <tbody id="assignmentMatrixTableBody">
-            <!-- Rendered by renderAssignmentMatrix() -->
-          </tbody>
-        </table>
+      <div class="admin-dropdown-body" style="padding: 1.25rem;">
+        <div style="overflow-x: auto;">
+          <table class="admin-matrix-table">
+            <thead>
+              <tr>
+                <th>TEAM</th>
+                <th>GROUP</th>
+                <th>QUALIFYING SLOT</th>
+                <th>ASSIGNED RIDDLE</th>
+                <th>STATUS</th>
+                <th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="assignmentMatrixTableBody">
+              <!-- Rendered by renderAssignmentMatrix() -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -1768,6 +1799,44 @@
     let globalAdminAssignments = { rounds: {} };
     let globalAdminRoundState = {};
     let currentValRound = 1;
+
+    function toggleAdminSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      if (!section) return;
+      section.classList.toggle('is-collapsed');
+    }
+
+    function filterAdminSections(selectedId) {
+      const sectionIds = [
+        'roundControlDeck',
+        'tournamentRosterSection',
+        'riddleBankSection',
+        'assignmentMatrixSection'
+      ];
+
+      if (selectedId === 'ALL') {
+        sectionIds.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.style.display = '';
+            el.classList.remove('is-collapsed');
+          }
+        });
+      } else {
+        sectionIds.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            if (id === selectedId) {
+              el.style.display = '';
+              el.classList.remove('is-collapsed');
+              el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+              el.classList.add('is-collapsed');
+            }
+          }
+        });
+      }
+    }
 
     function fetchAdminTournamentData() {
       fetch('/api/admin/assignments')
