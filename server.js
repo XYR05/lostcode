@@ -281,12 +281,19 @@ app.get('/api/team/challenge', (req, res) => {
   // If already solved, return completed view with solved answer regardless of whether round is still Live
   if (isAlreadySolved) {
     const rawRiddle = slot && slot.riddleId ? getRiddleBank()[slot.riddleId] : null;
+    const isHintUnlocked = rawRiddle && !!(team.hintsUnlocked && (team.hintsUnlocked[rawRiddle.id] || (rawRiddle.category && team.hintsUnlocked[rawRiddle.category])));
+    const unlockedRecord = rawRiddle && team.hintsUnlocked ? (team.hintsUnlocked[rawRiddle.id] || (rawRiddle.category && team.hintsUnlocked[rawRiddle.category])) : null;
+    const rawHintText = rawRiddle && ((Array.isArray(rawRiddle.hints) && rawRiddle.hints[0] && rawRiddle.hints[0].text) ? rawRiddle.hints[0].text : (rawRiddle.hint || `Intel clue for ${rawRiddle.title}`));
     const sanitized = rawRiddle ? {
       id: rawRiddle.id,
       title: rawRiddle.title,
       text: rawRiddle.text,
+      hasHint: true,
+      hintUnlocked: isHintUnlocked,
+      hintPenaltyMinutes: unlockedRecord && unlockedRecord.penaltyMinutes ? unlockedRecord.penaltyMinutes : null,
+      hint: isHintUnlocked ? rawHintText : null,
       points: 0
-    } : { id: 'solved', title: 'Riddle Completed', text: 'Bounty secured by your crew!' };
+    } : { id: 'solved', title: 'Riddle Completed', text: 'Bounty secured by your crew!', hasHint: false };
 
     const solvedAns = (typeof solveRecord === 'object' && solveRecord?.answer) ? solveRecord.answer : 'Flag Salvaged';
     return res.json({
@@ -348,16 +355,33 @@ app.get('/api/team/challenge', (req, res) => {
     });
   }
 
+  const isHintUnlocked = !!(team.hintsUnlocked && (team.hintsUnlocked[rawRiddle.id] || (rawRiddle.category && team.hintsUnlocked[rawRiddle.category])));
+  const unlockedRecord = team.hintsUnlocked ? (team.hintsUnlocked[rawRiddle.id] || (rawRiddle.category && team.hintsUnlocked[rawRiddle.category])) : null;
+  const rawHintText = (Array.isArray(rawRiddle.hints) && rawRiddle.hints[0] && rawRiddle.hints[0].text) 
+    ? rawRiddle.hints[0].text 
+    : (rawRiddle.hint || `Intel clue for ${rawRiddle.title}`);
+
+  const currentHintsCount = (team.hintsUnlocked && typeof team.hintsUnlocked === 'object') ? Object.keys(team.hintsUnlocked).length : 0;
+  const nextHintCostMinutes = (currentHintsCount + 1) * 5;
+
   // Sanitize riddle: NEVER leak expectedAnswer, normalizedAnswer, or matching rules
   const sanitizedRiddle = {
     id: rawRiddle.id,
     title: rawRiddle.title,
     text: rawRiddle.text,
-    hints: Array.isArray(rawRiddle.hints) ? rawRiddle.hints.map(h => ({
-      text: (team.hintsUnlocked && team.hintsUnlocked[rawRiddle.id]) ? h.text : 'Hint locked. Consult the Admiralty.',
-      cost: h.cost || 0,
-      unlocked: !!(team.hintsUnlocked && team.hintsUnlocked[rawRiddle.id])
-    })) : []
+    category: rawRiddle.category || rawRiddle.id,
+    hasHint: true,
+    hintUnlocked: isHintUnlocked,
+    hintPenaltyMinutes: unlockedRecord && unlockedRecord.penaltyMinutes ? unlockedRecord.penaltyMinutes : null,
+    hint: isHintUnlocked ? rawHintText : null,
+    nextHintCost: nextHintCostMinutes,
+    hints: [
+      {
+        text: isHintUnlocked ? rawHintText : 'Hint locked by Admiralty Quartermaster.',
+        cost: nextHintCostMinutes,
+        unlocked: isHintUnlocked
+      }
+    ]
   };
 
   return res.json({

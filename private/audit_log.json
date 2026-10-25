@@ -1,5 +1,35 @@
 [
   {
+    "id": "audit_1792959024832_uldd",
+    "timestamp": "2026-10-25T20:10:24.832Z",
+    "action": "TEST_AUDIT",
+    "admin": "admin@lostcode",
+    "reason": "Automated test audit event",
+    "details": {
+      "test": true
+    }
+  },
+  {
+    "id": "audit_1792959020016_mb6t",
+    "timestamp": "2026-10-25T20:10:20.016Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
+    "id": "audit_1792959005443_4e65",
+    "timestamp": "2026-10-25T20:10:05.443Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
     "id": "audit_1792958297282_5y7g",
     "timestamp": "2026-10-25T19:58:17.282Z",
     "action": "TEST_AUDIT",
