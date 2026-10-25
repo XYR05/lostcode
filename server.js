@@ -1982,7 +1982,7 @@ app.post('/api/proctor/violation', (req, res) => {
     return res.json({ ignored: true, message: 'Admin session exempt from proctoring.' });
   }
   if (ctfConfig.fullscreenEnforced === false) {
-    return res.json({ ignored: true, message: 'Fullscreen proctoring disabled by Admiralty.' });
+    return res.json({ ignored: true, message: 'Fullscreen proctoring disabled by administrator.' });
   }
 
   if (team.disqualified) {
