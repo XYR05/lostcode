@@ -14,5 +14,215 @@
     "hints": [],
     "createdAt": "2026-10-25T10:32:57.640Z",
     "updatedAt": "2026-10-25T10:33:35.111Z"
+  },
+  "riddle_r1_compass": {
+    "id": "riddle_r1_compass",
+    "title": "The Guiding Needle",
+    "text": "I have no voice, but I speak of four lands. I have a single trembling finger that points without hands. In iron or bronze I forever dwell; follow my needle and all shall be well. What nautical instrument am I?",
+    "expectedAnswer": "compass",
+    "targetRound": 1,
+    "status": "published",
+    "points": 100,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "A brass navigational instrument containing a magnetic needle pointing North.",
+        "cost": 20
+      }
+    ],
+    "createdAt": "2026-10-25T11:14:10.678Z",
+    "updatedAt": "2026-10-25T11:14:10.678Z"
+  },
+  "riddle_r1_anchor": {
+    "id": "riddle_r1_anchor",
+    "title": "The Iron Sleeper",
+    "text": "Heavy as lead, forged in dark flame; cast me overboard, I stop the grand game. With flukes to the seabed and shank in the tide, until ye haul wind, right here ye abide. What am I?",
+    "expectedAnswer": "anchor",
+    "targetRound": 1,
+    "status": "published",
+    "points": 100,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "A heavy iron device dropped from the bow to moor a vessel to the seafloor.",
+        "cost": 20
+      }
+    ],
+    "createdAt": "2026-10-25T11:14:10.678Z",
+    "updatedAt": "2026-10-25T11:14:10.678Z"
+  },
+  "riddle_r1_hourglass": {
+    "id": "riddle_r1_hourglass",
+    "title": "The Sands of Tide",
+    "text": "Two glass bells joined at the waist, I swallow fine shore with no sign of haste. Turn me on my head and my journey begins anew; mariners use me to strike the bells true. What timepiece am I?",
+    "expectedAnswer": "hourglass",
+    "targetRound": 1,
+    "status": "published",
+    "points": 100,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "A nautical sand timer with two glass bulbs connected by a narrow neck.",
+        "cost": 20
+      }
+    ],
+    "createdAt": "2026-10-25T11:14:10.678Z",
+    "updatedAt": "2026-10-25T11:14:10.678Z"
+  },
+  "riddle_r1_spyglass": {
+    "id": "riddle_r1_spyglass",
+    "title": "The Crow's Eye",
+    "text": "I stretch out long when brass sleeves slide, pulling far islands right to your side. Closed I am small, open I am tall; through lens of quartz I reveal ships to all. What tool am I?",
+    "expectedAnswer": "spyglass",
+    "targetRound": 1,
+    "status": "published",
+    "points": 100,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "A collapsible handheld refracting telescope used by sailors.",
+        "cost": 20
+      }
+    ],
+    "createdAt": "2026-10-25T11:14:10.678Z",
+    "updatedAt": "2026-10-25T11:14:10.678Z"
+  },
+  "riddle_r1_map": {
+    "id": "riddle_r1_map",
+    "title": "Parchment of the Red X",
+    "text": "I have cities without houses, forests without trees, and rivers without water crossing saltless seas. An inked scarlet 'X' marks where riches lay dead; hold me to candlefire to read what was said. What am I?",
+    "expectedAnswer": "map",
+    "targetRound": 1,
+    "status": "published",
+    "points": 100,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "A navigational chart on parchment showing landmarks and secret locations.",
+        "cost": 20
+      }
+    ],
+    "createdAt": "2026-10-25T11:14:10.678Z",
+    "updatedAt": "2026-10-25T11:14:10.678Z"
+  },
+  "riddle_r1_lighthouse": {
+    "id": "riddle_r1_lighthouse",
+    "title": "The Stone Sentinel",
+    "text": "I stand on jagged crags where wild breakers roar. My single eye burns with flame, peering out from the shore. I wear stripes of white and crimson so bold, warning proud captains of reefs deep and cold. What tower am I?",
+    "expectedAnswer": "lighthouse",
+    "targetRound": 1,
+    "status": "published",
+    "points": 100,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "A coastal beacon tower emitting light to guide ships and warn of shoals.",
+        "cost": 20
+      }
+    ],
+    "createdAt": "2026-10-25T11:14:10.678Z",
+    "updatedAt": "2026-10-25T11:14:10.678Z"
+  },
+  "riddle_r1_doubloon": {
+    "id": "riddle_r1_doubloon",
+    "title": "The Spanish Sun",
+    "text": "Stamped with royal crests and hauled from sunken hold, I clink in leather pouches, seven grams of solid gold. Pirates spill rum and duel for my shine; pieces of eight are humble cousins of mine. What coin am I?",
+    "expectedAnswer": "doubloon",
+    "targetRound": 1,
+    "status": "published",
+    "points": 100,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "A historic seven-gram Spanish gold coin.",
+        "cost": 20
+      }
+    ],
+    "createdAt": "2026-10-25T11:14:10.678Z",
+    "updatedAt": "2026-10-25T11:14:10.678Z"
+  },
+  "riddle_r1_cannon": {
+    "id": "riddle_r1_cannon",
+    "title": "The Bronze Dragon",
+    "text": "Feed me black powder and a sphere of cold lead. Pull back my lanyard, and silence is dead. Smoke fills the gun-deck and wooden hulls tear; my roar shakes the ocean and poisons the air. What weapon am I?",
+    "expectedAnswer": "cannon",
+    "targetRound": 1,
+    "status": "published",
+    "points": 100,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "A heavy muzzle-loading smoothbore artillery piece mounted on a carriage.",
+        "cost": 20
+      }
+    ],
+    "createdAt": "2026-10-25T11:14:10.678Z",
+    "updatedAt": "2026-10-25T11:14:10.678Z"
+  },
+  "riddle_r1_rudder": {
+    "id": "riddle_r1_rudder",
+    "title": "The Silent Sternsman",
+    "text": "Tucked under the transom beneath ocean swell, I obey the wooden wheel's command very well. Turn me hard port or starboard to steer; without my flat blade no safe port can draw near. What ship's part am I?",
+    "expectedAnswer": "rudder",
+    "targetRound": 1,
+    "status": "published",
+    "points": 100,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "A flat timber attached vertically to the sternpost used for steering.",
+        "cost": 20
+      }
+    ],
+    "createdAt": "2026-10-25T11:14:10.678Z",
+    "updatedAt": "2026-10-25T11:14:10.678Z"
+  },
+  "riddle_r1_crowsnest": {
+    "id": "riddle_r1_crowsnest",
+    "title": "The Perch of the Mast",
+    "text": "High above topsails where cold breezes sting, perched on the mainmast like a bird with no wing. From here sounds the cry when a landfall draws near: 'Land ho!' shouts the sailor with eagle eyes clear. What lookout perch am I?",
+    "expectedAnswer": "crows nest",
+    "targetRound": 1,
+    "status": "published",
+    "points": 100,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "A barrel or platform fitted high up on the masthead for the lookout.",
+        "cost": 20
+      }
+    ],
+    "createdAt": "2026-10-25T11:14:10.678Z",
+    "updatedAt": "2026-10-25T11:14:10.678Z"
   }
 }

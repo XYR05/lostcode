@@ -44,7 +44,7 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "first riddle",
+      "1": "riddle_r1_compass",
       "2": null,
       "3": null,
       "4": null
@@ -75,7 +75,7 @@
       1
     ],
     "allocatedRiddles": {
-      "1": null,
+      "1": "riddle_r1_anchor",
       "2": null,
       "3": null,
       "4": null
@@ -106,7 +106,7 @@
       1
     ],
     "allocatedRiddles": {
-      "1": null,
+      "1": "riddle_r1_hourglass",
       "2": null,
       "3": null,
       "4": null
@@ -137,7 +137,7 @@
       1
     ],
     "allocatedRiddles": {
-      "1": null,
+      "1": "riddle_r1_spyglass",
       "2": null,
       "3": null,
       "4": null
@@ -168,7 +168,7 @@
       1
     ],
     "allocatedRiddles": {
-      "1": null,
+      "1": "riddle_r1_map",
       "2": null,
       "3": null,
       "4": null
@@ -199,7 +199,7 @@
       1
     ],
     "allocatedRiddles": {
-      "1": null,
+      "1": "riddle_r1_lighthouse",
       "2": null,
       "3": null,
       "4": null
@@ -230,7 +230,7 @@
       1
     ],
     "allocatedRiddles": {
-      "1": null,
+      "1": "riddle_r1_doubloon",
       "2": null,
       "3": null,
       "4": null
@@ -261,7 +261,7 @@
       1
     ],
     "allocatedRiddles": {
-      "1": null,
+      "1": "riddle_r1_cannon",
       "2": null,
       "3": null,
       "4": null
@@ -292,7 +292,7 @@
       1
     ],
     "allocatedRiddles": {
-      "1": null,
+      "1": "riddle_r1_rudder",
       "2": null,
       "3": null,
       "4": null
@@ -323,7 +323,7 @@
       1
     ],
     "allocatedRiddles": {
-      "1": null,
+      "1": "riddle_r1_crowsnest",
       "2": null,
       "3": null,
       "4": null

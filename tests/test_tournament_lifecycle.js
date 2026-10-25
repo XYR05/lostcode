@@ -74,10 +74,10 @@ async function runTournamentLifecycleSimulation() {
     const valIncomplete = await fetch(`${baseUrl}/api/admin/rounds/validate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Cookie': adminCookie },
-      body: JSON.stringify({ round: 1 })
+      body: JSON.stringify({ round: 2 })
     });
     const valIncData = await valIncomplete.json();
-    assert.strictEqual(valIncData.valid, false, 'Unconfigured Round 1 must fail validation');
+    assert.strictEqual(valIncData.valid, false, 'Unconfigured Round 2 must fail validation');
     assert.ok(valIncData.errors.length > 0, 'Must report actionable errors');
     console.log(`✓ Criterion 12 PASS: Validation detected ${valIncData.errors.length} incomplete configuration issues.`);
 

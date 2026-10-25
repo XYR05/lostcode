@@ -9,7 +9,7 @@
       "slots": [
         {
           "slotId": "R1_S1",
-          "riddleId": "riddle_r1_1792924377640_8j9e",
+          "riddleId": "riddle_r1_compass",
           "assignedTeamId": "crew_1_buccaneers",
           "claimed": false,
           "claimedBy": null,
@@ -17,7 +17,7 @@
         },
         {
           "slotId": "R1_S2",
-          "riddleId": null,
+          "riddleId": "riddle_r1_anchor",
           "assignedTeamId": "crew_2_cutthroats",
           "claimed": false,
           "claimedBy": null,
@@ -25,7 +25,7 @@
         },
         {
           "slotId": "R1_S3",
-          "riddleId": null,
+          "riddleId": "riddle_r1_hourglass",
           "assignedTeamId": "crew_3_corsairs",
           "claimed": false,
           "claimedBy": null,
@@ -33,7 +33,7 @@
         },
         {
           "slotId": "R1_S4",
-          "riddleId": null,
+          "riddleId": "riddle_r1_spyglass",
           "assignedTeamId": "crew_4_krakens",
           "claimed": false,
           "claimedBy": null,
@@ -41,7 +41,7 @@
         },
         {
           "slotId": "R1_S5",
-          "riddleId": null,
+          "riddleId": "riddle_r1_map",
           "assignedTeamId": "crew_5_scallywags",
           "claimed": false,
           "claimedBy": null,
@@ -49,7 +49,7 @@
         },
         {
           "slotId": "R1_S6",
-          "riddleId": null,
+          "riddleId": "riddle_r1_lighthouse",
           "assignedTeamId": "crew_6_privateers",
           "claimed": false,
           "claimedBy": null,
@@ -57,7 +57,7 @@
         },
         {
           "slotId": "R1_S7",
-          "riddleId": null,
+          "riddleId": "riddle_r1_doubloon",
           "assignedTeamId": "crew_7_blackflags",
           "claimed": false,
           "claimedBy": null,
@@ -65,7 +65,7 @@
         },
         {
           "slotId": "R1_S8",
-          "riddleId": null,
+          "riddleId": "riddle_r1_cannon",
           "assignedTeamId": "crew_8_plunderers",
           "claimed": false,
           "claimedBy": null,
@@ -73,7 +73,7 @@
         },
         {
           "slotId": "R1_S9",
-          "riddleId": null,
+          "riddleId": "riddle_r1_rudder",
           "assignedTeamId": "crew_9_dreadsails",
           "claimed": false,
           "claimedBy": null,
@@ -81,7 +81,7 @@
         },
         {
           "slotId": "R1_S10",
-          "riddleId": null,
+          "riddleId": "riddle_r1_crowsnest",
           "assignedTeamId": "crew_10_searavens",
           "claimed": false,
           "claimedBy": null,

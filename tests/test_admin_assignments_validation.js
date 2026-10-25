@@ -35,22 +35,22 @@ async function runTests() {
     });
     const adminCookie = adminLogin.headers.get('set-cookie');
 
-    // 2. Validate empty Round 1 -> Should report failures because riddles are not assigned
+    // 2. Validate unconfigured Round 2 -> Should report failures because riddles are not assigned
     const valRes1 = await fetch(`${baseUrl}/api/admin/rounds/validate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Cookie': adminCookie },
-      body: JSON.stringify({ round: 1 })
+      body: JSON.stringify({ round: 2 })
     });
     assert.strictEqual(valRes1.status, 200);
     const valData1 = await valRes1.json();
-    assert.strictEqual(valData1.valid, false, 'Empty Round 1 assignments must fail validation');
+    assert.strictEqual(valData1.valid, false, 'Unconfigured Round 2 assignments must fail validation');
     assert.ok(valData1.errors.length > 0, 'Must return actionable error messages');
 
-    // 3. Attempting to activate invalid Round 1 -> Must return 400 with errors
+    // 3. Attempting to activate invalid Round 2 -> Must return 400 with errors
     const actFailRes = await fetch(`${baseUrl}/api/admin/rounds/activate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Cookie': adminCookie },
-      body: JSON.stringify({ round: 1 })
+      body: JSON.stringify({ round: 2 })
     });
     assert.strictEqual(actFailRes.status, 400, 'Activating invalid round must be rejected');
 
