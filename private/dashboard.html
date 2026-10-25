@@ -350,7 +350,7 @@
               <span>CREW & STANDING</span>
             </div>
             <div style="display: flex; align-items: center; gap: 36px; margin-right: 4px;">
-              <span>EXPEDITION ROUND</span>
+              <span>ROUNDS COMPLETED</span>
               <span>TIME LEFT / CLOCK</span>
             </div>
           </div>
@@ -1518,6 +1518,8 @@
       const teamUnlocked = (myTeamData && myTeamData.team && Array.isArray(myTeamData.team.unlockedRounds))
         ? myTeamData.team.unlockedRounds
         : unlockedRounds;
+      const myTeam = myTeamData && myTeamData.team;
+      const curR = myTeam ? (myTeam.currentRound || 1) : 1;
 
       [1, 2, 3, 4].forEach(r => {
         const station = document.getElementById(`mapIsland${r}`);
@@ -1527,17 +1529,39 @@
         const roundStateObj = globalAdminRoundState && globalAdminRoundState[String(r)];
         const isRoundLive = roundStateObj && roundStateObj.status === 'Live';
         const isRoundCompleted = roundStateObj && roundStateObj.status === 'Completed';
-        const isUnlocked = teamUnlocked.includes(r) || isRoundLive || isRoundCompleted || window.isAdminUser;
-        if (isUnlocked) {
-          station.classList.remove('is-locked');
+
+        // Check if team hasn't completed earlier round:
+        // "fro those who have not solved the round 1 but the round 2 is already activated fro them they should see 'complete the round 1 for unlocking the round 2' and same for the other rounds"
+        const isLockedPrereq = !window.isAdminUser && (r > curR);
+
+        if (isLockedPrereq) {
+          station.classList.add('is-locked');
+          const prereqMsg = `Complete the round ${r - 1} for unlocking the round ${r}`;
+          station.title = prereqMsg;
           if (bannerSub) {
-            bannerSub.textContent = roundDefs[r].sub;
-            bannerSub.style.color = '';
+            bannerSub.innerHTML = `<span class="svg-padlock-badge"><svg class="svg-padlock-icon" viewBox="0 0 260 260" style="width:13px;height:13px;"><circle cx="130" cy="130" r="97.5" fill="none" stroke="currentColor" stroke-width="18" /><path d="M103.5 118 V94 A26.5 26.5 0 0 1 156.5 94 V118" fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="square" /><rect x="85" y="113" width="90" height="78" rx="10" ry="10" fill="currentColor" /></svg></span> ${prereqMsg}`;
+            bannerSub.style.color = 'var(--gold-muted)';
           }
         } else {
-          station.classList.add('is-locked');
-          if (bannerSub) {
-            bannerSub.innerHTML = '<span class="svg-padlock-badge"><svg class="svg-padlock-icon" viewBox="0 0 260 260" style="width:13px;height:13px;"><circle cx="130" cy="130" r="97.5" fill="none" stroke="currentColor" stroke-width="18" /><path d="M103.5 118 V94 A26.5 26.5 0 0 1 156.5 94 V118" fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="square" /><rect x="85" y="113" width="90" height="78" rx="10" ry="10" fill="currentColor" /></svg> LOCKED WATERS</span>';
+          const isUnlocked = teamUnlocked.includes(r) || isRoundLive || isRoundCompleted || window.isAdminUser;
+          if (isUnlocked) {
+            station.classList.remove('is-locked');
+            station.title = roundDefs[r].title;
+            if (bannerSub) {
+              if (r < curR) {
+                bannerSub.innerHTML = '<span style="color:var(--success); font-weight:bold;">✓ COMPLETED</span>';
+              } else {
+                bannerSub.textContent = roundDefs[r].sub;
+                bannerSub.style.color = '';
+              }
+            }
+          } else {
+            station.classList.add('is-locked');
+            station.title = `Round ${r} is currently locked by the Admiralty`;
+            if (bannerSub) {
+              bannerSub.innerHTML = '<span class="svg-padlock-badge"><svg class="svg-padlock-icon" viewBox="0 0 260 260" style="width:13px;height:13px;"><circle cx="130" cy="130" r="97.5" fill="none" stroke="currentColor" stroke-width="18" /><path d="M103.5 118 V94 A26.5 26.5 0 0 1 156.5 94 V118" fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="square" /><rect x="85" y="113" width="90" height="78" rx="10" ry="10" fill="currentColor" /></svg> LOCKED WATERS</span>';
+              bannerSub.style.color = '';
+            }
           }
         }
       });
@@ -1635,9 +1659,10 @@
       const quotaEl = document.getElementById('windowQuotaRule');
       if (quotaEl) quotaEl.textContent = roundDefs[roundNum].quota;
 
+      const isLockedPrereq = !window.isAdminUser && (roundNum > curR);
       const statusWrap = document.getElementById('windowStatusPillWrap');
       if (statusWrap) {
-        if (!isUnlocked && !window.isAdminUser) {
+        if (isLockedPrereq || (!isUnlocked && !window.isAdminUser)) {
           statusWrap.innerHTML = `<span class="round-status-pill locked"><svg class="svg-padlock-icon" viewBox="0 0 260 260" style="width:13px;height:13px;"><circle cx="130" cy="130" r="97.5" fill="none" stroke="currentColor" stroke-width="18" /><path d="M103.5 118 V94 A26.5 26.5 0 0 1 156.5 94 V118" fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="square" /><rect x="85" y="113" width="90" height="78" rx="10" ry="10" fill="currentColor" /></svg> LOCKED WATERS</span>`;
         } else if (isThisRoundSolved) {
           statusWrap.innerHTML = `<span class="round-status-pill solved">✓ SOLVED & ADVANCED</span>`;
@@ -1683,11 +1708,11 @@
       const lockedCard = document.getElementById('windowLockedCard');
       const activeContent = document.getElementById('windowActiveContent');
 
-      if (data.roundStatus !== 'Live' && !window.isAdminUser) {
+      if ((data.roundStatus !== 'Live' || data.isLockedPrereq || data.success === false) && !window.isAdminUser) {
         if (lockedCard) {
           lockedCard.style.display = 'block';
           const msgEl = document.getElementById('windowLockedMessage');
-          if (msgEl) msgEl.textContent = data.message || `Round ${roundNum} is locked by the Admiralty.`;
+          if (msgEl) msgEl.textContent = data.message || `Complete the round ${roundNum - 1} for unlocking the round ${roundNum}`;
         }
         if (activeContent) activeContent.style.display = 'none';
         return;
@@ -3041,7 +3066,7 @@
           }
         }
 
-        if (typeof fetchMyTeamData === 'function') fetchMyTeamData();
+        if (typeof fetchMyTeam === 'function') fetchMyTeam();
         if (typeof fetchTeamScores === 'function') fetchTeamScores();
         if (typeof fetchParticipantChallenge === 'function') fetchParticipantChallenge(currentActiveRound || 1);
       })
@@ -3729,6 +3754,9 @@
             if (b.isWinner) return 1;
             if (a.eliminated && !b.eliminated) return 1;
             if (!a.eliminated && b.eliminated) return -1;
+            const countA = Object.values(a.roundSolves || {}).filter(s => s && (s.completed || typeof s === 'string')).length;
+            const countB = Object.values(b.roundSolves || {}).filter(s => s && (s.completed || typeof s === 'string')).length;
+            if (countB !== countA) return countB - countA;
             const rA = a.currentRound || 1;
             const rB = b.currentRound || 1;
             if (rB !== rA) return rB - rA;
@@ -3780,6 +3808,7 @@
           statusBadge = `<span style="background:rgba(201,154,82,0.18); border:1px solid var(--gold-primary); color:var(--gold-primary); font-size:11px; padding:2px 7px; border-radius:3px; margin-left:8px; font-weight:bold;">1 WARNING</span>`;
         }
 
+        const roundsCompleted = Object.values(t.roundSolves || {}).filter(s => s && (s.completed || typeof s === 'string')).length;
         const clock = getTeamClockDetails(t);
         const curR = t.currentRound || 1;
         const curGroup = (curR >= 3 ? t.groupRound3 : t.groupRound2) || 'A';
@@ -3793,7 +3822,7 @@
             ${statusBadge}
           </div>
           <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: flex-end;">
-            <span style="background: rgba(201, 154, 82, 0.12); border: 1px solid var(--border-subtle); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; padding: 4px 10px; border-radius: 3px; letter-spacing: 0.05em;">ROUND ${curR}</span>
+            <span style="background: rgba(201, 154, 82, 0.12); border: 1px solid var(--border-subtle); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; padding: 4px 10px; border-radius: 3px; letter-spacing: 0.05em;">${roundsCompleted} / 4 COMPLETED</span>
             <div style="font-size: 0.92rem; font-family: 'JetBrains Mono', monospace; font-weight: 700; min-width: 140px; text-align: right;">
               <span style="color: var(--gold-muted); font-size: 0.72rem; letter-spacing: 0.05em; margin-right: 5px;">TIME LEFT:</span>
               <span id="standingClock_${t.id}" style="color:${clock.color};">${clock.text}</span>
@@ -3838,44 +3867,43 @@
       const allTimestamps = new Set();
 
       topTeams.forEach(t => {
-        const rawHistory = Array.isArray(t.scoreHistory) ? t.scoreHistory : [];
         const norm = [];
+        const startTs = (t.scoreHistory && t.scoreHistory[0] && t.scoreHistory[0].timestamp) || (now - 60000);
+        norm.push({ timestamp: startTs - 5000, rounds: 0 });
+        allTimestamps.add(startTs - 5000);
 
-        rawHistory.forEach(pt => {
-          let ts = null;
-          if (typeof pt.timestamp === 'number' && !isNaN(pt.timestamp)) {
-            ts = pt.timestamp;
-          } else if (pt.time) {
-            const parsed = Date.parse(pt.time);
-            if (!isNaN(parsed)) ts = parsed;
-          }
-          if (ts === null) ts = now;
-          const score = typeof pt.score === 'number' ? pt.score : 0;
-          norm.push({ timestamp: ts, score });
-          allTimestamps.add(ts);
+        const solves = Object.entries(t.roundSolves || {});
+        solves.sort((a, b) => {
+          const tA = (a[1] && a[1].solvedAt) ? new Date(a[1].solvedAt).getTime() : 0;
+          const tB = (b[1] && b[1].solvedAt) ? new Date(b[1].solvedAt).getTime() : 0;
+          return tA - tB;
         });
 
-        if (norm.length === 0) {
-          const startTs = now - 60000;
-          norm.push({ timestamp: startTs, score: 0 });
-          allTimestamps.add(startTs);
+        let count = 0;
+        solves.forEach(([rKey, sInfo]) => {
+          if (sInfo && (sInfo.completed || typeof sInfo === 'string')) {
+            count++;
+            const ts = sInfo.solvedAt ? new Date(sInfo.solvedAt).getTime() : now;
+            norm.push({ timestamp: ts, rounds: count });
+            allTimestamps.add(ts);
+          }
+        });
+
+        if (Array.isArray(t.scoreHistory)) {
+          t.scoreHistory.forEach(pt => {
+            if (typeof pt.roundsCompleted === 'number') {
+              const ts = pt.timestamp || (pt.time ? Date.parse(pt.time) : now);
+              norm.push({ timestamp: ts, rounds: pt.roundsCompleted });
+              allTimestamps.add(ts);
+            }
+          });
         }
+
+        const totalCompleted = count || Object.values(t.roundSolves || {}).filter(s => s && (s.completed || typeof s === 'string')).length;
+        norm.push({ timestamp: now, rounds: totalCompleted });
+        allTimestamps.add(now);
 
         norm.sort((a, b) => a.timestamp - b.timestamp);
-
-        if (norm[0].score > 0) {
-          const baseTs = norm[0].timestamp - 10000;
-          norm.unshift({ timestamp: baseTs, score: 0 });
-          allTimestamps.add(baseTs);
-        }
-
-        const currentOfficialScore = typeof t.score === 'number' ? t.score : 0;
-        const latestHistScore = norm[norm.length - 1].score;
-        if (latestHistScore !== currentOfficialScore) {
-          norm.push({ timestamp: now, score: currentOfficialScore });
-          allTimestamps.add(now);
-        }
-
         normalizedHistories.set(t.id, norm);
       });
 
@@ -3885,28 +3913,28 @@
         .filter(ts => typeof ts === 'number' && !isNaN(ts))
         .sort((a, b) => a - b);
 
-      function getScoresSnapshot(time) {
+      function getRoundsSnapshot(time) {
         return topTeams.map(t => {
           const norm = normalizedHistories.get(t.id) || [];
-          let score = 0;
+          let rounds = 0;
           for (let i = 0; i < norm.length; i++) {
-            if (norm[i].timestamp <= time) score = norm[i].score;
+            if (norm[i].timestamp <= time) rounds = norm[i].rounds;
             else break;
           }
-          return score;
+          return rounds;
         });
       }
 
-      // Filter redundant timestamps: keep start, end, and points where any crew's score changed
+      // Filter redundant timestamps
       const filteredTimes = [];
-      let prevScoresStr = null;
+      let prevRoundsStr = null;
 
       allSortedTimes.forEach((time, idx) => {
-        const scores = getScoresSnapshot(time);
-        const scoresStr = scores.join(',');
-        if (idx === 0 || idx === allSortedTimes.length - 1 || scoresStr !== prevScoresStr) {
+        const rounds = getRoundsSnapshot(time);
+        const roundsStr = rounds.join(',');
+        if (idx === 0 || idx === allSortedTimes.length - 1 || roundsStr !== prevRoundsStr) {
           filteredTimes.push(time);
-          prevScoresStr = scoresStr;
+          prevRoundsStr = roundsStr;
         }
       });
 
@@ -3921,22 +3949,22 @@
         const norm = normalizedHistories.get(t.id) || [];
 
         const dataPoints = filteredTimes.map(time => {
-          let score = 0;
+          let rounds = 0;
           for (let i = 0; i < norm.length; i++) {
-            if (norm[i].timestamp <= time) score = norm[i].score;
+            if (norm[i].timestamp <= time) rounds = norm[i].rounds;
             else break;
           }
-          return score;
+          return rounds;
         });
 
         return {
-          label: `${t.teamName} (Round ${t.currentRound || 1})`,
+          label: t.teamName,
           data: dataPoints,
           borderColor: color,
           backgroundColor: color,
           borderWidth: 2.5,
-          pointRadius: 3.5,
-          pointHoverRadius: 6,
+          pointRadius: 4,
+          pointHoverRadius: 6.5,
           stepped: 'after',
           tension: 0
         };
@@ -3957,8 +3985,26 @@
           scales: {
             y: {
               beginAtZero: true,
-              grid: { color: 'rgba(73, 54, 34, 0.4)' },
-              ticks: { color: '#A99A82', font: { family: "'JetBrains Mono', monospace" } }
+              min: 0,
+              max: 4,
+              title: {
+                display: true,
+                text: 'ROUNDS COMPLETED',
+                color: '#C99A52',
+                font: { family: "'Cinzel', serif", size: 12, weight: 'bold' }
+              },
+              ticks: {
+                stepSize: 1,
+                precision: 0,
+                color: '#A99A82',
+                font: { family: "'JetBrains Mono', monospace" },
+                callback: function(value) {
+                  if (value === 0) return '0 Solved';
+                  if (value === 1) return '1 Round';
+                  return value + ' Rounds';
+                }
+              },
+              grid: { color: 'rgba(73, 54, 34, 0.4)' }
             },
             x: {
               grid: { color: 'rgba(73, 54, 34, 0.3)' },
@@ -3979,7 +4025,12 @@
               titleColor: '#C99A52',
               bodyColor: '#E4D5B8',
               titleFont: { family: "'Cinzel', serif" },
-              bodyFont: { family: "'JetBrains Mono', monospace" }
+              bodyFont: { family: "'JetBrains Mono', monospace" },
+              callbacks: {
+                label: function(context) {
+                  return ` ${context.dataset.label}: ${context.parsed.y} / 4 Rounds Completed`;
+                }
+              }
             }
           }
         }

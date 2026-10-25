@@ -2,6 +2,7 @@ const http = require('http');
 const assert = require('assert');
 const {
   app,
+  teams,
   getRiddleBank,
   saveRiddleBank,
   getTournamentAssignments,
@@ -54,6 +55,12 @@ async function runTests() {
     const roundState = getRoundState();
     roundState['2'].status = 'Live';
     saveRoundState(roundState);
+
+    // Set test crews currentRound to 2 for Round 2 competition
+    const bucMem = teams.find(t => t.id === 'crew_1_buccaneers');
+    if (bucMem) bucMem.currentRound = 2;
+    const corMem = teams.find(t => t.id === 'crew_3_corsairs');
+    if (corMem) corMem.currentRound = 2;
 
     // Login buccaneers
     const loginB = await fetch(`${baseUrl}/api/login`, {
@@ -140,6 +147,8 @@ async function runTests() {
     const rs4 = getRoundState();
     rs4['4'].status = 'Live';
     saveRoundState(rs4);
+
+    if (bucMem) bucMem.currentRound = 4;
 
     const finalSub = await fetch(`${baseUrl}/api/team/submit`, {
       method: 'POST',

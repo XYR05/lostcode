@@ -40,10 +40,7 @@
         {
           "slotId": "R1_S7",
           "riddleId": "riddle_r1_doubloon",
-          "assignedTeamId": "crew_7_blackflags",
-          "claimed": true,
-          "claimedBy": "crew_7_blackflags",
-          "claimedAt": "2026-10-25T21:38:42.238Z"
+          "assignedTeamId": "crew_7_blackflags"
         },
         {
           "slotId": "R1_S8",

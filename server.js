@@ -302,9 +302,23 @@ app.get('/api/team/challenge', (req, res) => {
     ? requestedRound
     : (team.currentRound || 1);
 
+  const curRound = team.currentRound || 1;
   const roundState = getRoundState();
   const currentRoundState = roundState[String(roundNum)] || { status: 'Locked' };
   const roundStatus = currentRoundState.status || 'Locked';
+
+  // "fro those who have not solved the round 1 but the round 2 is already activated fro them they should see 'complete the round 1 for unlocking the round 2' and same for the other rounds"
+  if (!isAdminSession(req) && roundNum > curRound) {
+    const prevRound = roundNum - 1;
+    return res.json({
+      success: false,
+      round: roundNum,
+      roundStatus,
+      isLockedPrereq: true,
+      message: `Complete the round ${prevRound} for unlocking the round ${roundNum}`,
+      riddle: null
+    });
+  }
 
   if (team.eliminated) {
     return res.json({
@@ -500,6 +514,13 @@ app.post('/api/team/submit', (req, res) => {
     ? requestedRound
     : (team.currentRound || 1);
 
+  const curRound = team.currentRound || 1;
+  if (!isAdminSession(req) && roundNum > curRound) {
+    return res.status(400).json({
+      error: `Complete the round ${roundNum - 1} for unlocking the round ${roundNum}`
+    });
+  }
+
   const roundState = getRoundState();
   const currentRoundState = roundState[String(roundNum)];
   if (!currentRoundState || currentRoundState.status !== 'Live') {
@@ -619,7 +640,13 @@ app.post('/api/team/submit', (req, res) => {
   if (!Array.isArray(team.scoreHistory)) {
     team.scoreHistory = [{ timestamp: solveTimestamp - 1000, time: new Date(solveTimestamp - 1000).toLocaleTimeString(), score: team.score - pointsEarned }];
   }
-  team.scoreHistory.push({ timestamp: solveTimestamp, time: new Date(solveTimestamp).toLocaleTimeString(), score: team.score });
+  const curCompletedCount = Object.values(team.roundSolves || {}).filter(s => s && (s.completed || typeof s === 'string')).length;
+  team.scoreHistory.push({
+    timestamp: solveTimestamp,
+    time: new Date(solveTimestamp).toLocaleTimeString(),
+    score: team.score,
+    roundsCompleted: curCompletedCount
+  });
 
   // Advance team round & unlock next round
   team.currentRound = Math.max(team.currentRound || 1, roundNum + 1);
@@ -1500,7 +1527,7 @@ app.post('/api/admin/wipe', (req, res) => {
   // Reset round state qualifiers & eliminations
   const roundState = getRoundState();
   Object.keys(roundState).forEach(r => {
-    roundState[r].status = r === '1' ? 'Ready' : 'Locked';
+    roundState[r].status = r === '1' ? 'Draft' : 'Locked';
     roundState[r].qualifiers = [];
     roundState[r].eliminations = [];
   });
@@ -2213,7 +2240,7 @@ app.post('/api/admin/tournament/seed-teams', isAdmin, (req, res) => {
 
   const roundState = getRoundState();
   Object.keys(roundState).forEach(r => {
-    roundState[r].status = r === '1' ? 'Ready' : 'Locked';
+    roundState[r].status = r === '1' ? 'Draft' : 'Locked';
     roundState[r].qualifiers = [];
     roundState[r].eliminations = [];
     delete roundState[r].winner;
