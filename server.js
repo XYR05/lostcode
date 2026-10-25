@@ -180,11 +180,14 @@ function findTeamSlotInRound(assignments, roundNum, teamId) {
 function getTeamRoundTimer(team, rKey) {
   if (!team) return null;
   if (!team.roundTimers) team.roundTimers = {};
+  const roundState = getRoundState();
+  const rState = roundState[rKey] || { status: 'Locked' };
+  const isRoundLive = rState.status === 'Live';
   const duration = (ctfConfig.roundDurations && ctfConfig.roundDurations[rKey]) || (rKey === '1' ? 30 : (rKey === '2' ? 25 : (rKey === '3' ? 20 : 15)));
   
   if (!team.roundTimers[rKey]) {
     team.roundTimers[rKey] = {
-      startedAt: Date.now(),
+      startedAt: null,
       durationMinutes: duration,
       hintPenaltiesMinutes: 0,
       bonusMinutes: 0,
@@ -195,41 +198,80 @@ function getTeamRoundTimer(team, rKey) {
   }
 
   const tState = team.roundTimers[rKey];
-  const allocatedSec = (tState.durationMinutes || duration) * 60;
+  const durMin = tState.durationMinutes || duration;
+  const allocatedSec = durMin * 60;
   const penaltySec = (tState.hintPenaltiesMinutes || 0) * 60;
   const bonusSec = (tState.bonusMinutes || 0) * 60;
 
+  const roundSolveEntry = team.roundSolves && team.roundSolves[rKey] && (team.roundSolves[rKey].completed || typeof team.roundSolves[rKey] === 'string')
+    ? team.roundSolves[rKey]
+    : null;
+
+  if (roundSolveEntry && !tState.solved) {
+    tState.solved = true;
+    if (!tState.solvedAt && roundSolveEntry.solvedAt) {
+      tState.solvedAt = new Date(roundSolveEntry.solvedAt).getTime() || Date.now();
+    }
+    if (!tState.finalSolveSeconds && roundSolveEntry.solveTimeSeconds) {
+      tState.finalSolveSeconds = roundSolveEntry.solveTimeSeconds;
+    }
+  }
+
   if (tState.solved && tState.solvedAt) {
-    const elapsedSec = Math.max(0, Math.floor((tState.solvedAt - tState.startedAt) / 1000));
-    const remainingSec = Math.max(0, allocatedSec + bonusSec - penaltySec - elapsedSec);
+    const elapsedSec = Math.max(0, Math.floor((tState.solvedAt - (tState.startedAt || tState.solvedAt)) / 1000));
     return {
       startedAt: tState.startedAt,
-      durationMinutes: tState.durationMinutes,
+      durationMinutes: durMin,
       hintPenaltiesMinutes: tState.hintPenaltiesMinutes || 0,
       penaltyMinutes: tState.hintPenaltiesMinutes || 0,
       bonusMinutes: tState.bonusMinutes || 0,
       solved: true,
       solvedAt: tState.solvedAt,
       elapsedSeconds: elapsedSec,
-      remainingSeconds: remainingSec,
-      solveTimeSeconds: tState.finalSolveSeconds || Math.max(0, elapsedSec + penaltySec - bonusSec)
+      remainingSeconds: Math.max(0, allocatedSec + bonusSec - penaltySec - elapsedSec),
+      solveTimeSeconds: tState.finalSolveSeconds || Math.max(0, elapsedSec + penaltySec - bonusSec),
+      isReady: false,
+      isLive: false
     };
-  } else {
-    const elapsedSec = Math.max(0, Math.floor((Date.now() - tState.startedAt) / 1000));
-    const remainingSec = Math.max(0, allocatedSec + bonusSec - penaltySec - elapsedSec);
+  }
+
+  // If round is NOT live or team has not started this round yet:
+  // Timer is in READY state, full duration remaining, NOT expired!
+  if (!isRoundLive || !tState.startedAt) {
     return {
-      startedAt: tState.startedAt,
-      durationMinutes: tState.durationMinutes,
+      startedAt: null,
+      durationMinutes: durMin,
       hintPenaltiesMinutes: tState.hintPenaltiesMinutes || 0,
       penaltyMinutes: tState.hintPenaltiesMinutes || 0,
       bonusMinutes: tState.bonusMinutes || 0,
       solved: false,
       solvedAt: null,
-      elapsedSeconds: elapsedSec,
-      remainingSeconds: remainingSec,
-      solveTimeSeconds: null
+      elapsedSeconds: 0,
+      remainingSeconds: allocatedSec,
+      solveTimeSeconds: null,
+      isReady: true,
+      isLive: false
     };
   }
+
+  // Round IS live and team timer has started
+  const elapsedSec = Math.max(0, Math.floor((Date.now() - tState.startedAt) / 1000));
+  const remainingSec = Math.max(0, allocatedSec + bonusSec - penaltySec - elapsedSec);
+
+  return {
+    startedAt: tState.startedAt,
+    durationMinutes: durMin,
+    hintPenaltiesMinutes: tState.hintPenaltiesMinutes || 0,
+    penaltyMinutes: tState.hintPenaltiesMinutes || 0,
+    bonusMinutes: tState.bonusMinutes || 0,
+    solved: false,
+    solvedAt: null,
+    elapsedSeconds: elapsedSec,
+    remainingSeconds: remainingSec,
+    solveTimeSeconds: null,
+    isReady: false,
+    isLive: remainingSec > 0
+  };
 }
 
 // -----------------------
@@ -582,20 +624,24 @@ app.post('/api/team/submit', (req, res) => {
     team.unlockedRounds.sort((a, b) => a - b);
   }
 
-  // Pre-seed next round timer startedAt
+  // Next round individual timer initialization:
+  // "once the team has completed the 1 round and next island is already activated/unloacked,
+  // the timer will only reset from new set timmer when the first rounded is scuessfult complted"
   if (roundNum < 4) {
     const nextRKey = String(roundNum + 1);
     const nextDur = (ctfConfig.roundDurations && ctfConfig.roundDurations[nextRKey]) || (nextRKey === '2' ? 25 : (nextRKey === '3' ? 20 : 15));
-    if (!team.roundTimers[nextRKey]) {
-      team.roundTimers[nextRKey] = {
-        startedAt: solveTimestamp,
-        durationMinutes: nextDur,
-        hintPenaltiesMinutes: 0,
-        solved: false,
-        solvedAt: null,
-        finalSolveSeconds: null
-      };
-    }
+    const nextRoundState = roundState[nextRKey] || { status: 'Locked' };
+    const isNextRoundLive = nextRoundState.status === 'Live';
+
+    team.roundTimers[nextRKey] = {
+      startedAt: isNextRoundLive ? solveTimestamp : null,
+      durationMinutes: nextDur,
+      hintPenaltiesMinutes: 0,
+      bonusMinutes: 0,
+      solved: false,
+      solvedAt: null,
+      finalSolveSeconds: null
+    };
   }
 
   if (typeof team.score !== 'number') team.score = 0;
@@ -1077,7 +1123,12 @@ app.post('/api/admin/rounds/activate', (req, res) => {
     try { fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2)); } catch (e) {}
   }
 
-  // Sync unlockedRounds and initialize individual timers for all active crews
+  if (roundNum === 1 && !ctfConfig.ctfStartTime) {
+    ctfConfig.ctfStartTime = new Date().toISOString();
+    try { fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2)); } catch (e) {}
+  }
+
+  // Sync unlockedRounds and start fresh individual timers for all eligible active crews
   const nowTs = Date.now();
   const dur = (ctfConfig.roundDurations && ctfConfig.roundDurations[rKey]) || (rKey === '1' ? 30 : (rKey === '2' ? 25 : (rKey === '3' ? 20 : 15)));
   teams.forEach(t => {
@@ -1088,15 +1139,33 @@ app.post('/api/admin/rounds/activate', (req, res) => {
         t.unlockedRounds.sort((a, b) => a - b);
       }
       if (!t.roundTimers) t.roundTimers = {};
-      if (!t.roundTimers[rKey]) {
-        t.roundTimers[rKey] = {
-          startedAt: nowTs,
-          durationMinutes: dur,
-          hintPenaltiesMinutes: 0,
-          solved: false,
-          solvedAt: null,
-          finalSolveSeconds: null
-        };
+
+      const hasSolved = t.roundSolves && t.roundSolves[rKey] && (t.roundSolves[rKey].completed || typeof t.roundSolves[rKey] === 'string');
+
+      // If team has not solved this round yet, start their timer fresh from NOW!
+      if (!hasSolved) {
+        if (roundNum === 1 || (t.currentRound || 1) >= roundNum) {
+          t.roundTimers[rKey] = {
+            startedAt: nowTs,
+            durationMinutes: dur,
+            hintPenaltiesMinutes: 0,
+            bonusMinutes: 0,
+            solved: false,
+            solvedAt: null,
+            finalSolveSeconds: null
+          };
+        } else {
+          // Team is still in earlier round: keep timer in ready state until they reach this round
+          t.roundTimers[rKey] = {
+            startedAt: null,
+            durationMinutes: dur,
+            hintPenaltiesMinutes: 0,
+            bonusMinutes: 0,
+            solved: false,
+            solvedAt: null,
+            finalSolveSeconds: null
+          };
+        }
       }
     }
   });
@@ -2045,6 +2114,34 @@ app.post('/api/admin/tournament/seed-teams', isAdmin, (req, res) => {
 
   teams = newTeams;
   users = newUsers;
+
+  // Reset slot claims & round state qualifiers so fresh teams start clean
+  const assignments = getTournamentAssignments();
+  if (assignments && assignments.rounds) {
+    Object.keys(assignments.rounds).forEach(r => {
+      const rd = assignments.rounds[r];
+      if (Array.isArray(rd.slots)) {
+        rd.slots.forEach(s => { delete s.claimed; delete s.claimedBy; delete s.claimedAt; });
+      }
+      if (rd.groups) {
+        Object.keys(rd.groups).forEach(g => {
+          if (Array.isArray(rd.groups[g].slots)) {
+            rd.groups[g].slots.forEach(s => { delete s.claimed; delete s.claimedBy; delete s.claimedAt; });
+          }
+        });
+      }
+    });
+    saveTournamentAssignments(assignments);
+  }
+
+  const roundState = getRoundState();
+  Object.keys(roundState).forEach(r => {
+    roundState[r].status = r === '1' ? 'Ready' : 'Locked';
+    roundState[r].qualifiers = [];
+    roundState[r].eliminations = [];
+    delete roundState[r].winner;
+  });
+  saveRoundState(roundState);
 
   fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
   fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));

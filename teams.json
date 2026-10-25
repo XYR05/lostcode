@@ -32,7 +32,7 @@
     "id": "crew_1_buccaneers",
     "teamName": "BUCCANEERS",
     "tagline": "Ruthless pirate adventurers",
-    "password": "$2b$10$sdrc4IWgLaHmnunNhY1prehtVJHg0oAonixHc1ligAVFEiwSB1sIO",
+    "password": "$2b$10$yh4cTkkDVvgODaSqL53Eredo9t48cL4LWNv7HdBkVVUL.GacHHkW2",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -53,26 +53,27 @@
     "eliminatedRound": null,
     "eliminatedReason": null,
     "roundSolves": {},
-    "isWinner": false,
-    "disqualified": false,
-    "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792962829051,
+        "startedAt": 1792963955563,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
+        "bonusMinutes": 0,
         "solved": false,
         "solvedAt": null,
         "finalSolveSeconds": null
       }
     },
-    "totalHintPenaltyMinutes": 0
+    "totalHintPenaltyMinutes": 0,
+    "disqualified": false,
+    "violations": 0,
+    "isWinner": false
   },
   {
     "id": "crew_2_cutthroats",
     "teamName": "CUTTHROATS",
     "tagline": "Fearless and dangerous",
-    "password": "$2b$10$7V62JgKkIpQZ0HaFqaCHdee3EJCe/.JC.pGgpg/sT/zE4ESd9yZ0e",
+    "password": "$2b$10$wdtq6OnSzXF3l.DPFhgy9.KGFcA5W/HvLAdV.nhXrZajwaG9Ko1aK",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -83,7 +84,7 @@
     ],
     "allocatedRiddles": {
       "1": "riddle_r1_anchor",
-      "2": "riddle_r2_barometer",
+      "2": "riddle_r2_figurehead",
       "3": "riddle_r3_jollyroger",
       "4": "riddle_r4_treasurechest"
     },
@@ -93,26 +94,27 @@
     "eliminatedRound": null,
     "eliminatedReason": null,
     "roundSolves": {},
-    "isWinner": false,
-    "disqualified": false,
-    "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792962829051,
+        "startedAt": 1792963955563,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
+        "bonusMinutes": 0,
         "solved": false,
         "solvedAt": null,
         "finalSolveSeconds": null
       }
     },
-    "totalHintPenaltyMinutes": 0
+    "totalHintPenaltyMinutes": 0,
+    "disqualified": false,
+    "violations": 0,
+    "isWinner": false
   },
   {
     "id": "crew_3_corsairs",
     "teamName": "CORSAIRS",
     "tagline": "Elite sea raiders",
-    "password": "$2b$10$hEz6RsVtW0w.51JfdNUaM.YqpMGIrf4Y8mwiz97TijS8vf1j1lkC2",
+    "password": "$2b$10$SXZODtuJT/vHqbDWSpEhMe.DMHHXOV./T8g.1j4z0Rb/Z5JqQ8x9O",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -123,86 +125,6 @@
     ],
     "allocatedRiddles": {
       "1": "riddle_r1_hourglass",
-      "2": "riddle_r2_figurehead",
-      "3": "riddle_r3_cutlass",
-      "4": "riddle_r4_treasurechest"
-    },
-    "groupRound2": "A",
-    "groupRound3": "A",
-    "eliminated": false,
-    "eliminatedRound": null,
-    "eliminatedReason": null,
-    "roundSolves": {},
-    "isWinner": false,
-    "disqualified": false,
-    "violations": 0,
-    "roundTimers": {
-      "1": {
-        "startedAt": 1792962829051,
-        "durationMinutes": 40,
-        "hintPenaltiesMinutes": 0,
-        "solved": false,
-        "solvedAt": null,
-        "finalSolveSeconds": null
-      }
-    },
-    "totalHintPenaltyMinutes": 0
-  },
-  {
-    "id": "crew_4_krakens",
-    "teamName": "KRAKENS",
-    "tagline": "Mythical forces of the deep",
-    "password": "$2b$10$Cm59v53cZb9u66q78zxiY.FyahWVF5NjW8N01Dq5b9O08Xukf.FWa",
-    "score": 0,
-    "solvedChallenges": [],
-    "hintsUnlocked": {},
-    "scoreHistory": [],
-    "currentRound": 1,
-    "unlockedRounds": [
-      1
-    ],
-    "allocatedRiddles": {
-      "1": "riddle_r1_spyglass",
-      "2": "riddle_r2_sextant",
-      "3": "riddle_r3_jollyroger",
-      "4": "riddle_r4_treasurechest"
-    },
-    "groupRound2": "B",
-    "groupRound3": "B",
-    "eliminated": false,
-    "eliminatedRound": null,
-    "eliminatedReason": null,
-    "roundSolves": {},
-    "isWinner": false,
-    "disqualified": false,
-    "violations": 0,
-    "roundTimers": {
-      "1": {
-        "startedAt": 1792962829051,
-        "durationMinutes": 40,
-        "hintPenaltiesMinutes": 0,
-        "solved": false,
-        "solvedAt": null,
-        "finalSolveSeconds": null
-      }
-    },
-    "totalHintPenaltyMinutes": 0
-  },
-  {
-    "id": "crew_5_scallywags",
-    "teamName": "SCALLYWAGS",
-    "tagline": "Mischievous pirates",
-    "password": "$2b$10$VR1NRLit7QOZh8lqF.bHROGW2cftQYuGNLAg4d0jUZMF7of7sbxbe",
-    "score": 0,
-    "solvedChallenges": [],
-    "hintsUnlocked": {},
-    "scoreHistory": [],
-    "currentRound": 1,
-    "unlockedRounds": [
-      1
-    ],
-    "allocatedRiddles": {
-      "1": "riddle_r1_map",
       "2": "riddle_r2_capstan",
       "3": "riddle_r3_cutlass",
       "4": "riddle_r4_treasurechest"
@@ -213,26 +135,109 @@
     "eliminatedRound": null,
     "eliminatedReason": null,
     "roundSolves": {},
-    "isWinner": false,
-    "disqualified": false,
-    "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792962829051,
+        "startedAt": 1792963955563,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
+        "bonusMinutes": 0,
         "solved": false,
         "solvedAt": null,
         "finalSolveSeconds": null
       }
     },
-    "totalHintPenaltyMinutes": 0
+    "totalHintPenaltyMinutes": 0,
+    "disqualified": false,
+    "violations": 0,
+    "isWinner": false
+  },
+  {
+    "id": "crew_4_krakens",
+    "teamName": "KRAKENS",
+    "tagline": "Mythical forces of the deep",
+    "password": "$2b$10$zw6jdIWV42RqTkBSAs.AYuru2bubOBxHTUWxIeSRxLtmdME97ThYG",
+    "score": 0,
+    "solvedChallenges": [],
+    "hintsUnlocked": {},
+    "scoreHistory": [],
+    "currentRound": 1,
+    "unlockedRounds": [
+      1
+    ],
+    "allocatedRiddles": {
+      "1": "riddle_r1_spyglass",
+      "2": "riddle_r2_barometer",
+      "3": "riddle_r3_jollyroger",
+      "4": "riddle_r4_treasurechest"
+    },
+    "groupRound2": "B",
+    "groupRound3": "B",
+    "eliminated": false,
+    "eliminatedRound": null,
+    "eliminatedReason": null,
+    "roundSolves": {},
+    "roundTimers": {
+      "1": {
+        "startedAt": 1792963955563,
+        "durationMinutes": 40,
+        "hintPenaltiesMinutes": 0,
+        "bonusMinutes": 0,
+        "solved": false,
+        "solvedAt": null,
+        "finalSolveSeconds": null
+      }
+    },
+    "totalHintPenaltyMinutes": 0,
+    "disqualified": false,
+    "violations": 0,
+    "isWinner": false
+  },
+  {
+    "id": "crew_5_scallywags",
+    "teamName": "SCALLYWAGS",
+    "tagline": "Mischievous pirates",
+    "password": "$2b$10$uGhOBdw1vAdYhiNuBZKpWuMdjItTbH17sluT0/PR1szRNdcSBC8Ke",
+    "score": 0,
+    "solvedChallenges": [],
+    "hintsUnlocked": {},
+    "scoreHistory": [],
+    "currentRound": 1,
+    "unlockedRounds": [
+      1
+    ],
+    "allocatedRiddles": {
+      "1": "riddle_r1_map",
+      "2": "riddle_r2_sextant",
+      "3": "riddle_r3_cutlass",
+      "4": "riddle_r4_treasurechest"
+    },
+    "groupRound2": "A",
+    "groupRound3": "A",
+    "eliminated": false,
+    "eliminatedRound": null,
+    "eliminatedReason": null,
+    "roundSolves": {},
+    "roundTimers": {
+      "1": {
+        "startedAt": 1792963955563,
+        "durationMinutes": 40,
+        "hintPenaltiesMinutes": 0,
+        "bonusMinutes": 0,
+        "solved": false,
+        "solvedAt": null,
+        "finalSolveSeconds": null
+      }
+    },
+    "totalHintPenaltyMinutes": 0,
+    "disqualified": false,
+    "violations": 0,
+    "isWinner": false
   },
   {
     "id": "crew_6_privateers",
     "teamName": "PRIVATEERS",
     "tagline": "Strategic naval raiders",
-    "password": "$2b$10$7Aa7bYhnHxVkdmvTNJ8S8e549p3C8B0H9ZphJ2O.GmjP8ZQFXfVVi",
+    "password": "$2b$10$8a01l5aVKSuEUM2LK/kVie1yArT2pfD.UQkhvSLOHmGP54S.FO4hq",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -253,26 +258,27 @@
     "eliminatedRound": null,
     "eliminatedReason": null,
     "roundSolves": {},
-    "isWinner": false,
-    "disqualified": false,
-    "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792962829051,
+        "startedAt": 1792963955563,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
+        "bonusMinutes": 0,
         "solved": false,
         "solvedAt": null,
         "finalSolveSeconds": null
       }
     },
-    "totalHintPenaltyMinutes": 0
+    "totalHintPenaltyMinutes": 0,
+    "disqualified": false,
+    "violations": 0,
+    "isWinner": false
   },
   {
     "id": "crew_7_blackflags",
     "teamName": "BLACKFLAGS",
     "tagline": "Rogue pirates of the seas",
-    "password": "$2b$10$i/GFhT0wGlWqpAO9EVL5l.vzFhHka6V04l/esCXbbZghCLMDJbZde",
+    "password": "$2b$10$qBjn24jqZ8cxjm2A70zuz.n.cMl/4nln07qrlzVmjmRG7BGkQxfVC",
     "score": 100,
     "solvedChallenges": [
       "riddle_r1_doubloon"
@@ -280,13 +286,13 @@
     "hintsUnlocked": {
       "riddle_r1_doubloon": {
         "penaltyMinutes": 5,
-        "unlockedAt": 1792962829060
+        "unlockedAt": 1792963955571
       }
     },
     "scoreHistory": [
       {
-        "timestamp": 1792962829070,
-        "time": "2:43:49 AM",
+        "timestamp": 1792963955582,
+        "time": "3:02:35 AM",
         "score": 100
       }
     ],
@@ -311,17 +317,14 @@
         "slotId": "R1_S7",
         "riddleId": "riddle_r1_doubloon",
         "answer": "doubloon",
-        "solvedAt": "2026-10-25T21:13:49.070Z",
+        "solvedAt": "2026-10-25T21:32:35.582Z",
         "completed": true,
         "solveTimeSeconds": 300
       }
     },
-    "isWinner": false,
-    "disqualified": false,
-    "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792962829103,
+        "startedAt": 1792963955614,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -330,21 +333,25 @@
         "finalSolveSeconds": null
       },
       "2": {
-        "startedAt": 1792962829070,
+        "startedAt": null,
         "durationMinutes": 25,
         "hintPenaltiesMinutes": 0,
+        "bonusMinutes": 0,
         "solved": false,
         "solvedAt": null,
         "finalSolveSeconds": null
       }
     },
-    "totalHintPenaltyMinutes": 0
+    "totalHintPenaltyMinutes": 0,
+    "disqualified": false,
+    "violations": 0,
+    "isWinner": false
   },
   {
     "id": "crew_8_plunderers",
     "teamName": "PLUNDERERS",
     "tagline": "Seekers of hidden treasure",
-    "password": "$2b$10$4ftyhafr3WsTQ90WOW/IweFIb8vws3fXDWytiqXq9UXX1W/ZHxE7C",
+    "password": "$2b$10$5bggCaDPn4Ud8EbTMCJJTOe9.I8lqi0GovcWy6Uz1VXa68y9q9vr2",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -355,7 +362,7 @@
     ],
     "allocatedRiddles": {
       "1": "riddle_r1_cannon",
-      "2": "riddle_r2_barometer",
+      "2": "riddle_r2_figurehead",
       "3": "riddle_r3_jollyroger",
       "4": "riddle_r4_treasurechest"
     },
@@ -365,26 +372,27 @@
     "eliminatedRound": null,
     "eliminatedReason": null,
     "roundSolves": {},
-    "isWinner": false,
-    "disqualified": false,
-    "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792962829051,
+        "startedAt": 1792963955563,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
+        "bonusMinutes": 0,
         "solved": false,
         "solvedAt": null,
         "finalSolveSeconds": null
       }
     },
-    "totalHintPenaltyMinutes": 0
+    "totalHintPenaltyMinutes": 0,
+    "disqualified": false,
+    "violations": 0,
+    "isWinner": false
   },
   {
     "id": "crew_9_dreadsails",
     "teamName": "DREADSAILS",
     "tagline": "Ghostly ships of the ocean",
-    "password": "$2b$10$I5B9ndrB1OGvl4IX0VIQK.6MVATGl1R/8ry.HauHxOZ4cK9EEHIwm",
+    "password": "$2b$10$V5I1qzQkklyNcpmewwtveulSAerOjQdBXRVtuWynnno5g4zW/ybam",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -395,7 +403,7 @@
     ],
     "allocatedRiddles": {
       "1": "riddle_r1_rudder",
-      "2": "riddle_r2_figurehead",
+      "2": "riddle_r2_capstan",
       "3": "riddle_r3_cutlass",
       "4": "riddle_r4_treasurechest"
     },
@@ -405,26 +413,27 @@
     "eliminatedRound": null,
     "eliminatedReason": null,
     "roundSolves": {},
-    "isWinner": false,
-    "disqualified": false,
-    "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792962829051,
+        "startedAt": 1792963955563,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
+        "bonusMinutes": 0,
         "solved": false,
         "solvedAt": null,
         "finalSolveSeconds": null
       }
     },
-    "totalHintPenaltyMinutes": 0
+    "totalHintPenaltyMinutes": 0,
+    "disqualified": false,
+    "violations": 0,
+    "isWinner": false
   },
   {
     "id": "crew_10_searavens",
     "teamName": "SEARAVENS",
     "tagline": "Dark and cunning voyagers",
-    "password": "$2b$10$rnz08/4KE90f6c/pu1PHluyZ6.2AWHeHN4EHtrGOWbHa/S.Z2jt7O",
+    "password": "$2b$10$53W2Xo9wsVFDg2NpZFnv5uwQhfppwFIvpknbZf1ByUDGx65jhDbk2",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -435,7 +444,7 @@
     ],
     "allocatedRiddles": {
       "1": "riddle_r1_crowsnest",
-      "2": "riddle_r2_sextant",
+      "2": "riddle_r2_barometer",
       "3": "riddle_r3_jollyroger",
       "4": "riddle_r4_treasurechest"
     },
@@ -445,19 +454,20 @@
     "eliminatedRound": null,
     "eliminatedReason": null,
     "roundSolves": {},
-    "isWinner": false,
-    "disqualified": false,
-    "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792962829051,
+        "startedAt": 1792963955563,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
+        "bonusMinutes": 0,
         "solved": false,
         "solvedAt": null,
         "finalSolveSeconds": null
       }
     },
-    "totalHintPenaltyMinutes": 0
+    "totalHintPenaltyMinutes": 0,
+    "disqualified": false,
+    "violations": 0,
+    "isWinner": false
   }
 ]

@@ -11,7 +11,7 @@
   },
   "2": {
     "status": "Locked",
-    "startedAt": "2026-10-25T21:07:29.794Z",
+    "startedAt": "2026-10-25T21:32:33.615Z",
     "completedAt": null,
     "qualifiers": [],
     "eliminated": [],
@@ -29,7 +29,6 @@
     "status": "Locked",
     "startedAt": "2026-10-25T21:10:24.706Z",
     "completedAt": null,
-    "winner": null,
     "eliminated": [],
     "qualifiers": [],
     "eliminations": []

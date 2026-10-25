@@ -1736,6 +1736,8 @@
           const m = Math.floor((data.timer.solveTimeSeconds || 0) / 60);
           const s = (data.timer.solveTimeSeconds || 0) % 60;
           timerStr = ` • SOLVE TIME: ${m}m ${s}s`;
+        } else if (data.timer.isReady || !data.timer.startedAt) {
+          timerStr = ` • ⏱ READY (${data.timer.durationMinutes || 30}m)`;
         } else {
           const rem = data.timer.remainingSeconds || 0;
           const m = Math.floor(rem / 60);
@@ -1746,7 +1748,7 @@
       if (subEl) subEl.textContent = `ROUND ${roundNum} • SLOT: ${data.slotId || ''}${timerStr}`;
 
       if (window._roundTimerInterval) clearInterval(window._roundTimerInterval);
-      if (data.timer && !data.timer.solved && (data.timer.remainingSeconds > 0)) {
+      if (data.timer && !data.timer.solved && !data.timer.isReady && data.timer.startedAt && (data.timer.remainingSeconds > 0)) {
         let remSec = data.timer.remainingSeconds;
         window._roundTimerInterval = setInterval(() => {
           remSec = Math.max(0, remSec - 1);
@@ -3481,8 +3483,16 @@
 
               let clockStatusText = 'WAITING FOR ACTIVATION';
               if (team.disqualified) clockStatusText = 'DISQUALIFIED';
-              else if (timer.solved) clockStatusText = `SOLVED (${Math.floor((timer.finalSolveSeconds||0)/60)}m ${(timer.finalSolveSeconds||0)%60}s)`;
-              else if (timer.started) clockStatusText = timer.isExpired ? 'TIME EXPIRED' : `${Math.floor((timer.remainingSeconds||0)/60)}m ${timer.remainingSeconds%60}s REMAINING`;
+              else if (timer.solved) {
+                const sSec = timer.solveTimeSeconds || timer.finalSolveSeconds || 0;
+                clockStatusText = `SOLVED (${Math.floor(sSec/60)}m ${sSec%60}s)`;
+              } else if (timer.isReady || !timer.startedAt) {
+                clockStatusText = `READY (${timer.durationMinutes || 30}m)`;
+              } else if (timer.remainingSeconds <= 0) {
+                clockStatusText = 'TIME EXPIRED';
+              } else {
+                clockStatusText = `${Math.floor((timer.remainingSeconds||0)/60)}m ${(timer.remainingSeconds||0)%60}s REMAINING`;
+              }
 
               myTeamInfo.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; background:rgba(23,17,12,0.6); padding:1.5rem; border:1px solid var(--border-subtle); border-radius:4px;">
@@ -3675,14 +3685,15 @@
       if (penMin > 0) penNote += ` (-${penMin}m hint)`;
       if (bonusMin > 0) penNote += ` (+${bonusMin}m rev)`;
 
-      if (!timer || !timer.startedAt) {
+      if (!timer || !timer.startedAt || timer.isReady) {
         return {
           statusType: 'waiting',
           roundLabel: `ROUND ${curR}`,
           label: 'READY',
           text: `${durMin + bonusMin - penMin}m 00s (Ready)`,
-          color: 'var(--text-secondary)',
-          isLive: false
+          color: 'var(--gold-muted)',
+          isLive: false,
+          remSec: durMin * 60
         };
       }
 
@@ -4232,6 +4243,9 @@
             const s = (t.timer.solveTimeSeconds || 0) % 60;
             const pen = t.timer.hintPenaltiesMinutes > 0 ? ` (+${t.timer.hintPenaltiesMinutes}m)` : '';
             timerDisplay = `<span style="color:var(--success); font-weight:700; font-family:'JetBrains Mono',monospace;">✓ ${m}m ${s}s${pen}</span>`;
+          } else if (t.timer.isReady || !t.timer.startedAt) {
+            const dur = t.timer.durationMinutes || (curR === 1 ? 30 : (curR === 2 ? 25 : (curR === 3 ? 20 : 15)));
+            timerDisplay = `<span style="color:var(--gold-muted); font-family:'JetBrains Mono',monospace;">⏱ ${dur}m (Ready)</span>`;
           } else {
             const rem = t.timer.remainingSeconds || 0;
             const m = Math.floor(rem / 60);
@@ -4260,12 +4274,55 @@
           <td><span style="font-weight:700; color:var(--text-primary);">Round ${curR}</span></td>
           <td style="font-size:0.78rem; color:var(--text-secondary); max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHTML(allocated)}">${escapeHTML(allocated)}</td>
           <td><span style="color:var(--gold-primary); font-weight:700;">${solvesCount} / 4</span></td>
-          <td>${timerDisplay}</td>
+          <td id="rosterTimer_${t.id}">${timerDisplay}</td>
           <td>${statusHtml}</td>
           <td>${actionsHtml}</td>
         `;
         tbody.appendChild(tr);
       });
+
+      currentRosterTeams = teamsList;
+      startRosterLiveTicker();
+    }
+
+    let currentRosterTeams = [];
+    let rosterTickInterval = null;
+    function startRosterLiveTicker() {
+      if (rosterTickInterval) return;
+      rosterTickInterval = setInterval(() => {
+        const adminSec = document.getElementById('admin-section');
+        if (!adminSec || adminSec.style.display === 'none') return;
+        if (!Array.isArray(currentRosterTeams) || currentRosterTeams.length === 0) return;
+
+        currentRosterTeams.forEach(t => {
+          const el = document.getElementById(`rosterTimer_${t.id}`);
+          if (!el) return;
+          const curR = t.currentRound || 1;
+          const timer = t.timer;
+          if (!timer) return;
+          if (timer.solved) return;
+          if (timer.isReady || !timer.startedAt) return;
+
+          const durMin = timer.durationMinutes || (curR === 1 ? 30 : (curR === 2 ? 25 : (curR === 3 ? 20 : 15)));
+          const penMin = timer.hintPenaltiesMinutes || 0;
+          const bonusMin = timer.bonusMinutes || 0;
+          const elapsedSec = Math.max(0, Math.floor((Date.now() - timer.startedAt) / 1000));
+          const allocatedSec = durMin * 60;
+          const penaltySec = penMin * 60;
+          const bonusSec = bonusMin * 60;
+          const remSec = Math.max(0, allocatedSec + bonusSec - penaltySec - elapsedSec);
+          const isZero = remSec <= 0;
+          const m = Math.floor(remSec / 60);
+          const s = remSec % 60;
+          const pen = penMin > 0 ? ` (-${penMin}m)` : '';
+          const bon = bonusMin > 0 ? ` (+${bonusMin}m)` : '';
+
+          const html = `<span style="color:${isZero ? 'var(--danger)' : 'var(--gold-primary)'}; font-family:'JetBrains Mono',monospace; font-weight:700;">⏱ ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}${pen}${bon}</span>`;
+          if (el.innerHTML !== html) {
+            el.innerHTML = html;
+          }
+        });
+      }, 1000);
     }
 
     function seedDefaultTournamentCrews() {
