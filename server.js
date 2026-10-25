@@ -122,6 +122,144 @@ function logAuditEvent(event) {
   return entry;
 }
 
+function findTeamSlotInRound(assignments, roundNum, teamId) {
+  const roundKey = String(roundNum);
+  const roundData = assignments.rounds && assignments.rounds[roundKey];
+  if (!roundData) return null;
+
+  if (roundNum === 1) {
+    const slots = roundData.slots || [];
+    return slots.find(s => s.assignedTeamId === teamId) || null;
+  }
+
+  if (roundNum === 2 || roundNum === 3) {
+    const groups = roundData.groups || {};
+    for (const gKey of ['A', 'B']) {
+      const group = groups[gKey];
+      if (group && Array.isArray(group.teams) && group.teams.includes(teamId)) {
+        const slots = group.slots || [];
+        const slot = slots.find(s => s.assignedTeamId === teamId) ||
+                     slots.find(s => Array.isArray(s.eligibleTeams) && s.eligibleTeams.includes(teamId)) ||
+                     slots[0] || null;
+        if (slot) {
+          return { ...slot, groupId: gKey };
+        }
+      }
+    }
+    return null;
+  }
+
+  if (roundNum === 4) {
+    const slots = roundData.slots || [];
+    return slots[0] || null;
+  }
+
+  return null;
+}
+
+// -----------------------
+// Private Participant Challenge Endpoint (Strict Privacy Enforced)
+// -----------------------
+app.get('/api/team/challenge', (req, res) => {
+  const team = getCurrentTeam(req);
+  if (!team) {
+    return res.status(401).json({ error: 'Authentication required. Please board your ship.' });
+  }
+
+  const requestedRound = parseInt(req.query.round, 10);
+  const roundNum = (!isNaN(requestedRound) && requestedRound >= 1 && requestedRound <= 4)
+    ? requestedRound
+    : (team.currentRound || 1);
+
+  const roundState = getRoundState();
+  const currentRoundState = roundState[String(roundNum)] || { status: 'Locked' };
+  const roundStatus = currentRoundState.status || 'Locked';
+
+  if (team.eliminated) {
+    return res.json({
+      success: false,
+      round: roundNum,
+      roundStatus,
+      isEliminated: true,
+      eliminatedRound: team.eliminatedRound,
+      message: `Your crew was marooned in Round ${team.eliminatedRound || roundNum}. Ye cannot participate in active challenges.`,
+      riddle: null
+    });
+  }
+
+  if (roundStatus !== 'Live') {
+    return res.json({
+      success: false,
+      round: roundNum,
+      roundStatus,
+      isEliminated: false,
+      isQualified: !!(currentRoundState.qualifiers || []).includes(team.id),
+      message: `Waters uncharted: Round ${roundNum} is currently ${roundStatus}.`,
+      riddle: null
+    });
+  }
+
+  const assignments = getTournamentAssignments();
+  const slot = findTeamSlotInRound(assignments, roundNum, team.id);
+
+  if (!slot || !slot.riddleId) {
+    return res.json({
+      success: true,
+      round: roundNum,
+      slotId: slot ? slot.slotId : null,
+      roundStatus,
+      isEliminated: false,
+      isQualified: !!(currentRoundState.qualifiers || []).includes(team.id),
+      message: 'The Admiralty has not yet charted a riddle for your crew in this round.',
+      riddle: null
+    });
+  }
+
+  const riddleBank = getRiddleBank();
+  const rawRiddle = riddleBank[slot.riddleId];
+
+  if (!rawRiddle || rawRiddle.status !== 'published') {
+    return res.json({
+      success: true,
+      round: roundNum,
+      slotId: slot.slotId,
+      roundStatus,
+      isEliminated: false,
+      isQualified: !!(currentRoundState.qualifiers || []).includes(team.id),
+      message: 'Riddle configuration is in draft state by the Admiralty.',
+      riddle: null
+    });
+  }
+
+  // Sanitize riddle: NEVER leak expectedAnswer, normalizedAnswer, or matching rules
+  const sanitizedRiddle = {
+    id: rawRiddle.id,
+    title: rawRiddle.title,
+    text: rawRiddle.text,
+    points: rawRiddle.points || 100,
+    hints: Array.isArray(rawRiddle.hints) ? rawRiddle.hints.map(h => ({
+      text: (team.hintsUnlocked && team.hintsUnlocked[rawRiddle.id]) ? h.text : 'Hint locked. Consult the Admiralty.',
+      cost: h.cost || 0,
+      unlocked: !!(team.hintsUnlocked && team.hintsUnlocked[rawRiddle.id])
+    })) : []
+  };
+
+  return res.json({
+    success: true,
+    round: roundNum,
+    slotId: slot.slotId,
+    groupId: slot.groupId || null,
+    riddle: sanitizedRiddle,
+    roundStatus,
+    isClaimed: !!slot.claimed,
+    claimedBy: slot.claimedBy || null,
+    claimedAt: slot.claimedAt || null,
+    isQualified: !!(currentRoundState.qualifiers || []).includes(team.id),
+    isEliminated: false
+  });
+});
+
+
 
 app.get('/api/config', (req, res) => {
   res.json({
