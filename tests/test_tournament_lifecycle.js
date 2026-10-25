@@ -443,6 +443,10 @@ async function runTournamentLifecycleSimulation() {
   } finally {
     saveRiddleBank(initialRiddleBank);
     saveTournamentAssignments(initialAssignments);
+    if (initialRoundState && initialRoundState['1']) {
+      initialRoundState['1'].status = 'Draft';
+      initialRoundState['1'].startedAt = null;
+    }
     saveRoundState(initialRoundState);
     fs.writeFileSync(teamsPath, JSON.stringify(initialTeams, null, 2), 'utf8');
     fs.writeFileSync(auditPath, JSON.stringify(initialAudit, null, 2), 'utf8');

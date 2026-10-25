@@ -1245,16 +1245,64 @@ body::after {
   }
 }
 
-/* Locked Island State: Completely Muted & Greyed Out */
+/* Locked Island State: Muted Island with Themed Accent Lock Medallion */
 .map-island-station.is-locked {
-  filter: grayscale(1) opacity(0.38) contrast(0.85);
   cursor: not-allowed;
+}
+
+.map-island-station.is-locked .island-sprite {
+  filter: grayscale(0.85) opacity(0.38) contrast(0.85);
 }
 
 .map-island-station.is-locked:hover {
   animation: none !important;
   transform: translate(-50%, -50%) !important;
-  filter: grayscale(0.9) opacity(0.48) contrast(0.9) !important;
+}
+
+.map-island-station.is-locked:hover .island-sprite {
+  filter: grayscale(0.75) opacity(0.48) contrast(0.9) !important;
+}
+
+/* Themed Accent Padlock Medallion for Locked Islands */
+.island-lock-accent {
+  display: none;
+  position: absolute;
+  top: 36%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 46px;
+  height: 46px;
+  background: radial-gradient(circle, rgba(32, 23, 16, 0.96) 0%, rgba(16, 11, 8, 0.98) 100%);
+  border: 1.5px solid var(--gold-primary, #c99a52);
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.9), 0 0 14px rgba(201, 154, 82, 0.45);
+  z-index: 15;
+  pointer-events: none;
+  animation: padlockPulse 2.5s ease-in-out infinite;
+}
+
+.island-lock-accent .svg-padlock-icon {
+  width: 22px;
+  height: 22px;
+  stroke: var(--gold-primary, #c99a52);
+  fill: rgba(201, 154, 82, 0.18);
+}
+
+.map-island-station.is-locked .island-lock-accent {
+  display: flex;
+}
+
+@keyframes padlockPulse {
+  0%, 100% {
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.9), 0 0 10px rgba(201, 154, 82, 0.3);
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.95), 0 0 18px rgba(201, 154, 82, 0.6);
+    transform: translate(-50%, -50%) scale(1.05);
+  }
 }
 
 .map-island-station.is-locked .island-banner {
