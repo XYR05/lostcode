@@ -1083,22 +1083,43 @@ const validateNoTags = (str, fieldName) => {
 // Tournament Engine Utilities: Riddle Allocations & Group Binding
 // -----------------------
 function getRiddlesByRound() {
-  const flagsFilePath = path.join(__dirname, 'private', 'flags.json');
-  if (!fs.existsSync(flagsFilePath)) return { 1: [], 2: [], 3: [], 4: [] };
-  const flagsData = JSON.parse(fs.readFileSync(flagsFilePath, 'utf8'));
+  const bank = getRiddleBank();
   const grouped = { 1: [], 2: [], 3: [], 4: [] };
-  Object.keys(flagsData).forEach(k => {
-    const r = flagsData[k].round || 1;
+  Object.keys(bank).forEach(k => {
+    const item = bank[k];
+    const r = item.targetRound || 1;
     if (grouped[r]) {
       grouped[r].push({
         key: k,
-        riddleNumber: flagsData[k].riddleNumber || 1,
-        subtitle: flagsData[k].subtitle || k,
-        points: flagsData[k].points || 500,
-        text: flagsData[k].text || ''
+        riddleNumber: item.riddleNumber || (grouped[r].length + 1),
+        subtitle: item.title || k,
+        points: item.points || 100,
+        text: item.text || ''
       });
     }
   });
+
+  if (grouped[1].length === 0) {
+    const flagsFilePath = path.join(__dirname, 'private', 'flags.json');
+    if (fs.existsSync(flagsFilePath)) {
+      try {
+        const flagsData = JSON.parse(fs.readFileSync(flagsFilePath, 'utf8'));
+        Object.keys(flagsData).forEach(k => {
+          const r = flagsData[k].round || 1;
+          if (grouped[r]) {
+            grouped[r].push({
+              key: k,
+              riddleNumber: flagsData[k].riddleNumber || 1,
+              subtitle: flagsData[k].subtitle || k,
+              points: flagsData[k].points || 500,
+              text: flagsData[k].text || ''
+            });
+          }
+        });
+      } catch (e) {}
+    }
+  }
+
   for (const r in grouped) {
     grouped[r].sort((a, b) => a.riddleNumber - b.riddleNumber);
   }

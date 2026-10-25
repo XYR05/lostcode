@@ -71,6 +71,13 @@ async function runTournamentLifecycleSimulation() {
     // CRITERION 12: Admin panel detects incomplete assignments before activation
     // -------------------------------------------------------------
     console.log('\n--- Checking Criterion 12: Pre-launch validation detects incomplete assignments ---');
+    const tempAssigns = getTournamentAssignments();
+    const savedR2Slots = JSON.parse(JSON.stringify(tempAssigns.rounds['2']));
+    for (const g of ['A', 'B']) {
+      tempAssigns.rounds['2'].groups[g].slots.forEach(s => s.riddleId = null);
+    }
+    saveTournamentAssignments(tempAssigns);
+
     const valIncomplete = await fetch(`${baseUrl}/api/admin/rounds/validate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Cookie': adminCookie },
@@ -80,6 +87,10 @@ async function runTournamentLifecycleSimulation() {
     assert.strictEqual(valIncData.valid, false, 'Unconfigured Round 2 must fail validation');
     assert.ok(valIncData.errors.length > 0, 'Must report actionable errors');
     console.log(`✓ Criterion 12 PASS: Validation detected ${valIncData.errors.length} incomplete configuration issues.`);
+
+    // Restore configured Round 2 slots
+    tempAssigns.rounds['2'] = savedR2Slots;
+    saveTournamentAssignments(tempAssigns);
 
     // -------------------------------------------------------------
     // CRITERION 11: Incomplete riddle drafts cannot accidentally become valid live challenges

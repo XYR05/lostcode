@@ -52,9 +52,9 @@
     ],
     "allocatedRiddles": {
       "1": "riddle_r1_compass",
-      "2": null,
-      "3": null,
-      "4": null
+      "2": "riddle_r2_astrolabe",
+      "3": "riddle_r3_cutlass",
+      "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "A",
     "groupRound3": "A",
@@ -92,9 +92,9 @@
     ],
     "allocatedRiddles": {
       "1": "riddle_r1_anchor",
-      "2": null,
-      "3": null,
-      "4": null
+      "2": "riddle_r2_barometer",
+      "3": "riddle_r3_jollyroger",
+      "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "B",
     "groupRound3": "B",
@@ -126,9 +126,9 @@
     ],
     "allocatedRiddles": {
       "1": "riddle_r1_hourglass",
-      "2": null,
-      "3": null,
-      "4": null
+      "2": "riddle_r2_figurehead",
+      "3": "riddle_r3_cutlass",
+      "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "A",
     "groupRound3": "A",
@@ -160,9 +160,9 @@
     ],
     "allocatedRiddles": {
       "1": "riddle_r1_spyglass",
-      "2": null,
-      "3": null,
-      "4": null
+      "2": "riddle_r2_sextant",
+      "3": "riddle_r3_jollyroger",
+      "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "B",
     "groupRound3": "B",
@@ -194,9 +194,9 @@
     ],
     "allocatedRiddles": {
       "1": "riddle_r1_map",
-      "2": null,
-      "3": null,
-      "4": null
+      "2": "riddle_r2_capstan",
+      "3": "riddle_r3_cutlass",
+      "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "A",
     "groupRound3": "A",
@@ -228,9 +228,9 @@
     ],
     "allocatedRiddles": {
       "1": "riddle_r1_lighthouse",
-      "2": null,
-      "3": null,
-      "4": null
+      "2": "riddle_r2_bilge",
+      "3": "riddle_r3_jollyroger",
+      "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "B",
     "groupRound3": "B",
@@ -262,9 +262,9 @@
     ],
     "allocatedRiddles": {
       "1": "riddle_r1_doubloon",
-      "2": null,
-      "3": null,
-      "4": null
+      "2": "riddle_r2_astrolabe",
+      "3": "riddle_r3_cutlass",
+      "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "A",
     "groupRound3": "A",
@@ -296,9 +296,9 @@
     ],
     "allocatedRiddles": {
       "1": "riddle_r1_cannon",
-      "2": null,
-      "3": null,
-      "4": null
+      "2": "riddle_r2_barometer",
+      "3": "riddle_r3_jollyroger",
+      "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "B",
     "groupRound3": "B",
@@ -330,9 +330,9 @@
     ],
     "allocatedRiddles": {
       "1": "riddle_r1_rudder",
-      "2": null,
-      "3": null,
-      "4": null
+      "2": "riddle_r2_figurehead",
+      "3": "riddle_r3_cutlass",
+      "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "A",
     "groupRound3": "A",
@@ -364,9 +364,9 @@
     ],
     "allocatedRiddles": {
       "1": "riddle_r1_crowsnest",
-      "2": null,
-      "3": null,
-      "4": null
+      "2": "riddle_r2_sextant",
+      "3": "riddle_r3_jollyroger",
+      "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "B",
     "groupRound3": "B",

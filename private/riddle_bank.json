@@ -1,20 +1,4 @@
 {
-  "riddle_r1_1792924377640_8j9e": {
-    "id": "riddle_r1_1792924377640_8j9e",
-    "title": "first riddle",
-    "text": "yoyo",
-    "expectedAnswer": "hellohithere",
-    "targetRound": 1,
-    "status": "published",
-    "answerMatchingRule": {
-      "caseSensitive": false,
-      "trim": true
-    },
-    "points": 100,
-    "hints": [],
-    "createdAt": "2026-10-25T10:32:57.640Z",
-    "updatedAt": "2026-10-25T10:33:35.111Z"
-  },
   "riddle_r1_compass": {
     "id": "riddle_r1_compass",
     "title": "The Guiding Needle",
@@ -224,5 +208,194 @@
     ],
     "createdAt": "2026-10-25T11:14:10.678Z",
     "updatedAt": "2026-10-25T11:14:10.678Z"
+  },
+  "riddle_r2_astrolabe": {
+    "id": "riddle_r2_astrolabe",
+    "title": "The Star Reckoner",
+    "text": "Forged in brass with rotating rete and plates, I measure the altitude of stars beyond the sea gates. Navigators hold me by my thumb ring against the twilight sky to reckon latitude where great galleons fly. What ancient celestial instrument am I?",
+    "expectedAnswer": "astrolabe",
+    "targetRound": 2,
+    "status": "published",
+    "points": 200,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "An ancient brass astronomical instrument used to calculate celestial positions and time.",
+        "cost": 30
+      }
+    ],
+    "createdAt": "2026-10-25T15:20:00.000Z",
+    "updatedAt": "2026-10-25T15:20:00.000Z"
+  },
+  "riddle_r2_figurehead": {
+    "id": "riddle_r2_figurehead",
+    "title": "The Siren of the Bow",
+    "text": "Carved from proud oak and bolted beneath the bowsprit line, I taste the salt spray and cut the ocean brine. Sailors swear I guard the hull from sirens and deep storm; a carved wooden spirit in maiden or creature form. What ship carving am I?",
+    "expectedAnswer": "figurehead",
+    "targetRound": 2,
+    "status": "published",
+    "points": 200,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "A carved wooden decorative figure placed on the prow or bow of a ship.",
+        "cost": 30
+      }
+    ],
+    "createdAt": "2026-10-25T15:20:00.000Z",
+    "updatedAt": "2026-10-25T15:20:00.000Z"
+  },
+  "riddle_r2_capstan": {
+    "id": "riddle_r2_capstan",
+    "title": "The Iron Spindle",
+    "text": "I stand on the main deck, a vertical cylinder of iron and wood. Sailors push against my handspikes where strong men stood. Step by step around I turn to pawl's clicking sound, heaving massive anchor cables up from the seabed ground. What winding machine am I?",
+    "expectedAnswer": "capstan",
+    "targetRound": 2,
+    "status": "published",
+    "points": 200,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "A revolving cylinder device on a ship's deck used for winding heavy cables or raising anchors.",
+        "cost": 30
+      }
+    ],
+    "createdAt": "2026-10-25T15:20:00.000Z",
+    "updatedAt": "2026-10-25T15:20:00.000Z"
+  },
+  "riddle_r2_barometer": {
+    "id": "riddle_r2_barometer",
+    "title": "The Storm Glass",
+    "text": "Inside my tube of glass, quicksilver rises and falls in silent dread. When my mercury sinks low, fierce gales and typhoons lie ahead. Sailors watch my glass before setting reefed sail; I predict the calm sea or the whistling gale. What weather instrument am I?",
+    "expectedAnswer": "barometer",
+    "targetRound": 2,
+    "status": "published",
+    "points": 200,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "An instrument measuring atmospheric pressure, used especially in forecasting the weather and storms.",
+        "cost": 30
+      }
+    ],
+    "createdAt": "2026-10-25T15:20:00.000Z",
+    "updatedAt": "2026-10-25T15:20:00.000Z"
+  },
+  "riddle_r2_sextant": {
+    "id": "riddle_r2_sextant",
+    "title": "The Arc of the Sun",
+    "text": "With an index mirror, horizon glass, and an arc of sixty degrees, I bring the midday sun down to kiss the level seas. Twice an octant's span, I fix the captain's sight, calculating nautical miles by sun or moon's clear light. What navigation tool am I?",
+    "expectedAnswer": "sextant",
+    "targetRound": 2,
+    "status": "published",
+    "points": 200,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "A doubly reflecting navigation instrument used to measure the angle between an astronomical object and the horizon.",
+        "cost": 30
+      }
+    ],
+    "createdAt": "2026-10-25T15:20:00.000Z",
+    "updatedAt": "2026-10-25T15:20:00.000Z"
+  },
+  "riddle_r2_bilge": {
+    "id": "riddle_r2_bilge",
+    "title": "The Dark Belly",
+    "text": "Deep beneath the lowest decks where no sunlight can ever gleam, foul waters gather in the hull along the keel's curved seam. Pumps must clank both day and night to drain my murky well, or ships grow heavy in the deep and founder where they dwell. What lowest hold of the ship am I?",
+    "expectedAnswer": "bilge",
+    "targetRound": 2,
+    "status": "published",
+    "points": 200,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "The lowest inner part of a ship's hull where wastewater and seepage collect.",
+        "cost": 30
+      }
+    ],
+    "createdAt": "2026-10-25T15:20:00.000Z",
+    "updatedAt": "2026-10-25T15:20:00.000Z"
+  },
+  "riddle_r3_cutlass": {
+    "id": "riddle_r3_cutlass",
+    "title": "The Curved Steel",
+    "text": "Shorter than a rapier with a single curved razor edge, in boarding smoke and close-quarters I make a deadly pledge. With a solid brass cupped hilt to guard a buccaneer's hand, I slash through rigging and rival crews on deck or sand. What pirate sword am I?",
+    "expectedAnswer": "cutlass",
+    "targetRound": 3,
+    "status": "published",
+    "points": 300,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "A short, heavy sword with a curved blade and cupped basket hilt favored by sailors.",
+        "cost": 50
+      }
+    ],
+    "createdAt": "2026-10-25T15:20:00.000Z",
+    "updatedAt": "2026-10-25T15:20:00.000Z"
+  },
+  "riddle_r3_jollyroger": {
+    "id": "riddle_r3_jollyroger",
+    "title": "The Skull and Bones",
+    "text": "Raised to the top of the mainmast on a field of pitch-black cloth, two crossed human bones and a grinning skull of wrath. Merchant vessels strike their colors when my black flag flies high, for mercy is denied to all who hear my battle cry. What infamous pirate banner am I?",
+    "expectedAnswer": "jolly roger",
+    "targetRound": 3,
+    "status": "published",
+    "points": 300,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "The traditional pirate flag featuring a white human skull and crossed crossbones on a black field.",
+        "cost": 50
+      }
+    ],
+    "createdAt": "2026-10-25T15:20:00.000Z",
+    "updatedAt": "2026-10-25T15:20:00.000Z"
+  },
+  "riddle_r4_treasurechest": {
+    "id": "riddle_r4_treasurechest",
+    "title": "The Grand Pirate Coffer",
+    "text": "Iron-bound oak locked tight with three heavy brass keys, buried in white sands beneath the skull-shaped palm trees. Filled with rubies, emeralds, gold ingots, and ancient maps untold, I crown the grand champions who conquer the Lost Code. What legendary prize am I?",
+    "expectedAnswer": "treasure chest",
+    "targetRound": 4,
+    "status": "published",
+    "points": 500,
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "hints": [
+      {
+        "text": "A reinforced iron-banded wooden coffer containing pirate loot, doubloons, and gems.",
+        "cost": 100
+      }
+    ],
+    "createdAt": "2026-10-25T15:20:00.000Z",
+    "updatedAt": "2026-10-25T15:20:00.000Z"
   }
 }

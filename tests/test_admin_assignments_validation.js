@@ -35,7 +35,14 @@ async function runTests() {
     });
     const adminCookie = adminLogin.headers.get('set-cookie');
 
-    // 2. Validate unconfigured Round 2 -> Should report failures because riddles are not assigned
+    // 2. Validate incomplete Round 2 (unassign slots) -> Should report failures because riddles are missing
+    const tempAssigns = getTournamentAssignments();
+    const savedR2Slots = JSON.parse(JSON.stringify(tempAssigns.rounds['2']));
+    for (const g of ['A', 'B']) {
+      tempAssigns.rounds['2'].groups[g].slots.forEach(s => s.riddleId = null);
+    }
+    saveTournamentAssignments(tempAssigns);
+
     const valRes1 = await fetch(`${baseUrl}/api/admin/rounds/validate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Cookie': adminCookie },
@@ -53,6 +60,10 @@ async function runTests() {
       body: JSON.stringify({ round: 2 })
     });
     assert.strictEqual(actFailRes.status, 400, 'Activating invalid round must be rejected');
+
+    // Restore configured Round 2 slots
+    tempAssigns.rounds['2'] = savedR2Slots;
+    saveTournamentAssignments(tempAssigns);
 
     // 4. Seed 10 distinct published riddles in Riddle Bank and assign them to the 10 teams in Round 1
     const riddleBank = getRiddleBank();
