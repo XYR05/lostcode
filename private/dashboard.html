@@ -331,9 +331,18 @@
           </div>
         </div>
         <div class="tab-content" id="standings">
-          <div class="standings-search">
-            <input type="text" id="standingsSearchInput" placeholder="Search standings..." />
-            <button id="standingsSearchBtn">Search</button>
+          <div class="standings-search" style="display: flex; gap: 10px; margin-bottom: 1rem;">
+            <input type="text" id="standingsSearchInput" placeholder="Search crews or standings..." style="flex: 1; padding: 0.65rem 1rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); color: var(--text-primary); border-radius: 4px; font-family: 'JetBrains Mono', monospace;" />
+            <button id="standingsSearchBtn" onclick="renderStandings()" style="padding: 0.65rem 1.4rem; background: rgba(201,154,82,0.15); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-family: 'Cinzel', serif; font-weight: 700; border-radius: 4px; cursor: pointer;">Search</button>
+          </div>
+          <div class="standings-header-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 9px 16px; background: rgba(10,8,5,0.7); border: 1px solid var(--border-subtle); border-radius: 4px; margin-bottom: 12px; font-family: 'Cinzel', serif; font-size: 0.76rem; font-weight: 700; color: var(--gold-primary); letter-spacing: 0.06em;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span>CREW & STANDING</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 36px; margin-right: 4px;">
+              <span>EXPEDITION ROUND</span>
+              <span>TIME LEFT / CLOCK</span>
+            </div>
           </div>
           <div class="standings-list" id="standingsList"></div>
         </div>
@@ -3039,10 +3048,12 @@
         div.className = 'team-item';
         const disqBadge = team.disqualified ? `<span style="color:var(--danger); font-size:11px; margin-left:8px; font-weight:bold;">[ DISQUALIFIED ]</span>` : '';
         const timer = team.timer || {};
-        let timeStr = `Round ${team.currentRound || 1}`;
-        if (team.disqualified) timeStr = `Disqualified`;
-        else if (timer.solved) timeStr = `✓ Solved (${Math.floor((timer.finalSolveSeconds||0)/60)}m ${(timer.finalSolveSeconds||0)%60}s)`;
-        else if (timer.started) timeStr = `${Math.floor((timer.remainingSeconds||0)/60)}m ${timer.remainingSeconds%60}s remaining`;
+        const curR = team.currentRound || 1;
+        let timeStr = `Round ${curR}`;
+        if (team.disqualified) timeStr = `Round ${curR} • Disqualified`;
+        else if (timer.solved) timeStr = `Round ${curR} • ✓ Solved (${Math.floor((timer.finalSolveSeconds||0)/60)}m ${(timer.finalSolveSeconds||0)%60}s)`;
+        else if (timer.started) timeStr = `Round ${curR} • Time Left: ${Math.floor((timer.remainingSeconds||0)/60)}m ${timer.remainingSeconds%60}s`;
+        else timeStr = `Round ${curR} • Ready`;
         div.innerHTML = `<div><strong>${escapeHTML(team.teamName)}</strong>${disqBadge} — Solved: ${solvedCount} Riddles</div><div style="color:${team.disqualified ? 'var(--danger)' : 'var(--gold-primary)'}; font-weight:bold; font-family:'JetBrains Mono',monospace;">${timeStr}</div>`;
         list.appendChild(div);
       });
@@ -3269,6 +3280,9 @@
       '#A64444', '#D4A373', '#4A7C59', '#9381FF', '#B8860B'
     ];
 
+    let currentStandingsTeams = [];
+    let standingsTickInterval = null;
+
     function setupScoreboardTabs() {
       const tabs = document.querySelectorAll('#scoreboard-section .tab-btn');
       tabs.forEach(btn => {
@@ -3285,9 +3299,103 @@
               scoreChart.update();
             }
             fetchTeamScores();
+          } else if (tabId === 'standings') {
+            fetchTeamScores();
           }
         });
       });
+
+      const sInput = document.getElementById('standingsSearchInput');
+      if (sInput && !sInput.dataset.bound) {
+        sInput.dataset.bound = 'true';
+        sInput.addEventListener('input', () => renderStandings());
+      }
+    }
+
+    function getTeamClockDetails(team) {
+      const curR = team.currentRound || 1;
+      const timer = team.timer || (team.roundTimers && team.roundTimers[String(curR)]) || null;
+      
+      if (team.disqualified) {
+        return {
+          statusType: 'disqualified',
+          roundLabel: `ROUND ${curR}`,
+          label: 'DISQUALIFIED',
+          text: 'DISQUALIFIED',
+          color: 'var(--danger)',
+          isLive: false
+        };
+      }
+
+      if (team.eliminated) {
+        return {
+          statusType: 'eliminated',
+          roundLabel: `ROUND ${team.eliminatedRound || curR}`,
+          label: 'ELIMINATED',
+          text: `ELIMINATED (R${team.eliminatedRound || curR})`,
+          color: '#ff8b8b',
+          isLive: false
+        };
+      }
+
+      if (team.isWinner) {
+        return {
+          statusType: 'winner',
+          roundLabel: `ROUND 4`,
+          label: 'CHAMPION',
+          text: '🏆 CHAMPION',
+          color: '#ffd700',
+          isLive: false
+        };
+      }
+
+      if (timer && timer.solved) {
+        const totalSec = timer.solveTimeSeconds || timer.finalSolveSeconds || 0;
+        const m = Math.floor(totalSec / 60);
+        const s = totalSec % 60;
+        return {
+          statusType: 'solved',
+          roundLabel: `ROUND ${curR}`,
+          label: 'SOLVED',
+          text: `✓ Solved (${m}m ${s}s)`,
+          color: 'var(--success)',
+          isLive: false
+        };
+      }
+
+      const durMin = (timer && timer.durationMinutes) || (curR === 1 ? 30 : (curR === 2 ? 25 : (curR === 3 ? 20 : 15)));
+      const penMin = (timer && (timer.hintPenaltiesMinutes || timer.penaltyMinutes)) || 0;
+      const penNote = penMin > 0 ? ` (-${penMin}m hint)` : '';
+
+      if (!timer || !timer.startedAt) {
+        return {
+          statusType: 'waiting',
+          roundLabel: `ROUND ${curR}`,
+          label: 'READY',
+          text: `${durMin}m 00s (Ready)`,
+          color: 'var(--text-secondary)',
+          isLive: false
+        };
+      }
+
+      const elapsedSec = Math.max(0, Math.floor((Date.now() - timer.startedAt) / 1000));
+      const allocatedSec = durMin * 60;
+      const penaltySec = penMin * 60;
+      const remSec = Math.max(0, allocatedSec - penaltySec - elapsedSec);
+      const isExpired = remSec <= 0;
+      const m = Math.floor(remSec / 60);
+      const s = remSec % 60;
+      const clockStr = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}${penNote}`;
+
+      return {
+        statusType: isExpired ? 'expired' : 'active',
+        roundLabel: `ROUND ${curR}`,
+        label: 'TIME LEFT',
+        text: isExpired ? '00:00 (TIME EXPIRED)' : clockStr,
+        color: isExpired ? 'var(--danger)' : 'var(--gold-primary)',
+        isLive: !isExpired,
+        remSec
+      };
     }
 
     function fetchTeamScores() {
@@ -3313,53 +3421,88 @@
             }
             return (b.score || 0) - (a.score || 0);
           });
+          currentStandingsTeams = teams;
           renderStandings(teams);
           renderScoreGraph(teams);
         });
     }
 
     function renderStandings(teams) {
+      if (Array.isArray(teams)) {
+        currentStandingsTeams = teams;
+      }
       const list = document.getElementById('standingsList');
       if (!list) return;
+
+      const searchInput = document.getElementById('standingsSearchInput');
+      const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+      const filtered = (currentStandingsTeams || []).filter(t => t.teamName.toLowerCase().includes(query));
+
       list.innerHTML = '';
-      teams.forEach((t, idx) => {
+      if (filtered.length === 0) {
+        list.innerHTML = `<div style="text-align: center; color: var(--text-secondary); padding: 2rem; font-style: italic;">No pirate crews found matching search query.</div>`;
+        return;
+      }
+
+      filtered.forEach((t, idx) => {
         const div = document.createElement('div');
         div.className = 'standing-item';
+        div.id = `standingRow_${t.id}`;
+
         let statusBadge = '';
         if (t.disqualified) {
-          statusBadge = `<span style="background:var(--danger); color:#fff; font-size:11px; padding:2px 6px; border-radius:3px; margin-left:8px; font-weight:bold;">DISQUALIFIED</span>`;
+          statusBadge = `<span style="background:var(--danger); color:#fff; font-size:11px; padding:2px 7px; border-radius:3px; margin-left:8px; font-weight:bold;">DISQUALIFIED</span>`;
         } else if (t.eliminated) {
-          statusBadge = `<span style="background:rgba(166,68,68,0.25); border:1px solid #c94444; color:#ff8b8b; font-size:11px; padding:2px 6px; border-radius:3px; margin-left:8px; font-weight:bold;">ELIMINATED</span>`;
+          statusBadge = `<span style="background:rgba(166,68,68,0.25); border:1px solid #c94444; color:#ff8b8b; font-size:11px; padding:2px 7px; border-radius:3px; margin-left:8px; font-weight:bold;">ELIMINATED</span>`;
         } else if (t.isWinner) {
-          statusBadge = `<span style="background:rgba(255,215,0,0.25); border:1px solid #ffd700; color:#ffd700; font-size:11px; padding:2px 6px; border-radius:3px; margin-left:8px; font-weight:bold;">CHAMPION</span>`;
+          statusBadge = `<span style="background:rgba(255,215,0,0.25); border:1px solid #ffd700; color:#ffd700; font-size:11px; padding:2px 7px; border-radius:3px; margin-left:8px; font-weight:bold;">CHAMPION</span>`;
+        } else if ((t.violations || 0) > 0) {
+          statusBadge = `<span style="background:rgba(201,154,82,0.18); border:1px solid var(--gold-primary); color:var(--gold-primary); font-size:11px; padding:2px 7px; border-radius:3px; margin-left:8px; font-weight:bold;">1 WARNING</span>`;
         }
 
-        const timer = t.timer || {};
-        let timeDisplay = `Round ${t.currentRound || 1}`;
-        if (t.disqualified) {
-          timeDisplay = `<span style="color:var(--danger); font-weight:bold;">DISQUALIFIED</span>`;
-        } else if (timer.solved) {
-          const m = Math.floor((timer.finalSolveSeconds || 0) / 60);
-          const s = (timer.finalSolveSeconds || 0) % 60;
-          timeDisplay = `<span style="color:var(--success); font-weight:bold;">✓ Solved (${m}m ${s}s)</span>`;
-        } else if (timer.started) {
-          const rem = timer.remainingSeconds || 0;
-          const m = Math.floor(rem / 60);
-          const s = rem % 60;
-          const penaltyNote = timer.penaltyMinutes > 0 ? ` (-${timer.penaltyMinutes}m hint)` : '';
-          timeDisplay = `<span style="color:var(--gold-primary); font-family:'JetBrains Mono',monospace;">${timer.isExpired ? 'TIME EXPIRED' : `${m}:${s < 10 ? '0' : ''}${s}${penaltyNote}`}</span>`;
-        }
+        const clock = getTeamClockDetails(t);
+        const curR = t.currentRound || 1;
+        const curGroup = (curR >= 3 ? t.groupRound3 : t.groupRound2) || 'A';
+        const groupBadge = curR >= 2 ? `<span style="font-size:0.72rem; color:var(--gold-muted); font-family:'Cinzel',serif; margin-left:6px;">[GRP ${curGroup}]</span>` : '';
 
         div.innerHTML = `
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="color:var(--gold-primary); font-weight:bold; min-width: 24px;">#${idx + 1}</span>
-            <span class="team-name">${escapeHTML(t.teamName)}</span>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="color:var(--gold-primary); font-weight:bold; min-width: 26px; font-size: 1.05rem;">#${idx + 1}</span>
+            <span class="team-name" style="font-family:'Cinzel',serif; font-size:1.05rem;">${escapeHTML(t.teamName)}</span>
+            ${groupBadge}
             ${statusBadge}
           </div>
-          <div class="team-score" style="font-size:0.88rem; font-family:'JetBrains Mono',monospace;">${timeDisplay}</div>
+          <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: flex-end;">
+            <span style="background: rgba(201, 154, 82, 0.12); border: 1px solid var(--border-subtle); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; padding: 4px 10px; border-radius: 3px; letter-spacing: 0.05em;">ROUND ${curR}</span>
+            <div style="font-size: 0.92rem; font-family: 'JetBrains Mono', monospace; font-weight: 700; min-width: 140px; text-align: right;">
+              <span style="color: var(--gold-muted); font-size: 0.72rem; letter-spacing: 0.05em; margin-right: 5px;">TIME LEFT:</span>
+              <span id="standingClock_${t.id}" style="color:${clock.color};">${clock.text}</span>
+            </div>
+          </div>
         `;
         list.appendChild(div);
       });
+
+      startStandingsLiveTicker();
+    }
+
+    function startStandingsLiveTicker() {
+      if (standingsTickInterval) return;
+      standingsTickInterval = setInterval(() => {
+        const tab = document.getElementById('standings');
+        if (!tab || !tab.classList.contains('active')) return;
+        if (!Array.isArray(currentStandingsTeams) || currentStandingsTeams.length === 0) return;
+
+        currentStandingsTeams.forEach(t => {
+          const el = document.getElementById(`standingClock_${t.id}`);
+          if (!el) return;
+          const clock = getTeamClockDetails(t);
+          if (el.textContent !== clock.text) {
+            el.textContent = clock.text;
+            el.style.color = clock.color;
+          }
+        });
+      }, 1000);
     }
 
     function renderScoreGraph(teams) {

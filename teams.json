@@ -58,7 +58,7 @@
     "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792957058174,
+        "startedAt": 1792958292467,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "solved": false,
@@ -98,7 +98,7 @@
     "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792957058174,
+        "startedAt": 1792958292467,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "solved": false,
@@ -138,7 +138,7 @@
     "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792957058174,
+        "startedAt": 1792958292467,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "solved": false,
@@ -178,7 +178,7 @@
     "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792957058174,
+        "startedAt": 1792958292467,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "solved": false,
@@ -218,7 +218,7 @@
     "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792957058174,
+        "startedAt": 1792958292467,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "solved": false,
@@ -258,7 +258,7 @@
     "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792957058174,
+        "startedAt": 1792958292467,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "solved": false,
@@ -280,13 +280,13 @@
     "hintsUnlocked": {
       "riddle_r1_doubloon": {
         "penaltyMinutes": 5,
-        "unlockedAt": 1792957058183
+        "unlockedAt": 1792958292475
       }
     },
     "scoreHistory": [
       {
-        "timestamp": 1792957058195,
-        "time": "1:07:38 AM",
+        "timestamp": 1792958292486,
+        "time": "1:28:12 AM",
         "score": 100
       }
     ],
@@ -311,7 +311,7 @@
         "slotId": "R1_S7",
         "riddleId": "riddle_r1_doubloon",
         "answer": "doubloon",
-        "solvedAt": "2026-10-25T19:37:38.195Z",
+        "solvedAt": "2026-10-25T19:58:12.485Z",
         "completed": true,
         "solveTimeSeconds": 300
       }
@@ -321,15 +321,15 @@
     "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792957058124,
+        "startedAt": 1792958292425,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 5,
         "solved": true,
-        "solvedAt": 1792957058195,
+        "solvedAt": 1792958292486,
         "finalSolveSeconds": 300
       },
       "2": {
-        "startedAt": 1792957058195,
+        "startedAt": 1792958292486,
         "durationMinutes": 25,
         "hintPenaltiesMinutes": 0,
         "solved": false,
@@ -369,7 +369,7 @@
     "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792957058174,
+        "startedAt": 1792958292467,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "solved": false,
@@ -409,7 +409,7 @@
     "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792957058174,
+        "startedAt": 1792958292467,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "solved": false,
@@ -449,7 +449,7 @@
     "violations": 0,
     "roundTimers": {
       "1": {
-        "startedAt": 1792957058174,
+        "startedAt": 1792958292467,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "solved": false,
