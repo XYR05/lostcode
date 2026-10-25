@@ -429,6 +429,156 @@ app.post('/api/team/submit', (req, res) => {
   });
 });
 
+// -----------------------
+// Admin Riddle Bank REST API
+// -----------------------
+app.get('/api/admin/riddle-bank', (req, res) => {
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
+  const riddles = getRiddleBank();
+  return res.json({ success: true, riddles });
+});
+
+app.post('/api/admin/riddle-bank', (req, res) => {
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
+
+  const { title, text, expectedAnswer, targetRound, status, answerMatchingRule, points, hints } = req.body || {};
+  if (!title || typeof title !== 'string' || !title.trim()) {
+    return res.status(400).json({ error: 'Riddle title or reference name is required.' });
+  }
+
+  const riddleStatus = (status === 'published') ? 'published' : 'draft';
+  if (riddleStatus === 'published' && (!expectedAnswer || !String(expectedAnswer).trim())) {
+    return res.status(400).json({ error: 'Published riddles must include an expected answer or flag.' });
+  }
+
+  const roundNum = parseInt(targetRound, 10) || 1;
+  const id = `riddle_r${roundNum}_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+  const now = new Date().toISOString();
+
+  const newRiddle = {
+    id,
+    title: title.trim(),
+    text: text ? String(text).trim() : '',
+    expectedAnswer: expectedAnswer ? String(expectedAnswer).trim() : '',
+    targetRound: roundNum,
+    status: riddleStatus,
+    answerMatchingRule: {
+      caseSensitive: !!(answerMatchingRule && answerMatchingRule.caseSensitive),
+      trim: (answerMatchingRule && answerMatchingRule.trim !== undefined) ? !!answerMatchingRule.trim : true
+    },
+    points: parseInt(points, 10) || 100,
+    hints: Array.isArray(hints) ? hints : [],
+    createdAt: now,
+    updatedAt: now
+  };
+
+  const riddleBank = getRiddleBank();
+  riddleBank[id] = newRiddle;
+  saveRiddleBank(riddleBank);
+
+  return res.status(201).json({ success: true, riddle: newRiddle });
+});
+
+app.put('/api/admin/riddle-bank/:id', (req, res) => {
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
+
+  const { id } = req.params;
+  const riddleBank = getRiddleBank();
+  const existing = riddleBank[id];
+  if (!existing) {
+    return res.status(404).json({ error: 'Riddle not found in bank.' });
+  }
+
+  const { title, text, expectedAnswer, targetRound, status, answerMatchingRule, points, hints } = req.body || {};
+  if (title !== undefined && (!title || !String(title).trim())) {
+    return res.status(400).json({ error: 'Riddle title cannot be empty.' });
+  }
+
+  const updatedStatus = (status !== undefined) ? status : existing.status;
+  const checkAnswer = (expectedAnswer !== undefined) ? expectedAnswer : existing.expectedAnswer;
+  if (updatedStatus === 'published' && (!checkAnswer || !String(checkAnswer).trim())) {
+    return res.status(400).json({ error: 'Published riddles must have an expected answer.' });
+  }
+
+  if (title !== undefined) existing.title = String(title).trim();
+  if (text !== undefined) existing.text = String(text).trim();
+  if (expectedAnswer !== undefined) existing.expectedAnswer = String(expectedAnswer).trim();
+  if (targetRound !== undefined) existing.targetRound = parseInt(targetRound, 10) || existing.targetRound;
+  if (status !== undefined) existing.status = updatedStatus;
+  if (points !== undefined) existing.points = parseInt(points, 10) || existing.points;
+  if (hints !== undefined && Array.isArray(hints)) existing.hints = hints;
+  if (answerMatchingRule !== undefined) {
+    existing.answerMatchingRule = {
+      caseSensitive: !!answerMatchingRule.caseSensitive,
+      trim: answerMatchingRule.trim !== undefined ? !!answerMatchingRule.trim : true
+    };
+  }
+  existing.updatedAt = new Date().toISOString();
+
+  riddleBank[id] = existing;
+  saveRiddleBank(riddleBank);
+
+  return res.json({ success: true, riddle: existing });
+});
+
+app.delete('/api/admin/riddle-bank/:id', (req, res) => {
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
+
+  const { id } = req.params;
+  const riddleBank = getRiddleBank();
+  if (!riddleBank[id]) {
+    return res.status(404).json({ error: 'Riddle not found in bank.' });
+  }
+
+  // Check if assigned in a Live round
+  const assignments = getTournamentAssignments();
+  const roundState = getRoundState();
+
+  for (const rKey of ['1', '2', '3', '4']) {
+    if (roundState[rKey] && roundState[rKey].status === 'Live') {
+      const rData = assignments.rounds && assignments.rounds[rKey];
+      if (rData) {
+        if (rKey === '1' || rKey === '4') {
+          const inSlots = (rData.slots || []).some(s => s.riddleId === id);
+          if (inSlots) {
+            return res.status(400).json({ error: `Cannot delete riddle assigned to Live Round ${rKey}.` });
+          }
+        } else {
+          for (const g of ['A', 'B']) {
+            const grp = rData.groups && rData.groups[g];
+            const inGrp = grp && (grp.slots || []).some(s => s.riddleId === id);
+            if (inGrp) {
+              return res.status(400).json({ error: `Cannot delete riddle assigned to Live Round ${rKey}.` });
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Unbind from non-live slots
+  for (const rKey of ['1', '2', '3', '4']) {
+    const rData = assignments.rounds && assignments.rounds[rKey];
+    if (rData) {
+      if (rKey === '1' || rKey === '4') {
+        (rData.slots || []).forEach(s => { if (s.riddleId === id) s.riddleId = null; });
+      } else {
+        for (const g of ['A', 'B']) {
+          const grp = rData.groups && rData.groups[g];
+          if (grp) (grp.slots || []).forEach(s => { if (s.riddleId === id) s.riddleId = null; });
+        }
+      }
+    }
+  }
+  saveTournamentAssignments(assignments);
+
+  delete riddleBank[id];
+  saveRiddleBank(riddleBank);
+
+  return res.json({ success: true, message: 'Riddle removed from bank.' });
+});
+
+
 
 
 
