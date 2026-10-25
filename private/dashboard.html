@@ -75,10 +75,6 @@
         <div class="stat-value" id="activeRoundStageCount">ROUND 1</div>
         <div class="stat-label">EXPEDITION STAGE</div>
       </div>
-      <div class="stat-card" id="userLiveTimerStatCard">
-        <div class="stat-value" id="userLiveTimerValue" style="color: var(--gold-primary); font-family: 'JetBrains Mono', monospace;">--:--</div>
-        <div class="stat-label" id="userLiveTimerLabel">CREW REVERSE COUNTDOWN</div>
-      </div>
     </div>
   </section>
 
@@ -215,9 +211,7 @@
               <span class="window-round-name" id="windowRoundName">ROUND 1: SETTING SAIL</span>
               <span class="window-group-pill" id="windowGroupPill">GROUP A</span>
             </div>
-            <div id="windowStatusPillWrap">
-              <span class="round-status-pill active" id="windowStatusPill">⚡ ACTIVE OBJECTIVE</span>
-            </div>
+            <div id="windowStatusPillWrap"></div>
           </div>
           <div class="window-quota-rule" id="windowQuotaRule">
             10 Crews • 10 Riddles • 0 Eliminations (All hands advance into the voyage)
@@ -1667,7 +1661,7 @@
         } else if (isThisRoundSolved) {
           statusWrap.innerHTML = `<span class="round-status-pill solved">✓ SOLVED & ADVANCED</span>`;
         } else {
-          statusWrap.innerHTML = `<span class="round-status-pill active">⚡ ACTIVE OBJECTIVE</span>`;
+          statusWrap.innerHTML = '';
         }
       }
 
@@ -3590,7 +3584,7 @@
           } else if (isThisRoundSolved) {
             statusWrap.innerHTML = `<span class="round-status-pill solved">✓ SOLVED & ADVANCED</span>`;
           } else {
-            statusWrap.innerHTML = `<span class="round-status-pill active">⚡ ACTIVE OBJECTIVE</span>`;
+            statusWrap.innerHTML = '';
           }
         }
 
