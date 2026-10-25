@@ -2095,7 +2095,11 @@
       .then(r => r.json())
       .then(data => {
         if (data.error) {
-          showCustomConfirm("Activation Blocked", data.error, true, null);
+          if (data.errors && data.errors.length) {
+            validateRoundModal(roundNum);
+          } else {
+            showCustomConfirm("Activation Blocked", data.error, true, null);
+          }
         } else {
           closeValidationModal();
           showCustomConfirm("Waters Opened!", data.message, true, null);
