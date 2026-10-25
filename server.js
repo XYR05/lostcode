@@ -237,7 +237,12 @@ function getTeamRoundTimer(team, rKey) {
 
   // If round is NOT live or team has not started this round yet:
   // Timer is in READY state, full duration remaining, NOT expired!
-  if (!isRoundLive || !tState.startedAt) {
+  // CRITICAL REQUIREMENT:
+  // "the timer of 1st roudn should only start after i start the tournamment and for other rounds after i activate the round"
+  const isRound1TimerRunning = (rKey === '1') && Boolean(ctfConfig.ctfStartTime) && isRoundLive && Boolean(tState.startedAt);
+  const isOtherRoundTimerRunning = (rKey !== '1') && isRoundLive && Boolean(tState.startedAt);
+
+  if (!isRound1TimerRunning && !isOtherRoundTimerRunning) {
     return {
       startedAt: null,
       durationMinutes: durMin,
@@ -1123,12 +1128,8 @@ app.post('/api/admin/rounds/activate', (req, res) => {
     try { fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2)); } catch (e) {}
   }
 
-  if (roundNum === 1 && !ctfConfig.ctfStartTime) {
-    ctfConfig.ctfStartTime = new Date().toISOString();
-    try { fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2)); } catch (e) {}
-  }
-
-  // Sync unlockedRounds and start fresh individual timers for all eligible active crews
+  // Sync unlockedRounds and start fresh individual timers
+  // "the timer of 1st roudn should only start after i start the tournamment and for other rounds after i activate the round"
   const nowTs = Date.now();
   const dur = (ctfConfig.roundDurations && ctfConfig.roundDurations[rKey]) || (rKey === '1' ? 30 : (rKey === '2' ? 25 : (rKey === '3' ? 20 : 15)));
   teams.forEach(t => {
@@ -1142,29 +1143,44 @@ app.post('/api/admin/rounds/activate', (req, res) => {
 
       const hasSolved = t.roundSolves && t.roundSolves[rKey] && (t.roundSolves[rKey].completed || typeof t.roundSolves[rKey] === 'string');
 
-      // If team has not solved this round yet, start their timer fresh from NOW!
       if (!hasSolved) {
-        if (roundNum === 1 || (t.currentRound || 1) >= roundNum) {
+        if (roundNum === 1) {
+          // Round 1 timer ONLY starts if tournament has been started via "Start Tournament"
+          const shouldStartR1 = Boolean(ctfConfig.ctfStartTime);
           t.roundTimers[rKey] = {
-            startedAt: nowTs,
+            startedAt: shouldStartR1 ? nowTs : null,
             durationMinutes: dur,
-            hintPenaltiesMinutes: 0,
-            bonusMinutes: 0,
+            hintPenaltiesMinutes: (t.roundTimers[rKey] && t.roundTimers[rKey].hintPenaltiesMinutes) || 0,
+            bonusMinutes: (t.roundTimers[rKey] && t.roundTimers[rKey].bonusMinutes) || 0,
             solved: false,
             solvedAt: null,
             finalSolveSeconds: null
           };
         } else {
-          // Team is still in earlier round: keep timer in ready state until they reach this round
-          t.roundTimers[rKey] = {
-            startedAt: null,
-            durationMinutes: dur,
-            hintPenaltiesMinutes: 0,
-            bonusMinutes: 0,
-            solved: false,
-            solvedAt: null,
-            finalSolveSeconds: null
-          };
+          // For other rounds (R2, R3, R4):
+          // Timer starts after admin activates this round FOR teams currently in this round
+          if ((t.currentRound || 1) >= roundNum) {
+            t.roundTimers[rKey] = {
+              startedAt: nowTs,
+              durationMinutes: dur,
+              hintPenaltiesMinutes: (t.roundTimers[rKey] && t.roundTimers[rKey].hintPenaltiesMinutes) || 0,
+              bonusMinutes: (t.roundTimers[rKey] && t.roundTimers[rKey].bonusMinutes) || 0,
+              solved: false,
+              solvedAt: null,
+              finalSolveSeconds: null
+            };
+          } else {
+            // Team is still in earlier round: keep timer staged in ready state
+            t.roundTimers[rKey] = {
+              startedAt: null,
+              durationMinutes: dur,
+              hintPenaltiesMinutes: (t.roundTimers[rKey] && t.roundTimers[rKey].hintPenaltiesMinutes) || 0,
+              bonusMinutes: (t.roundTimers[rKey] && t.roundTimers[rKey].bonusMinutes) || 0,
+              solved: false,
+              solvedAt: null,
+              finalSolveSeconds: null
+            };
+          }
         }
       }
     }
@@ -1357,11 +1373,65 @@ app.post('/api/admin/rounds/toggle', (req, res) => {
 app.post('/api/admin/start', (req, res) => {
   if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
   
-  ctfConfig.ctfStartTime = Date.now();
+  const nowTs = Date.now();
+  ctfConfig.ctfStartTime = nowTs;
+
+  // Ensure Round 1 is activated/live
+  const roundState = getRoundState();
+  roundState['1'].status = 'Live';
+  if (!roundState['1'].startedAt) {
+    roundState['1'].startedAt = new Date(nowTs).toISOString();
+  }
+  saveRoundState(roundState);
+
+  // Sync unlockedRounds in ctfConfig
+  if (!Array.isArray(ctfConfig.unlockedRounds)) ctfConfig.unlockedRounds = [1];
+  if (!ctfConfig.unlockedRounds.includes(1)) {
+    ctfConfig.unlockedRounds.push(1);
+    ctfConfig.unlockedRounds.sort((a, b) => a - b);
+  }
   fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2));
+
+  // "the timer of 1st roudn should only start after i start the tournamment"
+  // Start fresh Round 1 individual timer for all active crews currently in Round 1
+  const r1Dur = (ctfConfig.roundDurations && ctfConfig.roundDurations['1']) || 30;
+  teams.forEach(t => {
+    if (!isAdminTeam(t) && !t.eliminated) {
+      if (!Array.isArray(t.unlockedRounds)) t.unlockedRounds = [1];
+      if (!t.unlockedRounds.includes(1)) {
+        t.unlockedRounds.push(1);
+      }
+      if (!t.roundTimers) t.roundTimers = {};
+      const hasSolvedR1 = t.roundSolves && t.roundSolves['1'] && (t.roundSolves['1'].completed || typeof t.roundSolves['1'] === 'string');
+      if (!hasSolvedR1 && (t.currentRound || 1) === 1) {
+        t.roundTimers['1'] = {
+          startedAt: nowTs,
+          durationMinutes: r1Dur,
+          hintPenaltiesMinutes: (t.roundTimers['1'] && t.roundTimers['1'].hintPenaltiesMinutes) || 0,
+          bonusMinutes: (t.roundTimers['1'] && t.roundTimers['1'].bonusMinutes) || 0,
+          solved: false,
+          solvedAt: null,
+          finalSolveSeconds: null
+        };
+      }
+    }
+  });
+  fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
+
   io.emit('configUpdate', ctfConfig);
-  
-  res.json({ message: 'Treasure Hunt Started!', config: ctfConfig });
+  io.emit('roundsUpdate', ctfConfig.unlockedRounds);
+  io.emit('teamsUpdate');
+  io.emit('tournamentUpdate');
+  io.emit('scoreboardUpdate');
+
+  logAuditEvent({
+    action: 'START_TOURNAMENT',
+    admin: req.session.teamName || 'admin',
+    reason: 'Tournament started by Admiralty. Round 1 individual timers started for active crews.',
+    details: { startedAt: nowTs }
+  });
+
+  res.json({ message: 'Treasure Hunt Started! Round 1 timers are live.', config: ctfConfig });
 });
 
 app.post('/api/admin/stop', (req, res) => {
@@ -1370,12 +1440,19 @@ app.post('/api/admin/stop', (req, res) => {
   ctfConfig.ctfStartTime = null;
   fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2));
   io.emit('configUpdate', ctfConfig);
+  io.emit('teamsUpdate');
+  io.emit('tournamentUpdate');
+  io.emit('scoreboardUpdate');
   
   res.json({ message: 'Treasure Hunt Stopped!', config: ctfConfig });
 });
 
 app.post('/api/admin/wipe', (req, res) => {
   if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
+  
+  ctfConfig.ctfStartTime = null;
+  fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2));
+  io.emit('configUpdate', ctfConfig);
   
   teams.forEach(team => {
       team.scoreHistory = [];
@@ -2142,6 +2219,10 @@ app.post('/api/admin/tournament/seed-teams', isAdmin, (req, res) => {
     delete roundState[r].winner;
   });
   saveRoundState(roundState);
+
+  ctfConfig.ctfStartTime = null;
+  fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2));
+  io.emit('configUpdate', ctfConfig);
 
   fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
   fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));

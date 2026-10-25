@@ -49,14 +49,20 @@ async function run() {
   });
   console.log('[PASS] All crews show Ready state with full time remaining before activation.');
 
-  // 4. Activate Round 1
+  // 4. Activate Round 1 and Start Tournament
   const actRes = await fetch(`${baseUrl}/api/admin/rounds/activate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Cookie': adminCookie },
     body: JSON.stringify({ round: 1 })
   });
   assert.strictEqual(actRes.status, 200, 'Round 1 activation succeeded');
-  console.log('[PASS] Round 1 successfully activated to Live.');
+
+  const startRes = await fetch(`${baseUrl}/api/admin/start`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Cookie': adminCookie }
+  });
+  assert.strictEqual(startRes.status, 200, 'Start Tournament succeeded');
+  console.log('[PASS] Round 1 activated and Tournament started.');
 
   // 5. Verify all active crews in Round 1 have timers ticking from Date.now() with > 0 remaining
   const statusAfterR1Res = await fetch(`${baseUrl}/api/tournament/status`, {

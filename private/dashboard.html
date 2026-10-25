@@ -1736,7 +1736,7 @@
           const m = Math.floor((data.timer.solveTimeSeconds || 0) / 60);
           const s = (data.timer.solveTimeSeconds || 0) % 60;
           timerStr = ` • SOLVE TIME: ${m}m ${s}s`;
-        } else if (data.timer.isReady || !data.timer.startedAt) {
+        } else if (data.timer.isReady || !data.timer.startedAt || (roundNum === 1 && !ctfStartTime)) {
           timerStr = ` • ⏱ READY (${data.timer.durationMinutes || 30}m)`;
         } else {
           const rem = data.timer.remainingSeconds || 0;
@@ -1748,7 +1748,7 @@
       if (subEl) subEl.textContent = `ROUND ${roundNum} • SLOT: ${data.slotId || ''}${timerStr}`;
 
       if (window._roundTimerInterval) clearInterval(window._roundTimerInterval);
-      if (data.timer && !data.timer.solved && !data.timer.isReady && data.timer.startedAt && (data.timer.remainingSeconds > 0)) {
+      if (data.timer && !data.timer.solved && !data.timer.isReady && data.timer.startedAt && !(roundNum === 1 && !ctfStartTime) && (data.timer.remainingSeconds > 0)) {
         let remSec = data.timer.remainingSeconds;
         window._roundTimerInterval = setInterval(() => {
           remSec = Math.max(0, remSec - 1);
@@ -3685,7 +3685,7 @@
       if (penMin > 0) penNote += ` (-${penMin}m hint)`;
       if (bonusMin > 0) penNote += ` (+${bonusMin}m rev)`;
 
-      if (!timer || !timer.startedAt || timer.isReady) {
+      if (!timer || !timer.startedAt || timer.isReady || (curR === 1 && !ctfStartTime)) {
         return {
           statusType: 'waiting',
           roundLabel: `ROUND ${curR}`,
@@ -4243,7 +4243,7 @@
             const s = (t.timer.solveTimeSeconds || 0) % 60;
             const pen = t.timer.hintPenaltiesMinutes > 0 ? ` (+${t.timer.hintPenaltiesMinutes}m)` : '';
             timerDisplay = `<span style="color:var(--success); font-weight:700; font-family:'JetBrains Mono',monospace;">✓ ${m}m ${s}s${pen}</span>`;
-          } else if (t.timer.isReady || !t.timer.startedAt) {
+          } else if (t.timer.isReady || !t.timer.startedAt || (curR === 1 && !ctfStartTime)) {
             const dur = t.timer.durationMinutes || (curR === 1 ? 30 : (curR === 2 ? 25 : (curR === 3 ? 20 : 15)));
             timerDisplay = `<span style="color:var(--gold-muted); font-family:'JetBrains Mono',monospace;">⏱ ${dur}m (Ready)</span>`;
           } else {
@@ -4301,7 +4301,7 @@
           const timer = t.timer;
           if (!timer) return;
           if (timer.solved) return;
-          if (timer.isReady || !timer.startedAt) return;
+          if (timer.isReady || !timer.startedAt || (curR === 1 && !ctfStartTime)) return;
 
           const durMin = timer.durationMinutes || (curR === 1 ? 30 : (curR === 2 ? 25 : (curR === 3 ? 20 : 15)));
           const penMin = timer.hintPenaltiesMinutes || 0;

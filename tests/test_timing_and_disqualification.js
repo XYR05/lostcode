@@ -133,6 +133,12 @@ async function runTests() {
     const actData = await actRes.json();
     assert.strictEqual(actData.success, true, 'Round 1 activation failed');
 
+    // Start tournament so Round 1 timer is live and hints can be unlocked
+    await fetch(`${baseUrl}/api/admin/start`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Cookie': adminCookie }
+    });
+
     // 9. Hint unlock deducts time penalty minutes and keeps score untouched
     const chalRes = await fetch(`${baseUrl}/api/team/challenge`, {
       headers: { 'Cookie': teamCookie }
