@@ -64,7 +64,27 @@ async function runTournamentLifecycleSimulation() {
     const teamCookies = {};
     for (const crew of teamCrews) {
       teamCookies[crew.id] = await loginCrew(crew.name);
+      const t = teams.find(x => x.id === crew.id);
+      if (t) {
+        t.score = 0;
+        t.solvedChallenges = [];
+        t.scoreHistory = [{ timestamp: Date.now() - 5000, time: '12:00:00 AM', score: 0 }];
+        t.roundSolves = {};
+        t.eliminated = false;
+        t.eliminatedRound = null;
+        t.isWinner = false;
+        t.currentRound = 1;
+        t.unlockedRounds = [1];
+      }
     }
+    fs.writeFileSync(teamsPath, JSON.stringify(teams, null, 2), 'utf8');
+    const cleanRoundState = {
+      "1": { status: "Draft", startedAt: null, completedAt: null, qualifiers: [], eliminated: [] },
+      "2": { status: "Locked", startedAt: null, completedAt: null, qualifiers: [], eliminated: [] },
+      "3": { status: "Locked", startedAt: null, completedAt: null, qualifiers: [], eliminated: [] },
+      "4": { status: "Locked", startedAt: null, completedAt: null, winner: null, eliminated: [] }
+    };
+    saveRoundState(cleanRoundState);
     console.log('✓ All 10 official crews and Admiralty administrator authenticated.');
 
     // -------------------------------------------------------------

@@ -31,16 +31,27 @@
     "teamName": "BUCCANEERS",
     "tagline": "Ruthless pirate adventurers",
     "password": "$2b$10$sdrc4IWgLaHmnunNhY1prehtVJHg0oAonixHc1ligAVFEiwSB1sIO",
-    "score": 0,
-    "solvedChallenges": [],
+    "score": 100,
+    "solvedChallenges": [
+      "riddle_r1_compass"
+    ],
     "hintsUnlocked": {},
     "scoreHistory": [
       {
         "timestamp": 1792924472703,
+        "time": "4:04:32 PM",
         "score": 0
       },
       {
+        "timestamp": 1792927609000,
         "time": "4:56:49 PM",
+        "score": 100,
+        "challengeKey": "riddle_r1_compass",
+        "round": 1
+      },
+      {
+        "timestamp": 1792953161000,
+        "time": "12:02:41 AM",
         "score": 100,
         "challengeKey": "riddle_r1_compass",
         "round": 1
@@ -61,7 +72,9 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {},
+    "roundSolves": {
+      "1": "R1_S1"
+    },
     "isWinner": false,
     "disqualified": false,
     "violations": 0
@@ -77,13 +90,8 @@
     "scoreHistory": [
       {
         "timestamp": 1792924472761,
+        "time": "4:04:32 PM",
         "score": 0
-      },
-      {
-        "time": "4:58:14 PM",
-        "score": 100,
-        "challengeKey": "riddle_r1_anchor",
-        "round": 1
       }
     ],
     "currentRound": 1,

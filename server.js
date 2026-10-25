@@ -402,8 +402,10 @@ app.post('/api/team/submit', (req, res) => {
   const pointsAwarded = riddle.points || 100;
   team.score = (team.score || 0) + pointsAwarded;
   if (!Array.isArray(team.scoreHistory)) team.scoreHistory = [];
+  const solveTimestamp = Date.now();
   team.scoreHistory.push({
-    time: new Date().toLocaleTimeString(),
+    timestamp: solveTimestamp,
+    time: new Date(solveTimestamp).toLocaleTimeString(),
     score: team.score,
     challengeKey: riddle.id,
     round: roundNum
@@ -1803,10 +1805,11 @@ app.post('/api/challenge/flag', (req, res) => {
   team.solvedChallenges.push(category);
   const pointsEarned = challengeObj.points !== undefined ? Number(challengeObj.points) : 500;
   team.score = (team.score || 0) + pointsEarned;
+  const solveTs = Date.now();
   if (!team.scoreHistory) {
-    team.scoreHistory = [{ timestamp: Date.now() - 1000, score: team.score - pointsEarned }];
+    team.scoreHistory = [{ timestamp: solveTs - 1000, time: new Date(solveTs - 1000).toLocaleTimeString(), score: team.score - pointsEarned }];
   }
-  team.scoreHistory.push({ timestamp: Date.now(), score: team.score });
+  team.scoreHistory.push({ timestamp: solveTs, time: new Date(solveTs).toLocaleTimeString(), score: team.score });
 
   if (!team.roundSolves) team.roundSolves = {};
   const currentRoundNum = challengeRound;
@@ -1972,10 +1975,11 @@ app.post('/api/challenge/hint/unlock', (req, res) => {
     unlockedAt: Date.now()
   };
 
+  const hintTs = Date.now();
   if (!team.scoreHistory) {
-    team.scoreHistory = [{ timestamp: Date.now() - 1000, score: team.score + cost }];
+    team.scoreHistory = [{ timestamp: hintTs - 1000, time: new Date(hintTs - 1000).toLocaleTimeString(), score: team.score + cost }];
   }
-  team.scoreHistory.push({ timestamp: Date.now(), score: team.score });
+  team.scoreHistory.push({ timestamp: hintTs, time: new Date(hintTs).toLocaleTimeString(), score: team.score });
 
   try {
     fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));

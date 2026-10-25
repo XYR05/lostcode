@@ -3140,6 +3140,13 @@
           document.querySelectorAll('#scoreboard-section .tab-content').forEach(tc => tc.classList.remove('active'));
           const target = document.getElementById(tabId);
           if (target) target.classList.add('active');
+          if (tabId === 'score-graph') {
+            if (scoreChart) {
+              scoreChart.resize();
+              scoreChart.update();
+            }
+            fetchTeamScores();
+          }
         });
       });
     }
@@ -3179,37 +3186,115 @@
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
 
-      const topTeams = teams.slice(0, 8);
-      let timestamps = new Set();
-      topTeams.forEach(t => {
-        (t.scoreHistory || []).forEach(pt => timestamps.add(pt.timestamp));
-      });
-      const sortedTimes = Array.from(timestamps).sort((a,b) => a - b);
-      if (sortedTimes.length === 0) sortedTimes.push(Date.now());
+      const topTeams = (teams || []).slice(0, 10);
+      if (topTeams.length === 0) return;
 
-      const labels = sortedTimes.map(t => new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      const now = Date.now();
+      const normalizedHistories = new Map();
+      const allTimestamps = new Set();
+
+      topTeams.forEach(t => {
+        const rawHistory = Array.isArray(t.scoreHistory) ? t.scoreHistory : [];
+        const norm = [];
+
+        rawHistory.forEach(pt => {
+          let ts = null;
+          if (typeof pt.timestamp === 'number' && !isNaN(pt.timestamp)) {
+            ts = pt.timestamp;
+          } else if (pt.time) {
+            const parsed = Date.parse(pt.time);
+            if (!isNaN(parsed)) ts = parsed;
+          }
+          if (ts === null) ts = now;
+          const score = typeof pt.score === 'number' ? pt.score : 0;
+          norm.push({ timestamp: ts, score });
+          allTimestamps.add(ts);
+        });
+
+        if (norm.length === 0) {
+          const startTs = now - 60000;
+          norm.push({ timestamp: startTs, score: 0 });
+          allTimestamps.add(startTs);
+        }
+
+        norm.sort((a, b) => a.timestamp - b.timestamp);
+
+        if (norm[0].score > 0) {
+          const baseTs = norm[0].timestamp - 10000;
+          norm.unshift({ timestamp: baseTs, score: 0 });
+          allTimestamps.add(baseTs);
+        }
+
+        const currentOfficialScore = typeof t.score === 'number' ? t.score : 0;
+        const latestHistScore = norm[norm.length - 1].score;
+        if (latestHistScore !== currentOfficialScore) {
+          norm.push({ timestamp: now, score: currentOfficialScore });
+          allTimestamps.add(now);
+        }
+
+        normalizedHistories.set(t.id, norm);
+      });
+
+      allTimestamps.add(now);
+
+      const allSortedTimes = Array.from(allTimestamps)
+        .filter(ts => typeof ts === 'number' && !isNaN(ts))
+        .sort((a, b) => a - b);
+
+      function getScoresSnapshot(time) {
+        return topTeams.map(t => {
+          const norm = normalizedHistories.get(t.id) || [];
+          let score = 0;
+          for (let i = 0; i < norm.length; i++) {
+            if (norm[i].timestamp <= time) score = norm[i].score;
+            else break;
+          }
+          return score;
+        });
+      }
+
+      // Filter redundant timestamps: keep start, end, and points where any crew's score changed
+      const filteredTimes = [];
+      let prevScoresStr = null;
+
+      allSortedTimes.forEach((time, idx) => {
+        const scores = getScoresSnapshot(time);
+        const scoresStr = scores.join(',');
+        if (idx === 0 || idx === allSortedTimes.length - 1 || scoresStr !== prevScoresStr) {
+          filteredTimes.push(time);
+          prevScoresStr = scoresStr;
+        }
+      });
+
+      if (filteredTimes.length === 1) {
+        filteredTimes.push(filteredTimes[0] + 60000);
+      }
+
+      const labels = filteredTimes.map(ts => new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
 
       const datasets = topTeams.map((t, idx) => {
         const color = pirateColors[idx % pirateColors.length];
-        const history = t.scoreHistory || [];
-        
-        const dataPoints = sortedTimes.map(time => {
-          let lastScore = 0;
-          for (const pt of history) {
-            if (pt.timestamp <= time) lastScore = pt.score;
+        const norm = normalizedHistories.get(t.id) || [];
+
+        const dataPoints = filteredTimes.map(time => {
+          let score = 0;
+          for (let i = 0; i < norm.length; i++) {
+            if (norm[i].timestamp <= time) score = norm[i].score;
             else break;
           }
-          return lastScore;
+          return score;
         });
 
         return {
-          label: t.teamName,
+          label: `${t.teamName} (${t.score || 0} pts)`,
           data: dataPoints,
           borderColor: color,
           backgroundColor: color,
-          borderWidth: 2,
-          pointRadius: 3,
-          tension: 0.3
+          borderWidth: 2.5,
+          pointRadius: 3.5,
+          pointHoverRadius: 6,
+          stepped: 'after',
+          tension: 0
         };
       });
 
@@ -3220,6 +3305,11 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          animation: { duration: 300 },
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
           scales: {
             y: {
               beginAtZero: true,
@@ -3406,6 +3496,8 @@
       });
       socket.on('challengesUpdate', () => { fetchChallenges(); });
       socket.on('teamsUpdate', () => { fetchTeamScores(); fetchTeams(); fetchMyTeam(); });
+      socket.on('scoreboardUpdate', () => { fetchTeamScores(); });
+      socket.on('tournament:slot_claimed', () => { fetchTeamScores(); if (typeof fetchTournamentStatus === 'function') fetchTournamentStatus(); });
       socket.on('tournamentUpdate', () => {
         fetchMyTeam();
         fetchChallenges();
