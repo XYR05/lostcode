@@ -23,7 +23,8 @@
     "eliminatedReason": null,
     "isWinner": false,
     "violations": 0,
-    "tagline": "Admiralty Flagship"
+    "tagline": "Admiralty Flagship",
+    "disqualified": false
   },
   {
     "id": "crew_1_buccaneers",
@@ -37,6 +38,12 @@
       {
         "timestamp": 1792924472703,
         "score": 0
+      },
+      {
+        "time": "4:56:49 PM",
+        "score": 100,
+        "challengeKey": "riddle_r1_compass",
+        "round": 1
       }
     ],
     "currentRound": 1,
@@ -54,7 +61,10 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "disqualified": false,
+    "violations": 0
   },
   {
     "id": "crew_2_cutthroats",
@@ -68,6 +78,12 @@
       {
         "timestamp": 1792924472761,
         "score": 0
+      },
+      {
+        "time": "4:58:14 PM",
+        "score": 100,
+        "challengeKey": "riddle_r1_anchor",
+        "round": 1
       }
     ],
     "currentRound": 1,
@@ -85,7 +101,10 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "disqualified": false,
+    "violations": 0
   },
   {
     "id": "crew_3_corsairs",
@@ -116,7 +135,10 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "disqualified": false,
+    "violations": 0
   },
   {
     "id": "crew_4_krakens",
@@ -147,7 +169,10 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "disqualified": false,
+    "violations": 0
   },
   {
     "id": "crew_5_scallywags",
@@ -178,7 +203,10 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "disqualified": false,
+    "violations": 0
   },
   {
     "id": "crew_6_privateers",
@@ -209,7 +237,10 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "disqualified": false,
+    "violations": 0
   },
   {
     "id": "crew_7_blackflags",
@@ -240,7 +271,10 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "disqualified": false,
+    "violations": 0
   },
   {
     "id": "crew_8_plunderers",
@@ -271,7 +305,10 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "disqualified": false,
+    "violations": 0
   },
   {
     "id": "crew_9_dreadsails",
@@ -302,7 +339,10 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "disqualified": false,
+    "violations": 0
   },
   {
     "id": "crew_10_searavens",
@@ -333,6 +373,9 @@
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "disqualified": false,
+    "violations": 0
   }
 ]
