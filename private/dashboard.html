@@ -1476,6 +1476,130 @@
         win.style.display = 'flex';
       }
 
+      // Fetch authoritative private challenge for participant
+      fetchParticipantChallenge(roundNum);
+    }
+
+    function fetchParticipantChallenge(roundNum) {
+      fetch(`/api/team/challenge?round=${roundNum}`)
+        .then(r => r.json())
+        .then(data => {
+          renderParticipantChallengeWindow(data, roundNum);
+        })
+        .catch(err => console.error("Error loading challenge:", err));
+    }
+
+    function renderParticipantChallengeWindow(data, roundNum) {
+      if (data.isEliminated && !window.isAdminUser) {
+        openWalkPlankModal(data.message);
+        return;
+      }
+
+      const lockedCard = document.getElementById('windowLockedCard');
+      const activeContent = document.getElementById('windowActiveContent');
+
+      if (data.roundStatus !== 'Live' && !window.isAdminUser) {
+        if (lockedCard) {
+          lockedCard.style.display = 'block';
+          const msgEl = document.getElementById('windowLockedMessage');
+          if (msgEl) msgEl.textContent = data.message || `Round ${roundNum} is locked by the Admiralty.`;
+        }
+        if (activeContent) activeContent.style.display = 'none';
+        return;
+      }
+
+      if (lockedCard) lockedCard.style.display = 'none';
+      if (activeContent) activeContent.style.display = 'block';
+
+      const titleEl = document.getElementById('windowChallengeTitle');
+      const subEl = document.getElementById('windowChallengeSubtitle');
+      const briefSec = document.getElementById('windowCaptainBriefSection');
+      const briefDesc = document.getElementById('windowChallengeDescription');
+      const flagInput = document.getElementById('windowFlagInput');
+      const submitBtn = document.getElementById('windowSubmitFlagBtn');
+      const flagResult = document.getElementById('windowFlagResult');
+      const hintBox = document.getElementById('windowHintBox');
+
+      if (!data.riddle) {
+        if (titleEl) titleEl.textContent = "Waters Uncharted";
+        if (subEl) subEl.textContent = `ROUND ${roundNum}: AWAITING ADMIRALTY RIDDLE`;
+        if (briefSec && briefDesc) {
+          briefSec.style.display = 'block';
+          briefDesc.textContent = data.message || "Riddle configuration in progress by the Admiralty.";
+        }
+        if (hintBox) hintBox.style.display = 'none';
+        if (flagInput) {
+          flagInput.value = '';
+          flagInput.placeholder = 'Island uncharted — No active riddle';
+          flagInput.disabled = true;
+        }
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'UNCHARTED';
+          submitBtn.style.opacity = '0.5';
+          submitBtn.style.cursor = 'not-allowed';
+        }
+        return;
+      }
+
+      // Render riddle
+      if (titleEl) titleEl.textContent = data.riddle.title;
+      if (subEl) subEl.textContent = `ROUND ${roundNum} • SLOT: ${data.slotId || ''}`;
+      if (briefSec && briefDesc) {
+        briefSec.style.display = 'block';
+        briefDesc.textContent = data.riddle.text || 'Physical field clue location...';
+      }
+
+      if (data.isQualified) {
+        if (flagInput) {
+          flagInput.value = '✓ Bounty secured by your crew!';
+          flagInput.disabled = true;
+        }
+        if (submitBtn) {
+          submitBtn.textContent = 'SOLVED';
+          submitBtn.disabled = true;
+          submitBtn.style.opacity = '0.6';
+          submitBtn.style.cursor = 'not-allowed';
+        }
+        if (flagResult) {
+          flagResult.textContent = 'Your crew has qualified for this round!';
+          flagResult.style.color = 'var(--success)';
+        }
+      } else if (data.isClaimed) {
+        if (flagInput) {
+          flagInput.value = '⚠️ Slot already claimed by another crew!';
+          flagInput.disabled = true;
+        }
+        if (submitBtn) {
+          submitBtn.textContent = 'CLAIMED';
+          submitBtn.disabled = true;
+          submitBtn.style.opacity = '0.5';
+          submitBtn.style.cursor = 'not-allowed';
+        }
+        if (flagResult) {
+          flagResult.textContent = 'Another pirate crew claimed this qualifying berth seconds ahead!';
+          flagResult.style.color = 'var(--danger)';
+        }
+      } else {
+        if (flagInput) {
+          flagInput.value = '';
+          flagInput.placeholder = 'Enter salvaged flag (e.g. lostcode{flag})';
+          flagInput.disabled = false;
+        }
+        if (submitBtn) {
+          submitBtn.textContent = 'SUBMIT FLAG';
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = '1';
+          submitBtn.style.cursor = 'pointer';
+        }
+        if (flagResult) {
+          flagResult.textContent = 'Paste the exact answer found physically in the field to automatically advance.';
+          flagResult.style.color = 'var(--gold-muted)';
+        }
+      }
+    }
+
+
       // If locked, show the locked waters card inside the window
       if (!isUnlocked && !window.isAdminUser) {
         if (lockedCard) {
@@ -2481,7 +2605,7 @@
       const flagInput = document.getElementById('windowFlagInput');
       const submitBtn = document.getElementById('windowSubmitFlagBtn');
       const flagResult = document.getElementById('windowFlagResult');
-      if (!flagInput || !submitBtn || !flagResult || !currentCategory) return;
+      if (!flagInput || !submitBtn || !flagResult) return;
 
       const flag = flagInput.value.trim();
       if (!flag) {
@@ -2494,21 +2618,23 @@
       flagResult.textContent = 'Submitting flag to captain...';
       submitBtn.disabled = true;
 
-      fetch('/api/challenge/flag', {
+      fetch('/api/team/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category: currentCategory, flag })
+        body: JSON.stringify({ answer: flag, round: currentActiveRound || 1 })
       })
-      .then(res => {
-        if (!res.ok) {
-          return res.json().then(data => { throw new Error(data.error || 'Submission error'); });
-        }
-        return res.json();
-      })
+      .then(res => res.json())
       .then(data => {
+        if (!data.success) {
+          flagResult.textContent = data.message || data.error || 'Submission rejected.';
+          flagResult.style.color = 'var(--danger)';
+          submitBtn.disabled = false;
+          return;
+        }
+
         flagResult.textContent = data.message;
         flagResult.style.color = "var(--success)";
-        flagInput.value = 'Bounty already claimed by your crew!';
+        flagInput.value = 'Bounty secured by your crew!';
         flagInput.disabled = true;
         submitBtn.textContent = 'SOLVED';
         submitBtn.style.opacity = '0.6';
@@ -2518,6 +2644,25 @@
           if (!Array.isArray(myTeamData.team.solvedChallenges)) {
             myTeamData.team.solvedChallenges = [];
           }
+          if (data.slotId && !myTeamData.team.solvedChallenges.includes(data.slotId)) {
+            myTeamData.team.solvedChallenges.push(data.slotId);
+          }
+          if (data.isWinner) {
+            myTeamData.team.isWinner = true;
+            showCustomConfirm("🏆 GRAND CHAMPION!", "Your crew has won the Lost Code Championship!", true, null);
+          }
+        }
+
+        if (typeof fetchMyTeamData === 'function') fetchMyTeamData();
+        if (typeof fetchTeamScores === 'function') fetchTeamScores();
+        if (typeof fetchParticipantChallenge === 'function') fetchParticipantChallenge(currentActiveRound || 1);
+      })
+      .catch(err => {
+        flagResult.textContent = err.message || 'Error communicating with captain';
+        flagResult.style.color = 'var(--danger)';
+        submitBtn.disabled = false;
+      });
+    }
           if (!myTeamData.team.solvedChallenges.includes(currentCategory)) {
             myTeamData.team.solvedChallenges.push(currentCategory);
           }
