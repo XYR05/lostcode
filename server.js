@@ -970,8 +970,23 @@ app.post('/api/admin/assignments/override', (req, res) => {
 app.get('/api/config', (req, res) => {
   res.json({
     ctfStartTime: ctfConfig.ctfStartTime,
-    unlockedRounds: ctfConfig.unlockedRounds || [1]
+    unlockedRounds: ctfConfig.unlockedRounds || [1],
+    fullscreenEnforced: ctfConfig.fullscreenEnforced !== false
   });
+});
+
+// shortcut: stored in config.json, migrate to DB if multi-instance
+app.post('/api/admin/toggle-proctoring', (req, res) => {
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
+  const { enabled } = req.body || {};
+  ctfConfig.fullscreenEnforced = enabled !== undefined ? !!enabled : !(ctfConfig.fullscreenEnforced !== false);
+  try {
+    fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2));
+  } catch (e) {
+    console.error('Failed writing config:', e);
+  }
+  io.emit('configUpdate', ctfConfig);
+  res.json({ success: true, fullscreenEnforced: ctfConfig.fullscreenEnforced });
 });
 
 app.post('/api/admin/rounds/toggle', (req, res) => {
@@ -1965,6 +1980,9 @@ app.post('/api/proctor/violation', (req, res) => {
   if (!team) return res.status(403).json({ error: 'Not logged in' });
   if (isAdminTeam(team) || isAdminSession(req)) {
     return res.json({ ignored: true, message: 'Admin session exempt from proctoring.' });
+  }
+  if (ctfConfig.fullscreenEnforced === false) {
+    return res.json({ ignored: true, message: 'Fullscreen proctoring disabled by Admiralty.' });
   }
 
   if (team.disqualified) {

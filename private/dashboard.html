@@ -339,6 +339,7 @@
       </div>
       <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
         <button id="adminStartCtfBtn" style="padding: 0.65rem 1.4rem; border: 1px solid var(--gold-primary); background: var(--gold-primary); color: #17110c; font-family: 'Cinzel', serif; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 0.85rem; letter-spacing: 0.05em; transition: all 0.2s ease;">▶ Start Treasure Hunt</button>
+        <button id="adminToggleProctorBtn" type="button" onclick="toggleProctoring()" style="padding: 0.65rem 1.1rem; border: 1px solid var(--gold-primary); background: rgba(201,154,82,0.12); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 700; border-radius: 4px; cursor: pointer;">👁️ Fullscreen Proctor: ON</button>
         <button type="button" onclick="fetchTournamentStatus()" style="padding: 0.65rem 1.1rem; border: 1px solid var(--border-subtle); background: rgba(201,154,82,0.08); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 700; border-radius: 4px; cursor: pointer;">🔄 Refresh Roster</button>
         <button type="button" onclick="seedDefaultTournamentCrews()" style="padding: 0.65rem 1.1rem; border: 1px solid var(--border-subtle); background: transparent; color: var(--text-secondary); font-family: 'Cinzel', serif; font-size: 0.82rem; border-radius: 4px; cursor: pointer;">🏴‍☠️ Reseed 10 Crews</button>
         <button id="adminWipeDataBtn" style="padding: 0.65rem 1.1rem; border: 1px solid var(--border-subtle); background: transparent; color: var(--text-secondary); font-family: 'Cinzel', serif; font-size: 0.82rem; border-radius: 4px; cursor: pointer;">🗑 Wipe Data</button>
@@ -1068,6 +1069,33 @@
     let proctoringArmed = false;
     let violationInProgress = false;
     window.isAdminUser = Boolean(window.isAdminUser);
+    window.fullscreenEnforced = true;
+
+    function toggleProctoring() {
+      const next = !(window.fullscreenEnforced !== false);
+      fetch('/api/admin/toggle-proctoring', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: next })
+      })
+      .then(r => r.json())
+      .then(d => {
+        window.fullscreenEnforced = d.fullscreenEnforced;
+        updateProctorButton();
+        showToast(d.fullscreenEnforced ? 'Fullscreen Disqualification: ON' : 'Fullscreen Disqualification: OFF (Testing Mode)');
+      })
+      .catch(e => showCustomConfirm("Error", e.message, true, null));
+    }
+
+    function updateProctorButton() {
+      const btn = document.getElementById('adminToggleProctorBtn');
+      if (!btn) return;
+      const on = window.fullscreenEnforced !== false;
+      btn.textContent = on ? '👁️ Fullscreen Proctor: ON' : '👁️ Fullscreen Proctor: OFF';
+      btn.style.color = on ? 'var(--gold-primary)' : 'var(--text-secondary)';
+      btn.style.borderColor = on ? 'var(--gold-primary)' : 'var(--border-subtle)';
+      btn.style.background = on ? 'rgba(201,154,82,0.12)' : 'transparent';
+    }
 
     function enterTournamentFullscreen() {
       if (document.documentElement.requestFullscreen) {
@@ -1079,7 +1107,7 @@
 
     function armProctoring() {
       setTimeout(() => {
-        if (!window.isAdminUser) {
+        if (!window.isAdminUser && window.fullscreenEnforced !== false) {
           proctoringArmed = true;
         }
       }, 1500);
@@ -1124,7 +1152,7 @@
     }
 
     function triggerProctorViolation(reason) {
-      if (!proctoringArmed || window.isAdminUser || violationInProgress) return;
+      if (!proctoringArmed || window.isAdminUser || violationInProgress || window.fullscreenEnforced === false) return;
       violationInProgress = true;
 
       fetch('/api/proctor/violation', {
@@ -1152,24 +1180,24 @@
 
     // Departure Listeners
     document.addEventListener('fullscreenchange', () => {
-      if (window.isAdminUser) return;
+      if (window.isAdminUser || window.fullscreenEnforced === false) return;
       if (proctoringArmed && !document.fullscreenElement) {
         triggerProctorViolation('Exited fullscreen');
       }
     });
 
     document.addEventListener('visibilitychange', () => {
-      if (window.isAdminUser) return;
+      if (window.isAdminUser || window.fullscreenEnforced === false) return;
       if (proctoringArmed && document.hidden) {
         triggerProctorViolation('Tab switched or minimized');
       }
     });
 
     window.addEventListener('blur', () => {
-      if (window.isAdminUser) return;
+      if (window.isAdminUser || window.fullscreenEnforced === false) return;
       if (proctoringArmed) {
         setTimeout(() => {
-          if (!document.hasFocus() && proctoringArmed && !window.isAdminUser) {
+          if (!document.hasFocus() && proctoringArmed && !window.isAdminUser && window.fullscreenEnforced !== false) {
             triggerProctorViolation('Window lost focus');
           }
         }, 400);
@@ -1247,7 +1275,12 @@
       }
 
       // Check startup modal sequence
-      if (!sessionStorage.getItem('lostCodeFullscreenSeen')) {
+      if (window.fullscreenEnforced === false) {
+        if (noticeModal) noticeModal.style.display = 'none';
+        if (!sessionStorage.getItem('lostCodeIntroSeen')) {
+          if (introModal) introModal.style.display = 'flex';
+        }
+      } else if (!sessionStorage.getItem('lostCodeFullscreenSeen')) {
         if (noticeModal) noticeModal.style.display = 'flex';
       } else if (!sessionStorage.getItem('lostCodeIntroSeen')) {
         if (introModal) introModal.style.display = 'flex';
@@ -3159,6 +3192,8 @@
         if (Array.isArray(data.unlockedRounds)) {
           unlockedRounds = data.unlockedRounds;
         }
+        window.fullscreenEnforced = data.fullscreenEnforced !== false;
+        updateProctorButton();
         startLocalTimer();
         updateAdminStartButton();
         renderRouteMap();
@@ -3251,6 +3286,13 @@
         if (Array.isArray(data.unlockedRounds)) {
           unlockedRounds = data.unlockedRounds;
         }
+        window.fullscreenEnforced = data.fullscreenEnforced !== false;
+        if (window.fullscreenEnforced === false) {
+          proctoringArmed = false;
+          const wModal = document.getElementById('proctorWarningModal');
+          if (wModal) wModal.style.display = 'none';
+        }
+        updateProctorButton();
         startLocalTimer();
         updateAdminStartButton();
         renderRouteMap();
