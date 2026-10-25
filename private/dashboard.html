@@ -335,7 +335,7 @@
     <p style="color: var(--text-secondary); margin-bottom: 2rem;">Manage challenges below. Adding a challenge with an existing category name will update it.</p>
     
     <!-- Admiralty Round Control Deck -->
-    <div id="adminRoundControlDeck">
+    <div id="roundControlDeck">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 0.75rem;">
         <div>
           <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); display: flex; align-items: center; gap: 8px;">
@@ -386,6 +386,91 @@
           </thead>
           <tbody id="tournamentRosterTableBody">
             <!-- Dynamically populated by renderTournamentBracket() -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Riddle Bank Suite -->
+    <div id="riddleBankSection" class="card" style="margin-top: 2rem; background: var(--panel-secondary); border: 1px solid var(--border-subtle); padding: 1.5rem; border-radius: 4px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 1.25rem;">
+        <div>
+          <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); display: flex; align-items: center; gap: 8px;">
+            <span>📜</span> Admiralty Riddle Bank
+          </h3>
+          <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 0.85rem;">
+            Draft, configure, and publish expedition riddles. Unfinished riddles remain in Draft until finalized.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <select id="riddleBankRoundFilter" onchange="filterRiddleBank()" style="padding: 0.6rem 1rem; background: var(--panel-bg); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.82rem; border-radius: 4px; cursor: pointer;">
+            <option value="ALL">All Rounds</option>
+            <option value="1">Round 1 (Individual)</option>
+            <option value="2">Round 2 (High Seas)</option>
+            <option value="3">Round 3 (Dead Man's Creek)</option>
+            <option value="4">Round 4 (Treasure Island)</option>
+          </select>
+          <button type="button" onclick="openNewRiddleModal()" style="padding: 0.6rem 1.2rem; background: var(--gold-primary); border: none; color: var(--bg-primary); font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.82rem; border-radius: 4px; cursor: pointer;">
+            + New Riddle
+          </button>
+        </div>
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="admin-riddle-table">
+          <thead>
+            <tr>
+              <th>TITLE / CODE</th>
+              <th>TARGET ROUND</th>
+              <th>POINTS</th>
+              <th>STATUS</th>
+              <th>ANSWER RULE</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody id="riddleBankTableBody">
+            <!-- Rendered by renderRiddleBank() -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Team-to-Riddle Assignment Matrix -->
+    <div id="assignmentMatrixSection" class="card" style="margin-top: 2rem; background: var(--panel-secondary); border: 1px solid var(--border-subtle); padding: 1.5rem; border-radius: 4px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 1.25rem;">
+        <div>
+          <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); display: flex; align-items: center; gap: 8px;">
+            <span>🗺️</span> Team-to-Riddle Assignment Matrix
+          </h3>
+          <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 0.85rem;">
+            Pre-configure crew assignments per round. When a round goes Live, assignments are locked and can only be altered via verified override.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <select id="matrixRoundFilter" onchange="renderAssignmentMatrix()" style="padding: 0.6rem 1rem; background: var(--panel-bg); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.82rem; border-radius: 4px; cursor: pointer;">
+            <option value="1">Round 1 (10 Crews - 10 Riddles)</option>
+            <option value="2">Round 2 (2 Groups of 5 - 3 Slots Each)</option>
+            <option value="3">Round 3 (2 Groups of 3 - 1 Slot Each)</option>
+            <option value="4">Round 4 (Final Duel - 1 Shared Riddle)</option>
+          </select>
+          <button type="button" onclick="validateRoundModal(document.getElementById('matrixRoundFilter').value)" style="padding: 0.6rem 1.2rem; background: rgba(82, 140, 201, 0.2); border: 1px solid #528cc9; color: #8bbcef; font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.82rem; border-radius: 4px; cursor: pointer;">
+            📋 Validate Checklist
+          </button>
+        </div>
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="admin-matrix-table">
+          <thead>
+            <tr>
+              <th>CREW</th>
+              <th>GROUP</th>
+              <th>QUALIFYING SLOT</th>
+              <th>ASSIGNED RIDDLE</th>
+              <th>STATUS</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody id="assignmentMatrixTableBody">
+            <!-- Rendered by renderAssignmentMatrix() -->
           </tbody>
         </table>
       </div>
@@ -763,6 +848,144 @@
     </div>
   </div>
 
+  <!-- Modal: New / Edit Riddle -->
+  <div id="newRiddleModal" class="antique-modal-overlay" style="display: none;">
+    <div class="antique-modal-card">
+      <div class="antique-modal-header">
+        <h3 class="antique-modal-title">
+          <span>📜</span> <span id="riddleModalHeading">Configure Expedition Riddle</span>
+        </h3>
+        <button type="button" class="antique-modal-close-btn" onclick="closeNewRiddleModal()">&times;</button>
+      </div>
+      <div class="antique-modal-body">
+        <input type="hidden" id="riddleModalId" value="" />
+        <div>
+          <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Riddle Title or Internal Reference *</label>
+          <input type="text" id="riddleModalTitle" placeholder="e.g. The Cipher of the Black Pearl" style="width:100%; padding:0.6rem; background:rgba(0,0,0,0.4); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px;" />
+        </div>
+        <div>
+          <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Riddle Text / Physical Field Coordinates</label>
+          <textarea id="riddleModalText" rows="3" placeholder="Enter riddle text or clue description..." style="width:100%; padding:0.6rem; background:rgba(0,0,0,0.4); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px; font-family:inherit;"></textarea>
+        </div>
+        <div>
+          <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Expected Answer / Flag</label>
+          <input type="text" id="riddleModalAnswer" placeholder="e.g. FLAG{GOLDEN_COMPASS} or phrase" style="width:100%; padding:0.6rem; background:rgba(0,0,0,0.4); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px;" />
+        </div>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <div style="flex:1;">
+            <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Target Round</label>
+            <select id="riddleModalRound" style="width:100%; padding:0.6rem; background:var(--panel-bg); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px;">
+              <option value="1">Round 1: Setting Sail (Individual)</option>
+              <option value="2">Round 2: High Seas (2x5 Groups)</option>
+              <option value="3">Round 3: Dead Man's Creek (2x3 Groups)</option>
+              <option value="4">Round 4: Treasure Island (1v1 Final)</option>
+            </select>
+          </div>
+          <div style="flex:1;">
+            <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Points</label>
+            <input type="number" id="riddleModalPoints" value="100" style="width:100%; padding:0.6rem; background:rgba(0,0,0,0.4); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px;" />
+          </div>
+          <div style="flex:1;">
+            <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Status</label>
+            <select id="riddleModalStatus" style="width:100%; padding:0.6rem; background:var(--panel-bg); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px;">
+              <option value="draft">Draft (Unpublished)</option>
+              <option value="published">Published</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex; gap:20px; align-items:center; background:rgba(0,0,0,0.25); padding:10px 14px; border-radius:4px;">
+          <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--text-secondary); cursor:pointer;">
+            <input type="checkbox" id="riddleModalTrim" checked /> Auto-trim whitespace
+          </label>
+          <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--text-secondary); cursor:pointer;">
+            <input type="checkbox" id="riddleModalCase" /> Case-sensitive matching
+          </label>
+        </div>
+        <div id="riddleModalError" style="display:none; color:#ff6b6b; font-size:0.85rem;"></div>
+      </div>
+      <div class="antique-modal-footer">
+        <button type="button" onclick="closeNewRiddleModal()" style="padding:0.6rem 1.2rem; background:transparent; border:1px solid var(--border-subtle); color:var(--text-secondary); font-family:'Cinzel',serif; border-radius:4px; cursor:pointer;">Cancel</button>
+        <button type="button" onclick="saveRiddleForm()" style="padding:0.6rem 1.5rem; background:var(--gold-primary); border:none; color:var(--bg-primary); font-family:'Cinzel',serif; font-weight:700; border-radius:4px; cursor:pointer;">Save Riddle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Pre-Launch Validation Checklist -->
+  <div id="prelaunchValidationModal" class="antique-modal-overlay" style="display: none;">
+    <div class="antique-modal-card">
+      <div class="antique-modal-header">
+        <h3 class="antique-modal-title">
+          <span>📋</span> <span id="valModalHeading">Round Pre-Launch Checklist</span>
+        </h3>
+        <button type="button" class="antique-modal-close-btn" onclick="closeValidationModal()">&times;</button>
+      </div>
+      <div class="antique-modal-body">
+        <div style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:4px;">
+          The Admiralty requires verification that all crews, groups, slots, and published riddles are strictly accounted for before waters can be opened.
+        </div>
+        <div id="valChecklistContainer" style="display:flex; flex-direction:column; gap:8px;"></div>
+      </div>
+      <div class="antique-modal-footer">
+        <button type="button" onclick="closeValidationModal()" style="padding:0.6rem 1.2rem; background:transparent; border:1px solid var(--border-subtle); color:var(--text-secondary); font-family:'Cinzel',serif; border-radius:4px; cursor:pointer;">Close</button>
+        <button type="button" id="valModalActivateBtn" onclick="activateRoundAction(currentValRound)" style="padding:0.6rem 1.5rem; background:#2ed573; border:none; color:#0c1a10; font-family:'Cinzel',serif; font-weight:700; border-radius:4px; cursor:pointer;">Activate Round</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Administrative Assignment Override -->
+  <div id="auditOverrideModal" class="antique-modal-overlay" style="display: none;">
+    <div class="antique-modal-card">
+      <div class="antique-modal-header">
+        <h3 class="antique-modal-title">
+          <span>⚖️</span> Administrative Assignment Override
+        </h3>
+        <button type="button" class="antique-modal-close-btn" onclick="closeOverrideModal()">&times;</button>
+      </div>
+      <div class="antique-modal-body">
+        <p style="font-size:0.85rem; color:#ffb86c; margin:0;">
+          ⚠️ Live round assignments are locked. Any override here alters the live competition structure and will be permanently recorded in the Admiralty Audit Log.
+        </p>
+        <input type="hidden" id="overrideRoundInput" />
+        <input type="hidden" id="overrideSlotIdInput" />
+        <div>
+          <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Target Slot</label>
+          <div id="overrideSlotDisplay" style="font-family:'JetBrains Mono',monospace; font-size:0.9rem; color:var(--text-primary); background:rgba(0,0,0,0.3); padding:8px 12px; border-radius:4px;"></div>
+        </div>
+        <div>
+          <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Reassign to Riddle</label>
+          <select id="overrideRiddleSelect" style="width:100%; padding:0.6rem; background:var(--panel-bg); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px;"></select>
+        </div>
+        <div>
+          <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Reason for Override *</label>
+          <textarea id="overrideReasonInput" rows="3" placeholder="State reason for administrative override (required for audit log)..." style="width:100%; padding:0.6rem; background:rgba(0,0,0,0.4); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px; font-family:inherit;"></textarea>
+        </div>
+        <div id="overrideErrorMsg" style="display:none; color:#ff6b6b; font-size:0.85rem;"></div>
+      </div>
+      <div class="antique-modal-footer">
+        <button type="button" onclick="closeOverrideModal()" style="padding:0.6rem 1.2rem; background:transparent; border:1px solid var(--border-subtle); color:var(--text-secondary); font-family:'Cinzel',serif; border-radius:4px; cursor:pointer;">Cancel</button>
+        <button type="button" onclick="submitOverrideAction()" style="padding:0.6rem 1.5rem; background:#dc3545; border:none; color:#fff; font-family:'Cinzel',serif; font-weight:700; border-radius:4px; cursor:pointer;">Confirm & Log Override</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Private Preview Modal -->
+  <div id="privatePreviewModal" class="antique-modal-overlay" style="display: none;">
+    <div class="antique-modal-card">
+      <div class="antique-modal-header">
+        <h3 class="antique-modal-title">
+          <span>👁️</span> <span id="previewModalCrewHeading">Private Crew Riddle Preview</span>
+        </h3>
+        <button type="button" class="antique-modal-close-btn" onclick="closePreviewModal()">&times;</button>
+      </div>
+      <div class="antique-modal-body" id="previewModalBody">
+        <!-- Rendered by previewTeamChallenge() -->
+      </div>
+      <div class="antique-modal-footer">
+        <button type="button" onclick="closePreviewModal()" style="padding:0.6rem 1.2rem; background:var(--gold-primary); border:none; color:var(--bg-primary); font-family:'Cinzel',serif; font-weight:700; border-radius:4px; cursor:pointer;">Done</button>
+      </div>
+    </div>
+  </div>
+
   <!-- FIXED CTF EXPEDITION TIMER -->
   <div id="ctfTimerDisplay">--:--:--</div>
 
@@ -833,6 +1056,7 @@
         if (typeof fetchAdminChallenges === 'function') fetchAdminChallenges();
         renderAdminRoundControl();
         if (typeof fetchTournamentStatus === 'function') fetchTournamentStatus();
+        if (typeof fetchAdminTournamentData === 'function') fetchAdminTournamentData();
       }
       if (sectionId === 'challenges-section') {
         renderChallenges();
@@ -1489,22 +1713,58 @@
       selectWindowRiddle(category);
     }
 
+    let globalAdminRiddles = {};
+    let globalAdminAssignments = { rounds: {} };
+    let globalAdminRoundState = {};
+    let currentValRound = 1;
+
+    function fetchAdminTournamentData() {
+      fetch('/api/admin/assignments')
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            globalAdminAssignments = data.assignments || { rounds: {} };
+            globalAdminRoundState = data.roundState || {};
+            renderAdminRoundControl();
+            renderAssignmentMatrix();
+          }
+        })
+        .catch(err => console.error("Error fetching assignments:", err));
+
+      fetch('/api/admin/riddle-bank')
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            globalAdminRiddles = data.riddles || {};
+            renderRiddleBank();
+          }
+        })
+        .catch(err => console.error("Error fetching riddle bank:", err));
+    }
+
     function renderAdminRoundControl() {
       const container = document.getElementById('adminRoundsGridContainer');
       if (!container) return;
 
       const roundDefs = [
         { round: 1, title: 'Round 1: Setting Sail', thumb: '/1.png', meta: '10 Crews • 10 Riddles • 0 Eliminations' },
-        { round: 2, title: 'Round 2: High Seas', thumb: '/2.png', meta: '2 Groups of 5 • 6 Riddles • 4 Walk Plank' },
-        { round: 3, title: "Round 3: Dead Man's Creek", thumb: '/3.png', meta: '2 Groups of 3 • 2 Riddles • 4 Walk Plank' },
-        { round: 4, title: 'Round 4: Treasure Island ❌', thumb: '/4.png', meta: '1 v 1 Showdown • 1 Riddle • Final Bounty' }
+        { round: 2, title: 'Round 2: High Seas', thumb: '/2.png', meta: '2 Groups of 5 • 6 Qualifiers • 4 Eliminated' },
+        { round: 3, title: "Round 3: Dead Man's Creek", thumb: '/3.png', meta: '2 Groups of 3 • 2 Finalists • 4 Eliminated' },
+        { round: 4, title: 'Round 4: Treasure Island', thumb: '/4.png', meta: '1 v 1 Final Duel • 1 Grand Champion' }
       ];
 
       container.innerHTML = '';
       roundDefs.forEach(r => {
-        const isUnlocked = unlockedRounds.includes(r.round);
+        const state = globalAdminRoundState[String(r.round)] || { status: 'Locked' };
+        const st = state.status || 'Locked';
+        let badgeClass = 'badge-locked';
+        if (st === 'Live') badgeClass = 'badge-live';
+        else if (st === 'Draft') badgeClass = 'badge-draft';
+        else if (st === 'Ready') badgeClass = 'badge-ready';
+        else if (st === 'Completed') badgeClass = 'badge-completed';
+
         const card = document.createElement('div');
-        card.className = `admin-round-card ${isUnlocked ? 'is-unlocked' : ''}`;
+        card.className = `admin-round-card ${st === 'Live' ? 'is-unlocked' : ''}`;
         card.innerHTML = `
           <div>
             <div class="admin-round-card-header">
@@ -1514,17 +1774,497 @@
                 <div class="admin-round-desc">${escapeHTML(r.meta)}</div>
               </div>
             </div>
-            <div style="margin-top: 10px; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace;">
-              STATUS: <strong style="color: ${isUnlocked ? 'var(--success)' : 'var(--danger)'};">${isUnlocked ? 'CHARTED / OPEN' : 'LOCKED WATERS'}</strong>
+            <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
+              <span class="admin-portal-badge ${badgeClass}">${st}</span>
+              <span style="font-size: 0.75rem; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">
+                ${(state.qualifiers || []).length} Qualifiers
+              </span>
             </div>
           </div>
-          <button type="button" class="admin-round-toggle-btn ${isUnlocked ? 'btn-lock' : 'btn-unlock'}" onclick="toggleRoundLock(${r.round}, ${!isUnlocked})">
-            ${isUnlocked ? 'Lock Waters' : 'Chart & Open Waters'}
-          </button>
+          <div style="display: flex; gap: 8px; margin-top: 12px;">
+            <button type="button" onclick="validateRoundModal(${r.round})" style="flex: 1; padding: 0.5rem; background: rgba(82, 140, 201, 0.15); border: 1px solid #528cc9; color: #8bbcef; font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; border-radius: 4px; cursor: pointer;">
+              📋 Checklist
+            </button>
+            ${st !== 'Live' && st !== 'Completed' ? `
+              <button type="button" onclick="activateRoundAction(${r.round})" style="flex: 1; padding: 0.5rem; background: rgba(46, 213, 115, 0.2); border: 1px solid #2ed573; color: #2ed573; font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; border-radius: 4px; cursor: pointer;">
+                🚀 Activate
+              </button>
+            ` : `
+              <button type="button" disabled style="flex: 1; padding: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); color: var(--text-secondary); font-family: 'Cinzel', serif; font-size: 0.78rem; border-radius: 4px;">
+                ${st === 'Live' ? 'Active Waters' : 'Finished'}
+              </button>
+            `}
+          </div>
         `;
         container.appendChild(card);
       });
     }
+
+    function renderRiddleBank() {
+      const tbody = document.getElementById('riddleBankTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const filter = document.getElementById('riddleBankRoundFilter') ? document.getElementById('riddleBankRoundFilter').value : 'ALL';
+      const keys = Object.keys(globalAdminRiddles);
+
+      if (keys.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary); padding: 1.5rem;">The Riddle Bank is empty. Click "+ New Riddle" to begin creating competition riddles.</td></tr>`;
+        return;
+      }
+
+      let renderedCount = 0;
+      keys.forEach(k => {
+        const rid = globalAdminRiddles[k];
+        if (filter !== 'ALL' && String(rid.targetRound) !== String(filter)) return;
+        renderedCount++;
+
+        const stBadge = rid.status === 'published' ? '<span class="admin-portal-badge badge-live">Published</span>' : '<span class="admin-portal-badge badge-draft">Draft</span>';
+        const ruleText = `Trim: ${rid.answerMatchingRule && rid.answerMatchingRule.trim ? 'Yes' : 'No'} | Case: ${rid.answerMatchingRule && rid.answerMatchingRule.caseSensitive ? 'Exact' : 'Any'}`;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <div style="font-weight: 700; color: var(--gold-primary); font-family: 'Cinzel', serif;">${escapeHTML(rid.title)}</div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">${escapeHTML(rid.id)}</div>
+          </td>
+          <td><span style="font-weight: 700;">Round ${rid.targetRound || 1}</span></td>
+          <td><span style="color: var(--gold-primary); font-weight: 700;">${rid.points || 100}</span></td>
+          <td>${stBadge}</td>
+          <td style="font-size: 0.78rem; color: var(--text-secondary);">${ruleText}</td>
+          <td>
+            <div style="display: flex; gap: 6px;">
+              <button type="button" onclick="openNewRiddleModal('${rid.id}')" style="padding: 4px 8px; background: rgba(201,154,82,0.15); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-size: 0.75rem; border-radius: 3px; cursor: pointer;">Edit</button>
+              <button type="button" onclick="deleteRiddleAction('${rid.id}')" style="padding: 4px 8px; background: rgba(220,53,69,0.15); border: 1px solid #dc3545; color: #ff6b6b; font-size: 0.75rem; border-radius: 3px; cursor: pointer;">Delete</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (renderedCount === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary); padding: 1.5rem;">No riddles found matching the selected round filter.</td></tr>`;
+      }
+    }
+
+    function filterRiddleBank() {
+      renderRiddleBank();
+    }
+
+    function openNewRiddleModal(riddleId) {
+      const modal = document.getElementById('newRiddleModal');
+      const errBox = document.getElementById('riddleModalError');
+      if (errBox) errBox.style.display = 'none';
+
+      if (riddleId && globalAdminRiddles[riddleId]) {
+        const rid = globalAdminRiddles[riddleId];
+        document.getElementById('riddleModalHeading').textContent = 'Edit Expedition Riddle';
+        document.getElementById('riddleModalId').value = rid.id;
+        document.getElementById('riddleModalTitle').value = rid.title || '';
+        document.getElementById('riddleModalText').value = rid.text || '';
+        document.getElementById('riddleModalAnswer').value = rid.expectedAnswer || '';
+        document.getElementById('riddleModalRound').value = String(rid.targetRound || 1);
+        document.getElementById('riddleModalPoints').value = rid.points || 100;
+        document.getElementById('riddleModalStatus').value = rid.status || 'draft';
+        document.getElementById('riddleModalTrim').checked = !!(rid.answerMatchingRule && rid.answerMatchingRule.trim);
+        document.getElementById('riddleModalCase').checked = !!(rid.answerMatchingRule && rid.answerMatchingRule.caseSensitive);
+      } else {
+        document.getElementById('riddleModalHeading').textContent = 'Configure New Riddle';
+        document.getElementById('riddleModalId').value = '';
+        document.getElementById('riddleModalTitle').value = '';
+        document.getElementById('riddleModalText').value = '';
+        document.getElementById('riddleModalAnswer').value = '';
+        document.getElementById('riddleModalRound').value = document.getElementById('riddleBankRoundFilter') ? (document.getElementById('riddleBankRoundFilter').value === 'ALL' ? '1' : document.getElementById('riddleBankRoundFilter').value) : '1';
+        document.getElementById('riddleModalPoints').value = '100';
+        document.getElementById('riddleModalStatus').value = 'draft';
+        document.getElementById('riddleModalTrim').checked = true;
+        document.getElementById('riddleModalCase').checked = false;
+      }
+
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeNewRiddleModal() {
+      const modal = document.getElementById('newRiddleModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function saveRiddleForm() {
+      const id = document.getElementById('riddleModalId').value;
+      const title = document.getElementById('riddleModalTitle').value.trim();
+      const text = document.getElementById('riddleModalText').value.trim();
+      const expectedAnswer = document.getElementById('riddleModalAnswer').value.trim();
+      const targetRound = parseInt(document.getElementById('riddleModalRound').value, 10);
+      const points = parseInt(document.getElementById('riddleModalPoints').value, 10) || 100;
+      const status = document.getElementById('riddleModalStatus').value;
+      const trim = document.getElementById('riddleModalTrim').checked;
+      const caseSensitive = document.getElementById('riddleModalCase').checked;
+      const errBox = document.getElementById('riddleModalError');
+
+      if (!title) {
+        if (errBox) {
+          errBox.textContent = 'Please enter a riddle title or internal reference.';
+          errBox.style.display = 'block';
+        }
+        return;
+      }
+
+      const payload = {
+        title,
+        text,
+        expectedAnswer,
+        targetRound,
+        points,
+        status,
+        answerMatchingRule: { trim, caseSensitive }
+      };
+
+      const url = id ? `/api/admin/riddle-bank/${id}` : '/api/admin/riddle-bank';
+      const method = id ? 'PUT' : 'POST';
+
+      fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) {
+          if (errBox) {
+            errBox.textContent = data.error;
+            errBox.style.display = 'block';
+          }
+        } else {
+          closeNewRiddleModal();
+          fetchAdminTournamentData();
+        }
+      })
+      .catch(err => {
+        if (errBox) {
+          errBox.textContent = err.message;
+          errBox.style.display = 'block';
+        }
+      });
+    }
+
+    function deleteRiddleAction(riddleId) {
+      showCustomConfirm("Delete Riddle?", `Remove ${riddleId} from the Admiralty Riddle Bank?`, false, (confirmed) => {
+        if (!confirmed) return;
+        fetch(`/api/admin/riddle-bank/${riddleId}`, { method: 'DELETE' })
+          .then(r => r.json())
+          .then(data => {
+            if (data.error) {
+              showCustomConfirm("Action Prohibited", data.error, true, null);
+            } else {
+              fetchAdminTournamentData();
+            }
+          })
+          .catch(err => showCustomConfirm("Error", err.message, true, null));
+      });
+    }
+
+    function renderAssignmentMatrix() {
+      const tbody = document.getElementById('assignmentMatrixTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const filter = document.getElementById('matrixRoundFilter') ? document.getElementById('matrixRoundFilter').value : '1';
+      const rKey = String(filter);
+      const roundData = globalAdminAssignments.rounds && globalAdminAssignments.rounds[rKey];
+
+      if (!roundData) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary); padding: 1.5rem;">No assignment blueprint configured for Round ${filter}.</td></tr>`;
+        return;
+      }
+
+      const rows = [];
+      if (filter === '1') {
+        (roundData.slots || []).forEach(slot => {
+          rows.push({
+            teamId: slot.assignedTeamId,
+            group: 'Solo',
+            slotId: slot.slotId,
+            riddleId: slot.riddleId,
+            claimed: slot.claimed,
+            claimedBy: slot.claimedBy
+          });
+        });
+      } else if (filter === '2' || filter === '3') {
+        for (const g of ['A', 'B']) {
+          const grp = roundData.groups && roundData.groups[g];
+          if (grp) {
+            const groupTeams = grp.teams || [];
+            (grp.slots || []).forEach((slot, sIdx) => {
+              const assignedTeam = slot.assignedTeamId || groupTeams[sIdx] || 'Eligible Group ' + g;
+              rows.push({
+                teamId: assignedTeam,
+                group: 'Group ' + g,
+                slotId: slot.slotId,
+                riddleId: slot.riddleId,
+                claimed: slot.claimed,
+                claimedBy: slot.claimedBy
+              });
+            });
+          }
+        }
+      } else if (filter === '4') {
+        (roundData.slots || []).forEach(slot => {
+          rows.push({
+            teamId: slot.assignedTeamId || '2 Finalists',
+            group: 'Final Duel',
+            slotId: slot.slotId,
+            riddleId: slot.riddleId,
+            claimed: slot.claimed,
+            claimedBy: slot.claimedBy
+          });
+        });
+      }
+
+      if (rows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary); padding: 1.5rem;">No slots configured for this round.</td></tr>`;
+        return;
+      }
+
+      rows.forEach(row => {
+        const teamObj = teams.find(t => t.id === row.teamId);
+        const teamName = teamObj ? teamObj.teamName : (row.teamId || 'Unassigned');
+        const ridObj = row.riddleId ? globalAdminRiddles[row.riddleId] : null;
+        const riddleTitle = ridObj ? ridObj.title : (row.riddleId || '<span style="color:#ff6b6b;">⚠️ Unassigned</span>');
+
+        let statusText = '<span style="color:var(--text-secondary);">Unclaimed</span>';
+        if (row.claimed) {
+          const claimTeam = teams.find(t => t.id === row.claimedBy);
+          statusText = `<span style="color:#2ed573; font-weight:700;">Claimed by ${claimTeam ? claimTeam.teamName : row.claimedBy}</span>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong style="color:var(--gold-primary); font-family:'Cinzel',serif;">${escapeHTML(teamName)}</strong></td>
+          <td><span class="badge-group-pill badge-group-a">${escapeHTML(row.group)}</span></td>
+          <td><span style="font-family:'JetBrains Mono',monospace; font-size:0.8rem;">${escapeHTML(row.slotId)}</span></td>
+          <td>${riddleTitle}</td>
+          <td>${statusText}</td>
+          <td>
+            <div style="display:flex; gap:6px;">
+              <button type="button" onclick="previewTeamChallenge('${row.teamId}', ${filter})" style="padding:4px 8px; background:rgba(82,140,201,0.15); border:1px solid #528cc9; color:#8bbcef; font-size:0.75rem; border-radius:3px; cursor:pointer;">Preview</button>
+              <button type="button" onclick="openOverrideModal(${filter}, '${row.slotId}')" style="padding:4px 8px; background:rgba(201,154,82,0.15); border:1px solid var(--gold-primary); color:var(--gold-primary); font-size:0.75rem; border-radius:3px; cursor:pointer;">Override</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function validateRoundModal(roundNum) {
+      currentValRound = parseInt(roundNum, 10) || 1;
+      document.getElementById('valModalHeading').textContent = `Round ${currentValRound} Pre-Launch Checklist`;
+      const container = document.getElementById('valChecklistContainer');
+      const actBtn = document.getElementById('valModalActivateBtn');
+      if (container) container.innerHTML = '<div style="color:var(--text-secondary); text-align:center; padding:1rem;">Verifying expedition waters...</div>';
+
+      fetch('/api/admin/rounds/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ round: currentValRound })
+      })
+      .then(r => r.json())
+      .then(data => {
+        container.innerHTML = '';
+        if (data.valid) {
+          container.innerHTML = `
+            <div class="val-check-item val-check-pass">
+              <span>✅</span>
+              <div>
+                <strong>Pre-Launch Validation Passed!</strong><br />
+                All assigned crews, published riddles, and qualifying slots for Round ${currentValRound} are in proper order. Ready for live fleet activation.
+              </div>
+            </div>
+          `;
+          if (actBtn) {
+            actBtn.disabled = false;
+            actBtn.style.opacity = '1';
+            actBtn.style.cursor = 'pointer';
+          }
+        } else {
+          data.errors.forEach(err => {
+            const item = document.createElement('div');
+            item.className = 'val-check-item val-check-fail';
+            item.innerHTML = `<span>⚠️</span><div>${escapeHTML(err)}</div>`;
+            container.appendChild(item);
+          });
+          if (actBtn) {
+            actBtn.disabled = true;
+            actBtn.style.opacity = '0.5';
+            actBtn.style.cursor = 'not-allowed';
+          }
+        }
+        const modal = document.getElementById('prelaunchValidationModal');
+        if (modal) modal.style.display = 'flex';
+      })
+      .catch(err => {
+        if (container) container.innerHTML = `<div class="val-check-item val-check-fail"><span>⚠️</span><div>${escapeHTML(err.message)}</div></div>`;
+      });
+    }
+
+    function closeValidationModal() {
+      const modal = document.getElementById('prelaunchValidationModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function activateRoundAction(roundNum) {
+      fetch('/api/admin/rounds/activate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ round: roundNum })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) {
+          showCustomConfirm("Activation Blocked", data.error, true, null);
+        } else {
+          closeValidationModal();
+          showCustomConfirm("Waters Opened!", data.message, true, null);
+          fetchAdminTournamentData();
+          if (typeof fetchChallenges === 'function') fetchChallenges();
+        }
+      })
+      .catch(err => showCustomConfirm("Error", err.message, true, null));
+    }
+
+    function openOverrideModal(roundNum, slotId) {
+      document.getElementById('overrideRoundInput').value = roundNum;
+      document.getElementById('overrideSlotIdInput').value = slotId;
+      document.getElementById('overrideSlotDisplay').textContent = `Round ${roundNum} • Slot: ${slotId}`;
+      document.getElementById('overrideReasonInput').value = '';
+      const err = document.getElementById('overrideErrorMsg');
+      if (err) err.style.display = 'none';
+
+      const sel = document.getElementById('overrideRiddleSelect');
+      if (sel) {
+        sel.innerHTML = '<option value="">-- Leave Unassigned --</option>';
+        Object.keys(globalAdminRiddles).forEach(k => {
+          const r = globalAdminRiddles[k];
+          sel.innerHTML += `<option value="${r.id}">${escapeHTML(r.title)} (${r.id}) [R${r.targetRound || 1}]</option>`;
+        });
+      }
+
+      const modal = document.getElementById('auditOverrideModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeOverrideModal() {
+      const modal = document.getElementById('auditOverrideModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function submitOverrideAction() {
+      const round = document.getElementById('overrideRoundInput').value;
+      const slotId = document.getElementById('overrideSlotIdInput').value;
+      const newRiddleId = document.getElementById('overrideRiddleSelect').value;
+      const reason = document.getElementById('overrideReasonInput').value.trim();
+      const err = document.getElementById('overrideErrorMsg');
+
+      if (!reason) {
+        if (err) {
+          err.textContent = 'A detailed reason is strictly required to log this administrative override.';
+          err.style.display = 'block';
+        }
+        return;
+      }
+
+      fetch('/api/admin/assignments/override', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ round, slotId, newRiddleId, reason })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) {
+          if (err) {
+            err.textContent = data.error;
+            err.style.display = 'block';
+          }
+        } else {
+          closeOverrideModal();
+          showCustomConfirm("Override Logged", data.message, true, null);
+          fetchAdminTournamentData();
+        }
+      })
+      .catch(e => {
+        if (err) {
+          err.textContent = e.message;
+          err.style.display = 'block';
+        }
+      });
+    }
+
+    function previewTeamChallenge(teamId, roundNum) {
+      const teamObj = teams.find(t => t.id === teamId);
+      const teamName = teamObj ? teamObj.teamName : teamId;
+      document.getElementById('previewModalCrewHeading').textContent = `Private Preview for Crew: ${teamName}`;
+      const body = document.getElementById('previewModalBody');
+
+      // Find slot
+      const rKey = String(roundNum);
+      const roundData = globalAdminAssignments.rounds && globalAdminAssignments.rounds[rKey];
+      let assignedRiddleId = null;
+
+      const slot = filterSlotTeam(roundData, roundNum, teamId);
+      if (slot) {
+        assignedRiddleId = slot.riddleId;
+      }
+
+      const rid = assignedRiddleId ? globalAdminRiddles[assignedRiddleId] : null;
+
+      if (!rid) {
+        body.innerHTML = `
+          <div style="text-align:center; padding:1.5rem; color:var(--text-secondary);">
+            <div style="font-size:2rem; margin-bottom:8px;">🗺️</div>
+            <h4 style="font-family:'Cinzel',serif; color:var(--gold-primary); margin:0 0 6px 0;">Waters Uncharted</h4>
+            <p>No published riddle has been bound to this crew in Round ${roundNum}.</p>
+          </div>
+        `;
+      } else {
+        body.innerHTML = `
+          <div style="background:rgba(23,17,12,0.95); border:1px solid var(--gold-primary); padding:1.25rem; border-radius:4px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span class="admin-portal-badge badge-live">ROUND ${roundNum} ACTIVE RIDDLE</span>
+              <span style="color:var(--gold-primary); font-weight:700;">${rid.points || 100} PTS</span>
+            </div>
+            <h3 style="margin:0 0 8px 0; font-family:'Cinzel',serif; color:var(--gold-primary);">${escapeHTML(rid.title)}</h3>
+            <div style="font-size:0.9rem; line-height:1.6; color:var(--text-primary); margin-bottom:1rem; padding:10px; background:rgba(0,0,0,0.3); border-radius:4px;">
+              ${escapeHTML(rid.text || 'Physical field clue location...')}
+            </div>
+            <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:6px;">Expected Flag Format:</div>
+            <input type="text" disabled placeholder="lostcode{salvaged_flag}" style="width:100%; padding:0.6rem; background:rgba(0,0,0,0.5); border:1px solid var(--border-subtle); color:var(--text-secondary); border-radius:4px;" />
+          </div>
+        `;
+      }
+
+      const modal = document.getElementById('privatePreviewModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function filterSlotTeam(roundData, roundNum, teamId) {
+      if (!roundData) return null;
+      if (roundNum === 1) return (roundData.slots || []).find(s => s.assignedTeamId === teamId) || null;
+      if (roundNum === 2 || roundNum === 3) {
+        for (const g of ['A', 'B']) {
+          const grp = roundData.groups && roundData.groups[g];
+          if (grp && (grp.teams || []).includes(teamId)) {
+            return (grp.slots || []).find(s => s.assignedTeamId === teamId) || (grp.slots || [])[0] || null;
+          }
+        }
+      }
+      if (roundNum === 4) return (roundData.slots || [])[0] || null;
+      return null;
+    }
+
+    function closePreviewModal() {
+      const modal = document.getElementById('privatePreviewModal');
+      if (modal) modal.style.display = 'none';
+    }
+
 
     function toggleRoundLock(roundNum, unlocked) {
       fetch('/api/admin/rounds/toggle', {
@@ -2491,6 +3231,7 @@
       // Initial tournament fetch for admins
       if (window.isAdminUser) {
         fetchTournamentStatus();
+        fetchAdminTournamentData();
       }
 
       // Sockets
