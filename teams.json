@@ -6,7 +6,28 @@
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
-    "scoreHistory": []
+    "scoreHistory": [
+      {
+        "timestamp": 1792915977813,
+        "score": 0
+      }
+    ],
+    "currentRound": 1,
+    "unlockedRounds": [
+      1
+    ],
+    "allocatedRiddles": {
+      "1": null,
+      "2": null,
+      "3": null,
+      "4": null
+    },
+    "roundSolves": {},
+    "eliminated": false,
+    "eliminatedRound": null,
+    "eliminatedReason": null,
+    "isWinner": false,
+    "violations": 0
   },
   {
     "id": "crew_1_buccaneers",
@@ -18,7 +39,7 @@
     "hintsUnlocked": {},
     "scoreHistory": [
       {
-        "timestamp": 1792915578849,
+        "timestamp": 1792915977813,
         "score": 0
       }
     ],
@@ -27,17 +48,19 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "Round 1 - Riddle 1: The Forged Manifest",
-      "2": "Round 2 - Riddle 1: The Governor's Vault",
-      "3": "Round 3 - Riddle 1: Sunken Registers",
-      "4": "Round 4 - Riddle 1: Walk the Plank"
+      "1": null,
+      "2": null,
+      "3": null,
+      "4": null
     },
     "groupRound2": "A",
     "groupRound3": "A",
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "violations": 0
   },
   {
     "id": "crew_2_cutthroats",
@@ -49,7 +72,7 @@
     "hintsUnlocked": {},
     "scoreHistory": [
       {
-        "timestamp": 1792915579132,
+        "timestamp": 1792915977813,
         "score": 0
       }
     ],
@@ -58,17 +81,19 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "Round 1 - Riddle 2: Follow the Trail",
-      "2": "Round 2 - Riddle 2: The Caribbean Log",
-      "3": "Round 3 - Riddle 2: Ghost Mechanism",
-      "4": "Round 4 - Riddle 1: Walk the Plank"
+      "1": null,
+      "2": null,
+      "3": null,
+      "4": null
     },
     "groupRound2": "B",
     "groupRound3": "B",
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "violations": 0
   },
   {
     "id": "crew_3_corsairs",
@@ -80,7 +105,7 @@
     "hintsUnlocked": {},
     "scoreHistory": [
       {
-        "timestamp": 1792915579281,
+        "timestamp": 1792915977813,
         "score": 0
       }
     ],
@@ -89,17 +114,19 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "Round 1 - Riddle 3: Message in a Bottle",
-      "2": "Round 2 - Riddle 3: Siren's Call",
-      "3": "Round 3 - Riddle 1: Sunken Registers",
-      "4": "Round 4 - Riddle 1: Walk the Plank"
+      "1": null,
+      "2": null,
+      "3": null,
+      "4": null
     },
     "groupRound2": "A",
     "groupRound3": "A",
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "violations": 0
   },
   {
     "id": "crew_4_krakens",
@@ -111,7 +138,7 @@
     "hintsUnlocked": {},
     "scoreHistory": [
       {
-        "timestamp": 1792915579426,
+        "timestamp": 1792915977813,
         "score": 0
       }
     ],
@@ -120,17 +147,19 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "Round 1 - Riddle 4: Dead Man's Switch",
-      "2": "Round 2 - Riddle 4: Cipher Chest",
-      "3": "Round 3 - Riddle 2: Ghost Mechanism",
-      "4": "Round 4 - Riddle 1: Walk the Plank"
+      "1": null,
+      "2": null,
+      "3": null,
+      "4": null
     },
     "groupRound2": "B",
     "groupRound3": "B",
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "violations": 0
   },
   {
     "id": "crew_5_scallywags",
@@ -142,7 +171,7 @@
     "hintsUnlocked": {},
     "scoreHistory": [
       {
-        "timestamp": 1792915579581,
+        "timestamp": 1792915977813,
         "score": 0
       }
     ],
@@ -151,17 +180,19 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "Round 1 - Riddle 5: The Bovine Cipher",
-      "2": "Round 2 - Riddle 5: Port Royal Infiltration",
-      "3": "Round 3 - Riddle 1: Sunken Registers",
-      "4": "Round 4 - Riddle 1: Walk the Plank"
+      "1": null,
+      "2": null,
+      "3": null,
+      "4": null
     },
     "groupRound2": "A",
     "groupRound3": "A",
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "violations": 0
   },
   {
     "id": "crew_6_privateers",
@@ -173,7 +204,7 @@
     "hintsUnlocked": {},
     "scoreHistory": [
       {
-        "timestamp": 1792915579789,
+        "timestamp": 1792915977813,
         "score": 0
       }
     ],
@@ -182,17 +213,19 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "Round 1 - Riddle 6: Sailor's Compass",
-      "2": "Round 2 - Riddle 6: Blackbeard's Logbook",
-      "3": "Round 3 - Riddle 2: Ghost Mechanism",
-      "4": "Round 4 - Riddle 1: Walk the Plank"
+      "1": null,
+      "2": null,
+      "3": null,
+      "4": null
     },
     "groupRound2": "B",
     "groupRound3": "B",
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "violations": 0
   },
   {
     "id": "crew_7_blackflags",
@@ -204,7 +237,7 @@
     "hintsUnlocked": {},
     "scoreHistory": [
       {
-        "timestamp": 1792915580070,
+        "timestamp": 1792915977813,
         "score": 0
       }
     ],
@@ -213,17 +246,19 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "Round 1 - Riddle 7: Ghost Signal",
-      "2": "Round 2 - Riddle 1: The Governor's Vault",
-      "3": "Round 3 - Riddle 1: Sunken Registers",
-      "4": "Round 4 - Riddle 1: Walk the Plank"
+      "1": null,
+      "2": null,
+      "3": null,
+      "4": null
     },
     "groupRound2": "A",
     "groupRound3": "A",
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "violations": 0
   },
   {
     "id": "crew_8_plunderers",
@@ -235,7 +270,7 @@
     "hintsUnlocked": {},
     "scoreHistory": [
       {
-        "timestamp": 1792915580217,
+        "timestamp": 1792915977813,
         "score": 0
       }
     ],
@@ -244,17 +279,19 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "Round 1 - Riddle 8: The Quarterdeck",
-      "2": "Round 2 - Riddle 2: The Caribbean Log",
-      "3": "Round 3 - Riddle 2: Ghost Mechanism",
-      "4": "Round 4 - Riddle 1: Walk the Plank"
+      "1": null,
+      "2": null,
+      "3": null,
+      "4": null
     },
     "groupRound2": "B",
     "groupRound3": "B",
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "violations": 0
   },
   {
     "id": "crew_9_dreadsails",
@@ -266,7 +303,7 @@
     "hintsUnlocked": {},
     "scoreHistory": [
       {
-        "timestamp": 1792915580427,
+        "timestamp": 1792915977813,
         "score": 0
       }
     ],
@@ -275,17 +312,19 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "Round 1 - Riddle 9: Smuggler's Cask",
-      "2": "Round 2 - Riddle 3: Siren's Call",
-      "3": "Round 3 - Riddle 1: Sunken Registers",
-      "4": "Round 4 - Riddle 1: Walk the Plank"
+      "1": null,
+      "2": null,
+      "3": null,
+      "4": null
     },
     "groupRound2": "A",
     "groupRound3": "A",
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "violations": 0
   },
   {
     "id": "crew_10_searavens",
@@ -297,7 +336,7 @@
     "hintsUnlocked": {},
     "scoreHistory": [
       {
-        "timestamp": 1792915580663,
+        "timestamp": 1792915977813,
         "score": 0
       }
     ],
@@ -306,16 +345,18 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "Round 1 - Riddle 10: Kraken's Cipher",
-      "2": "Round 2 - Riddle 4: Cipher Chest",
-      "3": "Round 3 - Riddle 2: Ghost Mechanism",
-      "4": "Round 4 - Riddle 1: Walk the Plank"
+      "1": null,
+      "2": null,
+      "3": null,
+      "4": null
     },
     "groupRound2": "B",
     "groupRound3": "B",
     "eliminated": false,
     "eliminatedRound": null,
     "eliminatedReason": null,
-    "roundSolves": {}
+    "roundSolves": {},
+    "isWinner": false,
+    "violations": 0
   }
 ]

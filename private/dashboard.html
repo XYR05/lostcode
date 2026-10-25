@@ -419,7 +419,7 @@
           <option value="4">Tournament Round: Round 4: Treasure Island (1 Riddle)</option>
         </select>
         <div id="adminTextContainer" style="width: 100%; max-width: 500px;">
-          <input type="text" id="adminTextInput" placeholder="Challenge Text / Brief (Round 1 only)" style="width: 100%; text-align: center;">
+          <input type="text" id="adminTextInput" placeholder="Challenge Text / Physical Field Clue Location (Optional)" style="width: 100%; text-align: center;">
         </div>
         <input type="text" id="adminFlagInput" placeholder="Flag (will be hashed automatically)" style="width: 100%; max-width: 500px; text-align: center;">
         <select id="adminDiffInput" style="padding:0.75rem 1.25rem; border:1px solid var(--gold-primary); background:var(--panel-bg); color:var(--gold-primary); width: 100%; max-width: 500px; text-align: center; cursor: pointer; outline: none; font-weight: bold; font-family:'Cinzel', serif;">
@@ -1279,8 +1279,39 @@
         });
 
       if (roundCategories.length === 0) {
-        showToast(`Arr! No riddles charted yet for Round ${roundNum}.`);
-        closeChallengeWindow();
+        // Graceful Uncharted Island empty state inside the floating window
+        const titleEl = document.getElementById('windowChallengeTitle');
+        if (titleEl) titleEl.textContent = "Uncharted Waters";
+        const subEl = document.getElementById('windowChallengeSubtitle');
+        if (subEl) subEl.textContent = `ROUND ${roundNum}: AWAITING ADMIRALTY RIDDLES`;
+        const briefSec = document.getElementById('windowCaptainBriefSection');
+        const briefDesc = document.getElementById('windowChallengeDescription');
+        if (briefSec && briefDesc) {
+          briefSec.style.display = 'block';
+          briefDesc.textContent = `No expedition riddles charted yet for Island ${roundNum}. The Admiralty has not yet released the challenges for this round.`;
+        }
+        const hintBox = document.getElementById('windowHintBox');
+        if (hintBox) hintBox.style.display = 'none';
+        const strip = document.getElementById('windowRiddleSelectorStrip');
+        if (strip) strip.style.display = 'none';
+        const flagInput = document.getElementById('windowFlagInput');
+        const submitBtn = document.getElementById('windowSubmitFlagBtn');
+        const flagResult = document.getElementById('windowFlagResult');
+        if (flagInput) {
+          flagInput.value = '';
+          flagInput.placeholder = 'Island uncharted — No challenges active';
+          flagInput.disabled = true;
+        }
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'UNCHARTED';
+          submitBtn.style.opacity = '0.5';
+          submitBtn.style.cursor = 'not-allowed';
+        }
+        if (flagResult) {
+          flagResult.textContent = 'Awaiting challenge configuration by the Admiralty.';
+          flagResult.style.color = 'var(--gold-muted)';
+        }
         return;
       }
 
@@ -1820,17 +1851,8 @@
     // ADMIN ACTIONS
     // ======================================================
     function syncAdminRoundFields() {
-      const roundInput = document.getElementById('adminRoundInput');
       const textContainer = document.getElementById('adminTextContainer');
-      const textInput = document.getElementById('adminTextInput');
-      if (!roundInput) return;
-      const roundVal = roundInput.value;
-      if (roundVal === '1') {
-        if (textContainer) textContainer.style.display = 'block';
-      } else {
-        if (textContainer) textContainer.style.display = 'none';
-        if (textInput) textInput.value = '';
-      }
+      if (textContainer) textContainer.style.display = 'block';
     }
 
     function editChallenge(category) {
@@ -1915,18 +1937,16 @@
           const subtitle = document.getElementById('adminSubtitleInput').value;
           const round = document.getElementById('adminRoundInput') ? document.getElementById('adminRoundInput').value : '1';
           const roundNum = parseInt(round, 10) || 1;
-          const text = roundNum === 1 ? document.getElementById('adminTextInput').value : '';
+          const text = document.getElementById('adminTextInput') ? document.getElementById('adminTextInput').value : '';
           const flag = document.getElementById('adminFlagInput').value;
           const points = document.getElementById('adminPointsInput').value;
           const difficulty = document.getElementById('adminDiffInput').value;
           const hint = document.getElementById('adminHintInput').value;
           const msg = document.getElementById('adminMsg');
 
-          if (!category || (roundNum === 1 && !text) || !flag || !points) {
+          if (!category || !flag || !points) {
             msg.style.color = 'var(--danger)';
-            msg.textContent = roundNum === 1 
-              ? 'All fields (Category, Text, Flag, Points) are required.'
-              : 'All fields (Category, Flag, Points) are required.';
+            msg.textContent = 'All required fields (Category, Flag, Points) must be filled.';
             return;
           }
 

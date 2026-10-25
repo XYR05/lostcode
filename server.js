@@ -435,10 +435,8 @@ app.post('/api/admin/challenges', isAdmin, upload.single('resource'), (req, res)
   }
   
   const roundNum = parseInt(round, 10) || (flagsData[category] && flagsData[category].round) || 1;
-  if (!category || (roundNum === 1 && !text) || !flag || !points) {
-    return res.status(400).json({ error: roundNum === 1 
-      ? 'All fields (Category, Text, Flag, Points) are required.' 
-      : 'All fields (Category, Flag, Points) are required.' });
+  if (!category || !flag || !points) {
+    return res.status(400).json({ error: 'All required fields (Category, Flag, Points) must be provided.' });
   }
   
   let oldPoints = null;
@@ -449,7 +447,7 @@ app.post('/api/admin/challenges', isAdmin, upload.single('resource'), (req, res)
   }
   
   const newPoints = parseInt(points) || 500;
-  flagsData[category].text = roundNum === 1 ? (text || "") : "";
+  flagsData[category].text = text || "";
   flagsData[category].subtitle = subtitle || flagsData[category].subtitle || "";
   flagsData[category].points = newPoints;
   flagsData[category].difficulty = difficulty || "EASY";
