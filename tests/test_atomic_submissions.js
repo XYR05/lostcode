@@ -46,6 +46,9 @@ async function runTests() {
     assignments.rounds['2'].groups.A.slots[0].riddleId = 'riddle_r2_ga_s1';
     assignments.rounds['2'].groups.A.slots[0].claimed = false;
     assignments.rounds['2'].groups.A.slots[0].claimedBy = null;
+    assignments.rounds['2'].groups.A.slots[0].eligibleTeams = ['crew_1_buccaneers', 'crew_3_corsairs'];
+    assignments.rounds['2'].groups.A.slots[1].eligibleTeams = ['crew_5_scallywags'];
+    assignments.rounds['2'].groups.A.slots[2].eligibleTeams = ['crew_7_blackflags', 'crew_9_dreadsails'];
     saveTournamentAssignments(assignments);
 
     const roundState = getRoundState();

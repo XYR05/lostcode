@@ -138,9 +138,20 @@ function findTeamSlotInRound(assignments, roundNum, teamId) {
       const group = groups[gKey];
       if (group && Array.isArray(group.teams) && group.teams.includes(teamId)) {
         const slots = group.slots || [];
-        const slot = slots.find(s => s.assignedTeamId === teamId) ||
-                     slots.find(s => Array.isArray(s.eligibleTeams) && s.eligibleTeams.includes(teamId)) ||
-                     slots[0] || null;
+        // 1. Explicit team assignment
+        let slot = slots.find(s => s.assignedTeamId === teamId);
+        // 2. If no explicit assignedTeamId, find first unclaimed slot team is eligible for
+        if (!slot) {
+          slot = slots.find(s => Array.isArray(s.eligibleTeams) && s.eligibleTeams.includes(teamId) && !s.claimed);
+        }
+        // 3. Fallback to any slot team is eligible for (even if claimed)
+        if (!slot) {
+          slot = slots.find(s => Array.isArray(s.eligibleTeams) && s.eligibleTeams.includes(teamId));
+        }
+        // 4. Fallback to first slot
+        if (!slot) {
+          slot = slots[0] || null;
+        }
         if (slot) {
           return { ...slot, groupId: gKey };
         }
@@ -1977,6 +1988,7 @@ module.exports = {
   app,
   server,
   io,
+  teams,
   atomicWriteJsonSync,
   getRiddleBank,
   saveRiddleBank,
