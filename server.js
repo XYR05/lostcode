@@ -259,6 +259,177 @@ app.get('/api/team/challenge', (req, res) => {
   });
 });
 
+// -----------------------
+// Authoritative Concurrency-Safe Submission & Slot Claiming Engine
+// -----------------------
+function checkAnswerMatch(submitted, expected, rule) {
+  if (!submitted || !expected) return false;
+  let s = String(submitted);
+  let e = String(expected);
+  const trim = (rule && rule.trim !== undefined) ? rule.trim : true;
+  const caseSensitive = (rule && rule.caseSensitive !== undefined) ? rule.caseSensitive : false;
+  
+  if (trim) {
+    s = s.trim();
+    e = e.trim();
+  }
+  if (!caseSensitive) {
+    s = s.toLowerCase();
+    e = e.toLowerCase();
+  }
+  return s === e;
+}
+
+app.post('/api/team/submit', (req, res) => {
+  const team = getCurrentTeam(req);
+  if (!team) {
+    return res.status(401).json({ error: 'Authentication required. Please board your ship.' });
+  }
+
+  const { answer, round } = req.body || {};
+  if (!answer || typeof answer !== 'string' || !answer.trim()) {
+    return res.status(400).json({ error: 'Flag or answer cannot be empty.' });
+  }
+
+  if (team.eliminated) {
+    return res.status(403).json({
+      error: `Your crew was marooned in Round ${team.eliminatedRound || 'previous'} and cannot submit flags.`
+    });
+  }
+
+  const requestedRound = parseInt(round, 10);
+  const roundNum = (!isNaN(requestedRound) && requestedRound >= 1 && requestedRound <= 4)
+    ? requestedRound
+    : (team.currentRound || 1);
+
+  const roundState = getRoundState();
+  const currentRoundState = roundState[String(roundNum)];
+  if (!currentRoundState || currentRoundState.status !== 'Live') {
+    return res.status(400).json({
+      error: `Round ${roundNum} is not currently Live (Status: ${currentRoundState?.status || 'Locked'}).`
+    });
+  }
+
+  if (Array.isArray(currentRoundState.qualifiers) && currentRoundState.qualifiers.includes(team.id)) {
+    return res.status(400).json({
+      error: `Your crew has already secured qualification for Round ${roundNum}!`
+    });
+  }
+
+  const assignments = getTournamentAssignments();
+  const slot = findTeamSlotInRound(assignments, roundNum, team.id);
+  if (!slot || !slot.riddleId) {
+    return res.status(400).json({ error: 'No active riddle assigned to your crew in this round.' });
+  }
+
+  const riddleBank = getRiddleBank();
+  const riddle = riddleBank[slot.riddleId];
+  if (!riddle || riddle.status !== 'published') {
+    return res.status(400).json({ error: 'Riddle is not published for competition.' });
+  }
+
+  // Answer matching check
+  const isMatch = checkAnswerMatch(answer, riddle.expectedAnswer, riddle.answerMatchingRule);
+  if (!isMatch) {
+    return res.json({
+      success: false,
+      message: 'Avast! That flag be incorrect. Check your coordinates and try again.',
+      qualified: false
+    });
+  }
+
+  // Check atomic slot claim
+  if (slot.claimed) {
+    return res.json({
+      success: false,
+      message: `Treasure claimed! Another crew claimed this slot seconds before ye.`,
+      qualified: false
+    });
+  }
+
+  // Synchronously claim slot
+  const claimTime = new Date().toISOString();
+  slot.claimed = true;
+  slot.claimedBy = team.id;
+  slot.claimedAt = claimTime;
+
+  // Persist into assignments blueprint
+  if (roundNum === 1) {
+    const target = assignments.rounds['1'].slots.find(s => s.slotId === slot.slotId);
+    if (target) { target.claimed = true; target.claimedBy = team.id; target.claimedAt = claimTime; }
+  } else if (roundNum === 2 || roundNum === 3) {
+    const grp = assignments.rounds[String(roundNum)].groups[slot.groupId];
+    if (grp) {
+      const target = grp.slots.find(s => s.slotId === slot.slotId);
+      if (target) { target.claimed = true; target.claimedBy = team.id; target.claimedAt = claimTime; }
+    }
+  } else if (roundNum === 4) {
+    const target = assignments.rounds['4'].slots.find(s => s.slotId === slot.slotId);
+    if (target) { target.claimed = true; target.claimedBy = team.id; target.claimedAt = claimTime; }
+  }
+  saveTournamentAssignments(assignments);
+
+  // Update round state qualifiers
+  if (!Array.isArray(currentRoundState.qualifiers)) {
+    currentRoundState.qualifiers = [];
+  }
+  if (!currentRoundState.qualifiers.includes(team.id)) {
+    currentRoundState.qualifiers.push(team.id);
+  }
+
+  let isWinner = false;
+  if (roundNum === 4) {
+    isWinner = true;
+    team.isWinner = true;
+    team.wonAt = claimTime;
+    currentRoundState.winner = team.id;
+    currentRoundState.status = 'Completed';
+  }
+  saveRoundState(roundState);
+
+  // Update team score & solved list
+  const pointsAwarded = riddle.points || 100;
+  team.score = (team.score || 0) + pointsAwarded;
+  if (!Array.isArray(team.scoreHistory)) team.scoreHistory = [];
+  team.scoreHistory.push({
+    time: new Date().toLocaleTimeString(),
+    score: team.score,
+    challengeKey: riddle.id,
+    round: roundNum
+  });
+  if (!Array.isArray(team.solvedChallenges)) team.solvedChallenges = [];
+  if (!team.solvedChallenges.includes(riddle.id)) {
+    team.solvedChallenges.push(riddle.id);
+  }
+  if (!team.roundSolves) team.roundSolves = {};
+  team.roundSolves[String(roundNum)] = slot.slotId;
+
+  fs.writeFileSync(path.join(__dirname, 'teams.json'), JSON.stringify(teams, null, 2));
+
+  // Real-time broadcasts
+  io.emit('tournament:slot_claimed', {
+    round: roundNum,
+    slotId: slot.slotId,
+    teamId: team.id,
+    teamName: team.teamName,
+    claimedAt: claimTime
+  });
+  io.emit('teamsUpdate');
+  io.emit('scoreboardUpdate');
+
+  return res.json({
+    success: true,
+    message: isWinner
+      ? '🏆 VICTORY! Your crew has solved the final riddle and won the Lost Code Championship!'
+      : `⚓ Treasure secured! Qualification claimed for Round ${roundNum}!`,
+    qualified: true,
+    isWinner,
+    slotId: slot.slotId,
+    pointsAwarded
+  });
+});
+
+
 
 
 app.get('/api/config', (req, res) => {

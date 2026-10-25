@@ -11,7 +11,13 @@ async function runTests() {
   const port = server.address().port;
   const baseUrl = `http://localhost:${port}`;
 
+  // Backup initial states BEFORE any mutations
+  const initialRiddleBank = JSON.parse(JSON.stringify(getRiddleBank()));
+  const initialAssignments = JSON.parse(JSON.stringify(getTournamentAssignments()));
+  const initialRoundState = JSON.parse(JSON.stringify(getRoundState()));
+
   // Seed two test published riddles
+
   const riddleBank = getRiddleBank();
   riddleBank['test_r1_buccaneers'] = {
     id: 'test_r1_buccaneers',
@@ -47,11 +53,6 @@ async function runTests() {
   const roundState = getRoundState();
   roundState['1'].status = 'Live';
   saveRoundState(roundState);
-
-  // Backup initial states
-  const initialRiddleBank = JSON.parse(JSON.stringify(getRiddleBank()));
-  const initialAssignments = JSON.parse(JSON.stringify(getTournamentAssignments()));
-  const initialRoundState = JSON.parse(JSON.stringify(getRoundState()));
 
   try {
     // 1. Unauthenticated request must be rejected
