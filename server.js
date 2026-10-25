@@ -50,6 +50,79 @@ if (!Array.isArray(ctfConfig.unlockedRounds)) {
   ctfConfig.unlockedRounds = [1];
 }
 
+// -----------------------
+// Tournament Engine Persistence Helpers
+// -----------------------
+const riddleBankFilePath = path.join(__dirname, 'private', 'riddle_bank.json');
+const tournamentAssignmentsFilePath = path.join(__dirname, 'private', 'tournament_assignments.json');
+const roundStateFilePath = path.join(__dirname, 'private', 'round_state.json');
+const auditLogFilePath = path.join(__dirname, 'private', 'audit_log.json');
+
+function atomicWriteJsonSync(filePath, data) {
+  const tmpPath = `${filePath}.${Date.now()}.${Math.random().toString(36).substring(2, 8)}.tmp`;
+  fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2), 'utf8');
+  fs.renameSync(tmpPath, filePath);
+}
+
+function getRiddleBank() {
+  if (!fs.existsSync(riddleBankFilePath)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(riddleBankFilePath, 'utf8'));
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveRiddleBank(data) {
+  atomicWriteJsonSync(riddleBankFilePath, data);
+}
+
+function getTournamentAssignments() {
+  if (!fs.existsSync(tournamentAssignmentsFilePath)) return { rounds: {} };
+  try {
+    return JSON.parse(fs.readFileSync(tournamentAssignmentsFilePath, 'utf8'));
+  } catch (e) {
+    return { rounds: {} };
+  }
+}
+
+function saveTournamentAssignments(data) {
+  atomicWriteJsonSync(tournamentAssignmentsFilePath, data);
+}
+
+function getRoundState() {
+  if (!fs.existsSync(roundStateFilePath)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(roundStateFilePath, 'utf8'));
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveRoundState(data) {
+  atomicWriteJsonSync(roundStateFilePath, data);
+}
+
+function logAuditEvent(event) {
+  let log = [];
+  if (fs.existsSync(auditLogFilePath)) {
+    try {
+      log = JSON.parse(fs.readFileSync(auditLogFilePath, 'utf8'));
+    } catch (e) {
+      log = [];
+    }
+  }
+  const entry = {
+    id: `audit_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    timestamp: new Date().toISOString(),
+    ...event
+  };
+  log.unshift(entry);
+  atomicWriteJsonSync(auditLogFilePath, log);
+  return entry;
+}
+
+
 app.get('/api/config', (req, res) => {
   res.json({
     ctfStartTime: ctfConfig.ctfStartTime,
@@ -1143,6 +1216,23 @@ server.on('error', (err) => {
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  server.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = {
+  app,
+  server,
+  io,
+  atomicWriteJsonSync,
+  getRiddleBank,
+  saveRiddleBank,
+  getTournamentAssignments,
+  saveTournamentAssignments,
+  getRoundState,
+  saveRoundState,
+  logAuditEvent
+};
+

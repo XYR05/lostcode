@@ -1,6 +1,9 @@
 # Ignore temporary node scripts created by AI
 *.js
 !server.js
+!tests/**/*.js
+!tests/*.js
+
 
 # Ignore dynamically updated database files
 teams.json
