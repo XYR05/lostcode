@@ -121,10 +121,10 @@
       <div class="map-island-station" id="mapIsland1" onclick="openRoundIsland(1)" title="Round 1: Setting Sail">
         <img src="/1.png" alt="Round 1: Setting Sail" class="island-sprite" />
         <div class="island-lock-accent" aria-label="Locked Round">
-          <svg class="svg-padlock-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            <circle cx="12" cy="16" r="1.5"></circle>
+          <svg class="svg-padlock-icon" viewBox="0 0 260 260">
+            <circle cx="130" cy="130" r="97.5" fill="rgba(24, 18, 13, 0.94)" stroke="currentColor" stroke-width="14" />
+            <path d="M103.5 118 V94 A26.5 26.5 0 0 1 156.5 94 V118" stroke="currentColor" stroke-width="15" stroke-linecap="square" />
+            <rect x="85" y="113" width="90" height="78" rx="8" ry="8" fill="currentColor" />
           </svg>
         </div>
         <div class="island-banner" id="islandBanner1">
@@ -140,10 +140,10 @@
       <div class="map-island-station" id="mapIsland2" onclick="openRoundIsland(2)" title="Round 2: High Seas">
         <img src="/2.png" alt="Round 2: High Seas" class="island-sprite" />
         <div class="island-lock-accent" aria-label="Locked Round">
-          <svg class="svg-padlock-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            <circle cx="12" cy="16" r="1.5"></circle>
+          <svg class="svg-padlock-icon" viewBox="0 0 260 260">
+            <circle cx="130" cy="130" r="97.5" fill="rgba(24, 18, 13, 0.94)" stroke="currentColor" stroke-width="14" />
+            <path d="M103.5 118 V94 A26.5 26.5 0 0 1 156.5 94 V118" stroke="currentColor" stroke-width="15" stroke-linecap="square" />
+            <rect x="85" y="113" width="90" height="78" rx="8" ry="8" fill="currentColor" />
           </svg>
         </div>
         <div class="island-banner" id="islandBanner2">
@@ -159,10 +159,10 @@
       <div class="map-island-station" id="mapIsland3" onclick="openRoundIsland(3)" title="Round 3: Dead Man's Creek">
         <img src="/3.png" alt="Round 3: Dead Man's Creek" class="island-sprite" />
         <div class="island-lock-accent" aria-label="Locked Round">
-          <svg class="svg-padlock-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            <circle cx="12" cy="16" r="1.5"></circle>
+          <svg class="svg-padlock-icon" viewBox="0 0 260 260">
+            <circle cx="130" cy="130" r="97.5" fill="rgba(24, 18, 13, 0.94)" stroke="currentColor" stroke-width="14" />
+            <path d="M103.5 118 V94 A26.5 26.5 0 0 1 156.5 94 V118" stroke="currentColor" stroke-width="15" stroke-linecap="square" />
+            <rect x="85" y="113" width="90" height="78" rx="8" ry="8" fill="currentColor" />
           </svg>
         </div>
         <div class="island-banner" id="islandBanner3">
@@ -178,10 +178,10 @@
       <div class="map-island-station final-treasure-island" id="mapIsland4" onclick="openRoundIsland(4)" title="Round 4: Treasure Island ❌">
         <img src="/4.png" alt="Round 4: Treasure Island" class="island-sprite" />
         <div class="island-lock-accent" aria-label="Locked Round">
-          <svg class="svg-padlock-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            <circle cx="12" cy="16" r="1.5"></circle>
+          <svg class="svg-padlock-icon" viewBox="0 0 260 260">
+            <circle cx="130" cy="130" r="97.5" fill="rgba(24, 18, 13, 0.94)" stroke="currentColor" stroke-width="14" />
+            <path d="M103.5 118 V94 A26.5 26.5 0 0 1 156.5 94 V118" stroke="currentColor" stroke-width="15" stroke-linecap="square" />
+            <rect x="85" y="113" width="90" height="78" rx="8" ry="8" fill="currentColor" />
           </svg>
         </div>
         <div class="island-banner" id="islandBanner4">
@@ -216,10 +216,11 @@
 
         <!-- Locked Island View (displayed when clicking a locked island) -->
         <div class="window-locked-card" id="windowLockedCard" style="display: none;">
-          <div style="margin-bottom: 0.75rem;">
-            <svg class="svg-padlock-icon" style="width: 38px; height: 38px; color: var(--gold-muted);" viewBox="0 0 24 24">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          <div style="margin-bottom: 0.75rem; display: flex; justify-content: center;">
+            <svg class="svg-padlock-icon" style="width: 52px; height: 52px; color: var(--gold-primary); filter: drop-shadow(0 0 12px rgba(201,154,82,0.55));" viewBox="0 0 260 260">
+              <circle cx="130" cy="130" r="97.5" fill="rgba(24, 18, 13, 0.94)" stroke="currentColor" stroke-width="14" />
+              <path d="M103.5 118 V94 A26.5 26.5 0 0 1 156.5 94 V118" stroke="currentColor" stroke-width="15" stroke-linecap="square" />
+              <rect x="85" y="113" width="90" height="78" rx="8" ry="8" fill="currentColor" />
             </svg>
           </div>
           <h4 style="font-family: 'Cinzel', serif; color: var(--gold-primary); font-size: 1.15rem; margin: 0 0 6px 0;">
@@ -1381,7 +1382,7 @@
         } else {
           station.classList.add('is-locked');
           if (bannerSub) {
-            bannerSub.innerHTML = '<span class="svg-padlock-badge"><svg class="svg-padlock-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> LOCKED WATERS</span>';
+            bannerSub.innerHTML = '<span class="svg-padlock-badge"><svg class="svg-padlock-icon" viewBox="0 0 260 260" style="width:13px;height:13px;"><circle cx="130" cy="130" r="97.5" fill="none" stroke="currentColor" stroke-width="18" /><path d="M103.5 118 V94 A26.5 26.5 0 0 1 156.5 94 V118" fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="square" /><rect x="85" y="113" width="90" height="78" rx="10" ry="10" fill="currentColor" /></svg> LOCKED WATERS</span>';
           }
         }
       });
@@ -1482,7 +1483,7 @@
       const statusWrap = document.getElementById('windowStatusPillWrap');
       if (statusWrap) {
         if (!isUnlocked && !window.isAdminUser) {
-          statusWrap.innerHTML = `<span class="round-status-pill locked"><svg class="svg-padlock-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> LOCKED WATERS</span>`;
+          statusWrap.innerHTML = `<span class="round-status-pill locked"><svg class="svg-padlock-icon" viewBox="0 0 260 260" style="width:13px;height:13px;"><circle cx="130" cy="130" r="97.5" fill="none" stroke="currentColor" stroke-width="18" /><path d="M103.5 118 V94 A26.5 26.5 0 0 1 156.5 94 V118" fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="square" /><rect x="85" y="113" width="90" height="78" rx="10" ry="10" fill="currentColor" /></svg> LOCKED WATERS</span>`;
         } else if (isThisRoundSolved) {
           statusWrap.innerHTML = `<span class="round-status-pill solved">✓ SOLVED & ADVANCED</span>`;
         } else {
@@ -3026,7 +3027,7 @@
         const statusWrap = document.getElementById('windowStatusPillWrap');
         if (statusWrap) {
           if (!isUnlocked && !window.isAdminUser) {
-            statusWrap.innerHTML = `<span class="round-status-pill locked"><svg class="svg-padlock-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> LOCKED WATERS</span>`;
+            statusWrap.innerHTML = `<span class="round-status-pill locked"><svg class="svg-padlock-icon" viewBox="0 0 260 260" style="width:13px;height:13px;"><circle cx="130" cy="130" r="97.5" fill="none" stroke="currentColor" stroke-width="18" /><path d="M103.5 118 V94 A26.5 26.5 0 0 1 156.5 94 V118" fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="square" /><rect x="85" y="113" width="90" height="78" rx="10" ry="10" fill="currentColor" /></svg> LOCKED WATERS</span>`;
           } else if (isThisRoundSolved) {
             statusWrap.innerHTML = `<span class="round-status-pill solved">✓ SOLVED & ADVANCED</span>`;
           } else {
