@@ -929,7 +929,7 @@ app.post('/api/admin/start', (req, res) => {
   fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2));
   io.emit('configUpdate', ctfConfig);
   
-  res.json({ message: 'CTF Started!', config: ctfConfig });
+  res.json({ message: 'Treasure Hunt Started!', config: ctfConfig });
 });
 
 app.post('/api/admin/stop', (req, res) => {
@@ -939,7 +939,7 @@ app.post('/api/admin/stop', (req, res) => {
   fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2));
   io.emit('configUpdate', ctfConfig);
   
-  res.json({ message: 'CTF Stopped!', config: ctfConfig });
+  res.json({ message: 'Treasure Hunt Stopped!', config: ctfConfig });
 });
 
 app.post('/api/admin/wipe', (req, res) => {
@@ -1628,7 +1628,7 @@ app.post('/api/admin/tournament/seed-teams', isAdmin, (req, res) => {
 // Single-Submitter Flag Submission (Team-level)
 app.post('/api/challenge/flag', (req, res) => {
   const isAdminUser = isAdminSession(req);
-  if (!ctfConfig.ctfStartTime && !isAdminUser) return res.status(403).json({ error: 'The CTF has not started yet!' });
+  if (!ctfConfig.ctfStartTime && !isAdminUser) return res.status(403).json({ error: 'The Treasure Hunt has not started yet!' });
   const team = getCurrentTeam(req);
   if (!team) return res.status(403).json({ error: 'Not logged in' });
   if (team.disqualified) {
@@ -1805,7 +1805,7 @@ app.post('/api/challenge/flag', (req, res) => {
 // Unlock Hint with Escalating Deduction (-5, -10, -15...)
 app.post('/api/challenge/hint/unlock', (req, res) => {
   const isAdminUser = isAdminSession(req);
-  if (!ctfConfig.ctfStartTime && !isAdminUser) return res.status(403).json({ error: 'The CTF has not started yet!' });
+  if (!ctfConfig.ctfStartTime && !isAdminUser) return res.status(403).json({ error: 'The Treasure Hunt has not started yet!' });
   const team = getCurrentTeam(req);
   if (!team) return res.status(403).json({ error: 'Not logged in' });
   if (team.disqualified) {
