@@ -578,6 +578,298 @@ app.delete('/api/admin/riddle-bank/:id', (req, res) => {
   return res.json({ success: true, message: 'Riddle removed from bank.' });
 });
 
+// -----------------------
+// Admin Tournament Assignment Matrix, Validation & Override Engine
+// -----------------------
+function validateRoundConfiguration(roundNum) {
+  const rKey = String(roundNum);
+  const assignments = getTournamentAssignments();
+  const riddleBank = getRiddleBank();
+  const roundData = assignments.rounds && assignments.rounds[rKey];
+  const errors = [];
+  const warnings = [];
+
+  if (!roundData) {
+    return { valid: false, errors: [`Round ${roundNum} blueprint is missing.`] };
+  }
+
+  if (roundNum === 1) {
+    const slots = roundData.slots || [];
+    if (slots.length !== 10) {
+      errors.push(`Round 1 requires exactly 10 slots (found ${slots.length}).`);
+    }
+    const assignedTeams = new Set();
+    const assignedRiddles = new Set();
+
+    slots.forEach((s, idx) => {
+      if (!s.assignedTeamId) {
+        errors.push(`Slot ${s.slotId || idx + 1} has no assigned crew.`);
+      } else {
+        if (assignedTeams.has(s.assignedTeamId)) {
+          errors.push(`Duplicate crew assignment: ${s.assignedTeamId} is assigned more than once.`);
+        }
+        assignedTeams.add(s.assignedTeamId);
+      }
+
+      if (!s.riddleId) {
+        errors.push(`Slot ${s.slotId || idx + 1} has no riddle assigned.`);
+      } else {
+        const riddle = riddleBank[s.riddleId];
+        if (!riddle) {
+          errors.push(`Slot ${s.slotId} references non-existent riddle ID "${s.riddleId}".`);
+        } else if (riddle.status !== 'published') {
+          errors.push(`Riddle "${riddle.title || s.riddleId}" in slot ${s.slotId} is in Draft state (must be Published).`);
+        } else if (!riddle.expectedAnswer || !riddle.expectedAnswer.trim()) {
+          errors.push(`Riddle "${riddle.title || s.riddleId}" has no expected answer.`);
+        }
+
+        if (assignedRiddles.has(s.riddleId)) {
+          errors.push(`Riddle "${s.riddleId}" is assigned to multiple teams. In Round 1, all 10 teams must receive distinct riddles.`);
+        }
+        assignedRiddles.add(s.riddleId);
+      }
+    });
+
+    if (assignedTeams.size < 10) {
+      errors.push(`All 10 official crews must be assigned (currently ${assignedTeams.size}/10).`);
+    }
+  } else if (roundNum === 2) {
+    const groups = roundData.groups || {};
+    for (const g of ['A', 'B']) {
+      const grp = groups[g];
+      if (!grp) {
+        errors.push(`Group ${g} definition is missing in Round 2.`);
+        continue;
+      }
+      const teams = grp.teams || [];
+      if (teams.length !== 5) {
+        errors.push(`Round 2 Group ${g} must contain exactly 5 crews (currently ${teams.length}).`);
+      }
+      const slots = grp.slots || [];
+      if (slots.length !== 3) {
+        errors.push(`Round 2 Group ${g} must have exactly 3 qualifying slots (found ${slots.length}).`);
+      }
+      slots.forEach((s, idx) => {
+        if (!s.riddleId) {
+          errors.push(`Group ${g} Slot ${s.slotId || idx + 1} has no riddle assigned.`);
+        } else {
+          const riddle = riddleBank[s.riddleId];
+          if (!riddle || riddle.status !== 'published' || !riddle.expectedAnswer) {
+            errors.push(`Group ${g} Slot ${s.slotId} riddle is missing or in Draft state.`);
+          }
+        }
+      });
+    }
+  } else if (roundNum === 3) {
+    const groups = roundData.groups || {};
+    for (const g of ['A', 'B']) {
+      const grp = groups[g];
+      if (!grp) {
+        errors.push(`Group ${g} definition is missing in Round 3.`);
+        continue;
+      }
+      const teams = grp.teams || [];
+      if (teams.length !== 3) {
+        errors.push(`Round 3 Group ${g} must contain exactly 3 crews (currently ${teams.length}).`);
+      }
+      const slots = grp.slots || [];
+      if (slots.length !== 1) {
+        errors.push(`Round 3 Group ${g} must have exactly 1 qualifying slot (found ${slots.length}).`);
+      }
+      if (slots[0]) {
+        const s = slots[0];
+        if (!s.riddleId) {
+          errors.push(`Group ${g} Slot ${s.slotId} has no riddle assigned.`);
+        } else {
+          const riddle = riddleBank[s.riddleId];
+          if (!riddle || riddle.status !== 'published' || !riddle.expectedAnswer) {
+            errors.push(`Group ${g} Slot ${s.slotId} riddle is missing or in Draft state.`);
+          }
+        }
+      }
+    }
+  } else if (roundNum === 4) {
+    const slots = roundData.slots || [];
+    if (slots.length !== 1) {
+      errors.push(`Round 4 requires exactly 1 qualifying championship slot.`);
+    }
+    const s = slots[0];
+    if (!s || !s.riddleId) {
+      errors.push(`Round 4 final championship riddle has not been assigned.`);
+    } else {
+      const riddle = riddleBank[s.riddleId];
+      if (!riddle || riddle.status !== 'published' || !riddle.expectedAnswer) {
+        errors.push(`Round 4 final riddle is missing, empty, or in Draft state.`);
+      }
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    warnings
+  };
+}
+
+app.get('/api/admin/assignments', (req, res) => {
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
+  return res.json({
+    success: true,
+    assignments: getTournamentAssignments(),
+    roundState: getRoundState(),
+    auditLog: (function() {
+      try { return JSON.parse(fs.readFileSync(auditLogFilePath, 'utf8')); } catch(e) { return []; }
+    })()
+  });
+});
+
+app.post('/api/admin/assignments', (req, res) => {
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
+
+  const { round, assignments: incomingAssignments } = req.body || {};
+  const roundNum = parseInt(round, 10);
+  if (!roundNum || roundNum < 1 || roundNum > 4) {
+    return res.status(400).json({ error: 'Invalid round number.' });
+  }
+
+  const roundState = getRoundState();
+  if (roundState[String(roundNum)] && roundState[String(roundNum)].status === 'Live') {
+    return res.status(400).json({
+      error: `Round ${roundNum} is currently Live. Direct edits are frozen. Use administrative override with reason.`
+    });
+  }
+
+  const currentAssignments = getTournamentAssignments();
+  if (incomingAssignments) {
+    currentAssignments.rounds[String(roundNum)] = incomingAssignments;
+    saveTournamentAssignments(currentAssignments);
+  }
+
+  return res.json({
+    success: true,
+    message: `Round ${roundNum} assignments updated successfully.`,
+    assignments: currentAssignments.rounds[String(roundNum)]
+  });
+});
+
+app.post('/api/admin/rounds/validate', (req, res) => {
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
+  const roundNum = parseInt(req.body.round, 10) || 1;
+  const result = validateRoundConfiguration(roundNum);
+  return res.json({
+    success: true,
+    round: roundNum,
+    valid: result.valid,
+    errors: result.errors,
+    warnings: result.warnings
+  });
+});
+
+app.post('/api/admin/rounds/activate', (req, res) => {
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
+  const roundNum = parseInt(req.body.round, 10) || 1;
+  const rKey = String(roundNum);
+
+  const result = validateRoundConfiguration(roundNum);
+  if (!result.valid) {
+    return res.status(400).json({
+      error: `Pre-launch checklist failed for Round ${roundNum}. Resolve all issues before activation.`,
+      errors: result.errors
+    });
+  }
+
+  const roundState = getRoundState();
+  if (!roundState[rKey]) roundState[rKey] = {};
+  roundState[rKey].status = 'Live';
+  roundState[rKey].startedAt = new Date().toISOString();
+  saveRoundState(roundState);
+
+  logAuditEvent({
+    action: 'ROUND_ACTIVATION',
+    admin: req.session.teamName || 'admin',
+    reason: `Round ${roundNum} successfully activated to Live state`,
+    details: { round: roundNum }
+  });
+
+  io.emit('tournament:round_state', { round: roundNum, status: 'Live' });
+
+  return res.json({
+    success: true,
+    message: `Round ${roundNum} is now Live!`,
+    roundState: roundState[rKey]
+  });
+});
+
+app.post('/api/admin/assignments/override', (req, res) => {
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
+  const { round, slotId, newRiddleId, newTeamId, reason } = req.body || {};
+
+  if (!reason || typeof reason !== 'string' || !reason.trim()) {
+    return res.status(400).json({ error: 'A valid reason is required for administrative overrides.' });
+  }
+
+  const roundNum = parseInt(round, 10);
+  const rKey = String(roundNum);
+  const assignments = getTournamentAssignments();
+  const roundData = assignments.rounds && assignments.rounds[rKey];
+
+  if (!roundData) {
+    return res.status(404).json({ error: `Round ${roundNum} blueprint not found.` });
+  }
+
+  let slotFound = false;
+  let previousState = null;
+
+  if (roundNum === 1 || roundNum === 4) {
+    const slot = (roundData.slots || []).find(s => s.slotId === slotId);
+    if (slot) {
+      previousState = { ...slot };
+      if (newRiddleId !== undefined) slot.riddleId = newRiddleId;
+      if (newTeamId !== undefined) slot.assignedTeamId = newTeamId;
+      slotFound = true;
+    }
+  } else {
+    for (const g of ['A', 'B']) {
+      const grp = roundData.groups && roundData.groups[g];
+      if (grp) {
+        const slot = (grp.slots || []).find(s => s.slotId === slotId);
+        if (slot) {
+          previousState = { ...slot };
+          if (newRiddleId !== undefined) slot.riddleId = newRiddleId;
+          if (newTeamId !== undefined) slot.assignedTeamId = newTeamId;
+          slotFound = true;
+          break;
+        }
+      }
+    }
+  }
+
+  if (!slotFound) {
+    return res.status(404).json({ error: `Slot ${slotId} not found in Round ${roundNum}.` });
+  }
+
+  saveTournamentAssignments(assignments);
+
+  logAuditEvent({
+    action: 'ASSIGNMENT_OVERRIDE',
+    admin: req.session.teamName || 'admin',
+    reason: reason.trim(),
+    details: {
+      round: roundNum,
+      slotId,
+      previousState,
+      newRiddleId,
+      newTeamId
+    }
+  });
+
+  return res.json({
+    success: true,
+    message: `Assignment override applied to ${slotId} and recorded in audit log.`
+  });
+});
+
+
 
 
 
