@@ -979,6 +979,20 @@
       return categoryIcons[cat] || `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg>`;
     }
 
+    let teamsData = [];
+    const crewNameMap = {
+      'crew_1_buccaneers': 'BUCCANEERS',
+      'crew_2_cutthroats': 'CUTTHROATS',
+      'crew_3_corsairs': 'CORSAIRS',
+      'crew_4_krakens': 'KRAKENS',
+      'crew_5_scallywags': 'SCALLYWAGS',
+      'crew_6_privateers': 'PRIVATEERS',
+      'crew_7_blackflags': 'BLACKFLAGS',
+      'crew_8_plunderers': 'PLUNDERERS',
+      'crew_9_dreadsails': 'DREADSAILS',
+      'crew_10_searavens': 'SEARAVENS'
+    };
+
     // Toast Notifications
     function showToast(msg) {
       let toast = document.getElementById('pirateToast');
@@ -2001,15 +2015,31 @@
       }
 
       rows.forEach(row => {
-        const teamObj = teams.find(t => t.id === row.teamId);
-        const teamName = teamObj ? teamObj.teamName : (row.teamId || 'Unassigned');
-        const ridObj = row.riddleId ? globalAdminRiddles[row.riddleId] : null;
-        const riddleTitle = ridObj ? ridObj.title : (row.riddleId || '<span style="color:var(--text-secondary); font-style:italic;">⚠️ Unassigned</span>');
+        const teamName = getAdminCrewName(row.teamId);
+
+        // Build interactive riddle selection dropdown
+        const roundRiddles = Object.values(globalAdminRiddles).filter(r => String(r.targetRound) === String(filter));
+        let selectHtml = `<select onchange="assignSlotRiddle(${filter}, '${row.slotId}', this.value)" style="width:100%; max-width:240px; padding:5px 8px; font-size:0.8rem; background:rgba(20,16,11,0.9); border:1px solid var(--border-subtle); color:var(--gold-primary); border-radius:3px;">`;
+        selectHtml += `<option value="">-- No Riddle Assigned --</option>`;
+
+        let hasCurrentRiddle = false;
+        roundRiddles.forEach(r => {
+          const isSelected = (row.riddleId === r.id);
+          if (isSelected) hasCurrentRiddle = true;
+          selectHtml += `<option value="${r.id}" ${isSelected ? 'selected' : ''}>${escapeHTML(r.title)} (${escapeHTML(r.id)})</option>`;
+        });
+
+        if (row.riddleId && !hasCurrentRiddle) {
+          const ridObj = globalAdminRiddles[row.riddleId];
+          const title = ridObj ? ridObj.title : row.riddleId;
+          selectHtml += `<option value="${row.riddleId}" selected>${escapeHTML(title)} [Other/Draft]</option>`;
+        }
+        selectHtml += `</select>`;
 
         let statusText = '<span style="color:var(--text-secondary);">Unclaimed</span>';
         if (row.claimed) {
-          const claimTeam = teams.find(t => t.id === row.claimedBy);
-          statusText = `<span style="color:var(--gold-primary); font-weight:700;">Claimed by ${claimTeam ? claimTeam.teamName : row.claimedBy}</span>`;
+          const claimTeamName = getAdminCrewName(row.claimedBy);
+          statusText = `<span style="color:var(--gold-primary); font-weight:700;">Claimed by ${escapeHTML(claimTeamName)}</span>`;
         }
 
         const tr = document.createElement('tr');
@@ -2017,7 +2047,7 @@
           <td><strong style="color:var(--gold-primary); font-family:'Cinzel',serif;">${escapeHTML(teamName)}</strong></td>
           <td><span class="badge-group-pill badge-group-a">${escapeHTML(row.group)}</span></td>
           <td><span style="font-family:'JetBrains Mono',monospace; font-size:0.8rem;">${escapeHTML(row.slotId)}</span></td>
-          <td>${riddleTitle}</td>
+          <td>${selectHtml}</td>
           <td>${statusText}</td>
           <td>
             <div style="display:flex; gap:6px;">
@@ -2027,6 +2057,37 @@
           </td>
         `;
         tbody.appendChild(tr);
+      });
+    }
+
+    function getAdminCrewName(teamId) {
+      if (!teamId) return 'Unassigned';
+      const teamObj = (teamsData || []).find(t => t.id === teamId);
+      if (teamObj && teamObj.teamName) return teamObj.teamName;
+      if (typeof crewNameMap !== 'undefined' && crewNameMap[teamId]) return crewNameMap[teamId];
+      return teamId;
+    }
+
+    function assignSlotRiddle(roundNum, slotId, riddleId) {
+      fetch('/api/admin/assignments/assign-slot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ round: roundNum, slotId, riddleId })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) {
+          showCustomConfirm("Assignment Error", data.error, true, null);
+          fetchAdminTournamentData();
+        } else {
+          showToast(data.message || 'Slot assignment updated!');
+          fetchAdminTournamentData();
+          if (typeof fetchTournamentStatus === 'function') fetchTournamentStatus();
+        }
+      })
+      .catch(err => {
+        showCustomConfirm("Error", err.message, true, null);
+        fetchAdminTournamentData();
       });
     }
 
@@ -2178,8 +2239,7 @@
     }
 
     function previewTeamChallenge(teamId, roundNum) {
-      const teamObj = teams.find(t => t.id === teamId);
-      const teamName = teamObj ? teamObj.teamName : teamId;
+      const teamName = getAdminCrewName(teamId);
       document.getElementById('previewModalCrewHeading').textContent = `Private Preview for Crew: ${teamName}`;
       const body = document.getElementById('previewModalBody');
 
@@ -2214,8 +2274,8 @@
             <div style="font-size:0.9rem; line-height:1.6; color:var(--text-primary); margin-bottom:1rem; padding:10px; background:rgba(0,0,0,0.3); border-radius:4px;">
               ${escapeHTML(rid.text || 'Physical field clue location...')}
             </div>
-            <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:6px;">Expected Flag Format:</div>
-            <input type="text" disabled placeholder="lostcode{salvaged_flag}" style="width:100%; padding:0.6rem; background:rgba(0,0,0,0.5); border:1px solid var(--border-subtle); color:var(--text-secondary); border-radius:4px;" />
+            <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:6px;">Expected Answer / Clue:</div>
+            <div style="font-family:'JetBrains Mono',monospace; padding:0.6rem; background:rgba(0,0,0,0.5); border:1px solid var(--border-subtle); color:var(--gold-primary); border-radius:4px;">${escapeHTML(rid.expectedAnswer || 'N/A')}</div>
           </div>
         `;
       }
@@ -2699,7 +2759,6 @@
     }
 
     // Crews (Teams)
-    let teamsData = [];
     function fetchTeams() {
       fetch('/api/teams')
         .then(r => r.json())

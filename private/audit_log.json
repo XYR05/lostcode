@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "id": "audit_1792924972372_y7vn",
+    "timestamp": "2026-10-25T10:42:52.372Z",
+    "action": "TEST_AUDIT",
+    "admin": "admin@lostcode",
+    "reason": "Automated test audit event",
+    "details": {
+      "test": true
+    }
+  }
+]

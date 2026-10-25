@@ -487,6 +487,33 @@ app.post('/api/admin/riddle-bank', (req, res) => {
   riddleBank[id] = newRiddle;
   saveRiddleBank(riddleBank);
 
+  // If published, automatically bind to first open slot in target round if round is not live
+  if (riddleStatus === 'published') {
+    const assignments = getTournamentAssignments();
+    const roundData = assignments.rounds && assignments.rounds[String(roundNum)];
+    const roundState = getRoundState();
+    const isLive = roundState[String(roundNum)] && roundState[String(roundNum)].status === 'Live';
+    if (roundData && !isLive) {
+      if (roundNum === 1 || roundNum === 4) {
+        const openSlot = (roundData.slots || []).find(s => !s.riddleId);
+        if (openSlot) {
+          openSlot.riddleId = id;
+          saveTournamentAssignments(assignments);
+        }
+      } else {
+        for (const g of ['A', 'B']) {
+          const grp = roundData.groups && roundData.groups[g];
+          const openSlot = grp && (grp.slots || []).find(s => !s.riddleId);
+          if (openSlot) {
+            openSlot.riddleId = id;
+            saveTournamentAssignments(assignments);
+            break;
+          }
+        }
+      }
+    }
+  }
+
   return res.status(201).json({ success: true, riddle: newRiddle });
 });
 
@@ -760,6 +787,61 @@ app.post('/api/admin/assignments', (req, res) => {
     success: true,
     message: `Round ${roundNum} assignments updated successfully.`,
     assignments: currentAssignments.rounds[String(roundNum)]
+  });
+});
+
+app.post('/api/admin/assignments/assign-slot', (req, res) => {
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
+  const { round, slotId, riddleId } = req.body || {};
+  const roundNum = parseInt(round, 10);
+  if (!roundNum || roundNum < 1 || roundNum > 4) {
+    return res.status(400).json({ error: 'Invalid round number.' });
+  }
+
+  const roundState = getRoundState();
+  if (roundState[String(roundNum)] && roundState[String(roundNum)].status === 'Live') {
+    return res.status(400).json({
+      error: `Round ${roundNum} is currently Live. Direct edits are frozen. Use administrative override with reason.`
+    });
+  }
+
+  const assignments = getTournamentAssignments();
+  const roundData = assignments.rounds && assignments.rounds[String(roundNum)];
+  if (!roundData) {
+    return res.status(404).json({ error: `Round ${roundNum} blueprint not found.` });
+  }
+
+  let slotFound = false;
+  if (roundNum === 1 || roundNum === 4) {
+    const slot = (roundData.slots || []).find(s => s.slotId === slotId);
+    if (slot) {
+      slot.riddleId = riddleId ? String(riddleId).trim() : null;
+      slotFound = true;
+    }
+  } else {
+    for (const g of ['A', 'B']) {
+      const grp = roundData.groups && roundData.groups[g];
+      if (grp) {
+        const slot = (grp.slots || []).find(s => s.slotId === slotId);
+        if (slot) {
+          slot.riddleId = riddleId ? String(riddleId).trim() : null;
+          slotFound = true;
+          break;
+        }
+      }
+    }
+  }
+
+  if (!slotFound) {
+    return res.status(404).json({ error: `Slot ${slotId} not found in Round ${roundNum}.` });
+  }
+
+  saveTournamentAssignments(assignments);
+  return res.json({
+    success: true,
+    message: `Slot ${slotId} updated.`,
+    slotId,
+    riddleId: riddleId || null
   });
 });
 

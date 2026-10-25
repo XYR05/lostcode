@@ -1,1 +1,18 @@
-{}
+{
+  "riddle_r1_1792924377640_8j9e": {
+    "id": "riddle_r1_1792924377640_8j9e",
+    "title": "first riddle",
+    "text": "yoyo",
+    "expectedAnswer": "hellohithere",
+    "targetRound": 1,
+    "status": "published",
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "points": 100,
+    "hints": [],
+    "createdAt": "2026-10-25T10:32:57.640Z",
+    "updatedAt": "2026-10-25T10:33:35.111Z"
+  }
+}
