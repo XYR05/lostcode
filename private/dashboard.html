@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lost Code // CoreDump 2.0</title>
+  <title>Lost Code // Treasure Expedition</title>
   <link rel="stylesheet" href="/dashboard-styles.css?v=22" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="/socket.io/socket.io.js"></script>
@@ -26,7 +26,7 @@
       </div>
       <div class="brand-titles">
         <div class="brand-title">LOST CODE</div>
-        <div class="brand-subtitle">COREDUMP 2.0</div>
+        <div class="brand-subtitle">TREASURE EXPEDITION</div>
       </div>
     </div>
 
@@ -72,8 +72,8 @@
         <div class="stat-label">REGISTERED CREWS</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" id="totalPointsCount">0</div>
-        <div class="stat-label">TOTAL BOUNTY</div>
+        <div class="stat-value" id="activeRoundStageCount">ROUND 1</div>
+        <div class="stat-label">EXPEDITION STAGE</div>
       </div>
     </div>
   </section>
@@ -239,17 +239,11 @@
           <!-- Challenge Header -->
           <div class="window-header">
             <div class="window-title-wrap">
-              <svg class="window-target-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="22" y1="12" x2="18" y2="12"></line>
-                <line x1="6" y1="12" x2="2" y2="12"></line>
-                <line x1="12" y1="6" x2="12" y2="2"></line>
-                <line x1="12" y1="22" x2="12" y2="18"></line>
-              </svg>
+              <span class="window-accent-badge">EXPEDITION RIDDLE</span>
               <h3 id="windowChallengeTitle">THE FORGED MANIFEST</h3>
             </div>
             <div class="window-subtitle" id="windowChallengeSubtitle">
-              ROUND 1 // RIDDLE 01 // EASY // 500 POINTS
+              ROUND 1 // RIDDLE 01
             </div>
           </div>
 
@@ -261,11 +255,8 @@
           <!-- Captain's Brief / Physical Field Directive -->
           <div class="window-section" id="windowCaptainBriefSection">
             <div class="window-section-title">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
-                <line x1="4" y1="22" x2="4" y2="15"></line>
-              </svg>
-              CAPTAIN'S FIELD BRIEF
+              <span class="window-tag-badge">DIRECTIVE</span>
+              <span>CAPTAIN'S FIELD BRIEF</span>
             </div>
             <div class="window-text" id="windowChallengeDescription"></div>
           </div>
@@ -273,10 +264,7 @@
           <!-- Quartermaster's Hint Box -->
           <div class="window-hint-box" id="windowHintBox">
             <div class="hint-header">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
-              </svg>
+              <span class="window-tag-badge">INTEL</span>
               <span>QUARTERMASTER'S HINT</span>
             </div>
             <div id="windowHintContent">
@@ -287,11 +275,8 @@
           <!-- Submit Flag Box -->
           <div class="window-flag-box">
             <div class="flag-header">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
-                <line x1="4" y1="22" x2="4" y2="15"></line>
-              </svg>
-              <span>SUBMIT PHYSICAL FIELD FLAG</span>
+              <span class="window-tag-badge">CLAIM</span>
+              <span>SUBMIT SALVAGED FIELD FLAG</span>
             </div>
             <input type="text" id="windowFlagInput" class="flag-input" placeholder="lostcode{answer_found_in_field}" autocomplete="off" />
             <button type="button" id="windowSubmitFlagBtn" class="window-submit-btn">CLAIM BOUNTY</button>
@@ -431,8 +416,9 @@
                 <th>CURRENT ROUND</th>
                 <th>ASSIGNED RIDDLE</th>
                 <th>SOLVES</th>
-                <th>SCORE</th>
+                <th>CREW TIMER</th>
                 <th>STATUS</th>
+                <th>ACTIONS</th>
               </tr>
             </thead>
             <tbody id="tournamentRosterTableBody">
@@ -562,8 +548,8 @@
         Are you sure you want to reveal the Quartermaster's secret for this challenge?
       </p>
       <div class="modal-cost-alert" id="hintModalAlert">
-        ⚠️ Warning: <strong id="hintModalPenaltyPoints">5</strong> points will be deducted immediately from your crew's treasure!
-        <div style="font-size: 11px; opacity: 0.85; margin-top: 4px;">(Penalty increases with each hint unlocked: -5, -10, -15 pts...)</div>
+        ⚠️ Time Deduction: <strong id="hintModalPenaltyPoints">5</strong> minutes will be deducted immediately from your crew's timer!
+        <div style="font-size: 11px; opacity: 0.85; margin-top: 4px;">(Escalating penalty for each hint unlocked: -5m, -10m, -15m...)</div>
       </div>
       <div class="modal-actions">
         <button class="modal-cancel-btn" onclick="closeHintUnlockModal()">Keep Secrets</button>
@@ -619,7 +605,7 @@
           <span style="font-size: 0.85rem; color: var(--gold-primary);">Head-to-head championship showdown between Group A and Group B finalists. The first crew to submit claims the Grand Lost Treasure!</span>
         </div>
         <div style="padding: 12px; background: rgba(201, 154, 82, 0.1); border-left: 3px solid var(--gold-primary); margin-top: 15px; font-size: 13px; color: var(--text-primary);">
-          ⚠️ <strong>Quartermaster Hint Cost:</strong> Hints carry an escalating score deduction: Hint #1 = -5 pts, Hint #2 = -10 pts, Hint #3 = -15 pts, Hint #4 = -20 pts...
+          ⚠️ <strong>Quartermaster Hint Cost:</strong> Hints carry an escalating time deduction from your crew's timer: Hint #1 = -5 mins, Hint #2 = -10 mins, Hint #3 = -15 mins...
         </div>
       </div>
     </div>
@@ -755,12 +741,12 @@
               Quartermaster's Hints
             </h3>
             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.5rem;">
-              Every riddle contains an optional hint from the ship's Quartermaster. Unlocking hints carries an <strong>escalating treasure penalty</strong> for your crew:
+              Every riddle contains an optional hint from the ship's Quartermaster. Unlocking hints carries an <strong>escalating time deduction</strong> from your crew's timer:
             </p>
             <ul style="list-style: none; padding-left: 0.75rem; margin-bottom: 0.5rem; border-left: 2px solid var(--gold-primary); font-size: 0.85rem;">
-              <li style="margin-bottom: 0.25rem;"><span style="color: var(--gold-primary);">•</span> 1st Hint Unlocked: <strong>-5 PTS</strong></li>
-              <li style="margin-bottom: 0.25rem;"><span style="color: var(--gold-primary);">•</span> 2nd Hint Unlocked: <strong>-10 PTS</strong></li>
-              <li style="margin-bottom: 0.25rem;"><span style="color: var(--gold-primary);">•</span> 3rd Hint Unlocked: <strong>-15 PTS</strong> (escalates by -5 pts)</li>
+              <li style="margin-bottom: 0.25rem;"><span style="color: var(--gold-primary);">•</span> 1st Hint Unlocked: <strong>-5 MINS</strong></li>
+              <li style="margin-bottom: 0.25rem;"><span style="color: var(--gold-primary);">•</span> 2nd Hint Unlocked: <strong>-10 MINS</strong></li>
+              <li style="margin-bottom: 0.25rem;"><span style="color: var(--gold-primary);">•</span> 3rd Hint Unlocked: <strong>-15 MINS</strong> (escalates by -5 mins)</li>
             </ul>
             <p style="color: var(--gold-muted); font-size: 0.8rem; font-style: italic; margin: 0;">Once unlocked by any crewmate, the hint is revealed to your entire crew.</p>
           </div>
@@ -1180,6 +1166,10 @@
 
     function lockDisqualified(info) {
       proctoringArmed = false;
+      const noticeModal = document.getElementById('fullscreenNoticeModal');
+      if (noticeModal) noticeModal.style.display = 'none';
+      const introModal = document.getElementById('introModal');
+      if (introModal) introModal.style.display = 'none';
       const warningModal = document.getElementById('proctorWarningModal');
       if (warningModal) warningModal.style.display = 'none';
 
@@ -1209,6 +1199,44 @@
         flagResult.style.color = 'var(--danger)';
         flagResult.textContent = '☠️ Crew Disqualified from Competition';
       }
+
+      const winInput = document.getElementById('windowFlagInput');
+      if (winInput) {
+        winInput.disabled = true;
+        winInput.value = 'CREW DISQUALIFIED';
+      }
+      const winSubmit = document.getElementById('windowSubmitFlagBtn');
+      if (winSubmit) {
+        winSubmit.disabled = true;
+        winSubmit.textContent = 'DISQUALIFIED';
+        winSubmit.style.opacity = '0.5';
+        winSubmit.style.cursor = 'not-allowed';
+      }
+      const winResult = document.getElementById('windowFlagResult');
+      if (winResult) {
+        winResult.style.color = 'var(--danger)';
+        winResult.textContent = '☠️ Crew Disqualified for Proctoring Violations';
+      }
+    }
+
+    function unlockReinstated() {
+      const disqModal = document.getElementById('disqualifiedModal');
+      if (disqModal) disqModal.style.display = 'none';
+      const warningModal = document.getElementById('proctorWarningModal');
+      if (warningModal) warningModal.style.display = 'none';
+      
+      if (myTeamData && myTeamData.team) {
+        myTeamData.team.disqualified = false;
+        myTeamData.team.violations = 0;
+      }
+
+      violationInProgress = false;
+      showToast("⚓ Crew Reinstated by Admiralty Order! Proctoring re-armed.");
+      armProctoring();
+      fetchMyTeam();
+      if (currentActiveRound) {
+        fetchParticipantChallenge(currentActiveRound);
+      }
     }
 
     function triggerProctorViolation(reason) {
@@ -1230,11 +1258,16 @@
           lockDisqualified(data);
         } else if (data.warning) {
           showProctorWarning(data);
+          setTimeout(() => {
+            violationInProgress = false;
+          }, 1500);
         }
       })
       .catch(err => {
         console.error('Proctor violation network error:', err);
-        violationInProgress = false;
+        setTimeout(() => {
+          violationInProgress = false;
+        }, 1500);
       });
     }
 
@@ -1403,7 +1436,10 @@
         const bannerSub = document.getElementById(`bannerSub${r}`);
         if (!station) return;
 
-        const isUnlocked = teamUnlocked.includes(r) || window.isAdminUser;
+        const roundStateObj = globalAdminRoundState && globalAdminRoundState[String(r)];
+        const isRoundLive = roundStateObj && roundStateObj.status === 'Live';
+        const isRoundCompleted = roundStateObj && roundStateObj.status === 'Completed';
+        const isUnlocked = teamUnlocked.includes(r) || isRoundLive || isRoundCompleted || window.isAdminUser;
         if (isUnlocked) {
           station.classList.remove('is-locked');
           if (bannerSub) {
@@ -1602,26 +1638,67 @@
 
       // Render riddle
       if (titleEl) titleEl.textContent = data.riddle.title;
-      if (subEl) subEl.textContent = `ROUND ${roundNum} • SLOT: ${data.slotId || ''}`;
+      
+      let timerStr = '';
+      if (data.timer) {
+        if (data.timer.solved) {
+          const m = Math.floor((data.timer.solveTimeSeconds || 0) / 60);
+          const s = (data.timer.solveTimeSeconds || 0) % 60;
+          timerStr = ` • SOLVE TIME: ${m}m ${s}s`;
+        } else {
+          const rem = data.timer.remainingSeconds || 0;
+          const m = Math.floor(rem / 60);
+          const s = rem % 60;
+          timerStr = ` • ⏱ TIME REMAINING: ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        }
+      }
+      if (subEl) subEl.textContent = `ROUND ${roundNum} • SLOT: ${data.slotId || ''}${timerStr}`;
+
+      if (window._roundTimerInterval) clearInterval(window._roundTimerInterval);
+      if (data.timer && !data.timer.solved && (data.timer.remainingSeconds > 0)) {
+        let remSec = data.timer.remainingSeconds;
+        window._roundTimerInterval = setInterval(() => {
+          remSec = Math.max(0, remSec - 1);
+          const m = Math.floor(remSec / 60);
+          const s = remSec % 60;
+          const tText = `ROUND ${roundNum} • SLOT: ${data.slotId || ''} • ⏱ TIME REMAINING: ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+          if (subEl) subEl.textContent = tText;
+          if (remSec <= 0) {
+            clearInterval(window._roundTimerInterval);
+            if (flagResult && !data.isSolved && !data.isQualified) {
+              flagResult.textContent = '⌛ Round time has expired!';
+              flagResult.style.color = 'var(--danger)';
+            }
+          }
+        }, 1000);
+      }
+
       if (briefSec && briefDesc) {
         briefSec.style.display = 'block';
         briefDesc.textContent = data.riddle.text || 'Physical field clue location...';
       }
 
-      if (data.isQualified) {
+      if (data.isSolved || data.isQualified) {
         if (flagInput) {
-          flagInput.value = '✓ Bounty secured by your crew!';
+          flagInput.value = data.solvedAnswer ? `✓ Solved: ${data.solvedAnswer}` : '✓ Bounty claimed by your crew!';
           flagInput.disabled = true;
+          flagInput.style.borderColor = 'var(--gold-primary)';
+          flagInput.style.background = 'rgba(201,154,82,0.08)';
+          flagInput.style.color = 'var(--gold-primary)';
         }
         if (submitBtn) {
-          submitBtn.textContent = 'SOLVED';
+          submitBtn.textContent = 'COMPLETED';
           submitBtn.disabled = true;
           submitBtn.style.opacity = '0.6';
           submitBtn.style.cursor = 'not-allowed';
         }
         if (flagResult) {
-          flagResult.textContent = 'Your crew has qualified for this round!';
+          flagResult.textContent = '✓ Bounty secured and recorded in Admiralty archives. You cannot submit again.';
           flagResult.style.color = 'var(--success)';
+        }
+        const statusWrap = document.getElementById('windowStatusPillWrap');
+        if (statusWrap) {
+          statusWrap.innerHTML = `<span class="round-status-pill solved">✓ SOLVED & ADVANCED</span>`;
         }
       } else if (data.isClaimed) {
         if (flagInput) {
@@ -1643,21 +1720,25 @@
           flagInput.value = '';
           flagInput.placeholder = 'Enter salvaged flag (e.g. lostcode{flag})';
           flagInput.disabled = false;
+          flagInput.style.borderColor = '';
+          flagInput.style.background = '';
+          flagInput.style.color = '';
         }
         if (submitBtn) {
-          submitBtn.textContent = 'SUBMIT FLAG';
+          submitBtn.textContent = 'CLAIM BOUNTY';
           submitBtn.disabled = false;
           submitBtn.style.opacity = '1';
           submitBtn.style.cursor = 'pointer';
         }
         if (flagResult) {
-          flagResult.textContent = 'Paste the exact answer found physically in the field to automatically advance.';
+          flagResult.textContent = 'Paste the exact answer found physically in the field to advance.';
           flagResult.style.color = 'var(--gold-muted)';
         }
       }
     }
 
     function closeChallengeWindow() {
+      if (window._roundTimerInterval) clearInterval(window._roundTimerInterval);
       currentActiveRound = null;
       const win = document.getElementById('mapChallengeWindow');
       if (win) {
@@ -1696,8 +1777,7 @@
         const roundName = chall.roundName || getRoundName(rNum);
         const riddleNum = chall.riddleNumber || 1;
         const diff = chall.difficulty || 'EASY';
-        const pts = chall.points || 500;
-        subEl.textContent = `ROUND ${rNum}: ${roundName.toUpperCase()} // RIDDLE ${riddleNum} // ${diff.toUpperCase()} // ${pts} POINTS`;
+        subEl.textContent = `ROUND ${rNum}: ${roundName.toUpperCase()} // RIDDLE ${riddleNum} // ${diff.toUpperCase()}`;
       }
 
       // Captain's Field Brief & Directions
@@ -1725,15 +1805,14 @@
             </div>
           `;
         } else {
-          const cost = chall.nextHintCost || 5;
+          const cost = chall.nextHintCost || (myTeamData?.team?.hintsUnlockedCount ? (myTeamData.team.hintsUnlockedCount + 1) * 5 : 5);
           hintContent.innerHTML = `
             <div class="hint-locked-box">
               <div class="hint-locked-message">
-                The Quartermaster holds a secret for this riddle. Revealing it will deduct <strong>${cost} points</strong> from your crew's treasure.
+                The Quartermaster holds a secret for this riddle. Revealing it will deduct <strong>${cost} minutes</strong> from your crew's timer.
               </div>
               <button type="button" class="hint-unlock-btn" onclick="openHintUnlockModal('${escapeHTML(category)}', ${cost})">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
-                Unlock Hint (-${cost} PTS)
+                Unlock Hint (-${cost} MINS)
               </button>
             </div>
           `;
@@ -1798,6 +1877,7 @@
     let globalAdminRiddles = {};
     let globalAdminAssignments = { rounds: {} };
     let globalAdminRoundState = {};
+    let globalAdminRoundDurations = { "1": 30, "2": 25, "3": 20, "4": 15 };
     let currentValRound = 1;
 
     function toggleAdminSection(sectionId) {
@@ -1845,6 +1925,7 @@
           if (data.success) {
             globalAdminAssignments = data.assignments || { rounds: {} };
             globalAdminRoundState = data.roundState || {};
+            if (data.roundDurations) globalAdminRoundDurations = data.roundDurations;
             renderAdminRoundControl();
             renderAssignmentMatrix();
           }
@@ -1862,6 +1943,37 @@
         .catch(err => console.error("Error fetching riddle bank:", err));
     }
 
+    function saveRoundDuration(roundNum) {
+      const input = document.getElementById(`roundDurationInput_${roundNum}`);
+      if (!input) return;
+      const dur = parseInt(input.value, 10);
+      if (!dur || dur < 1 || dur > 180) {
+        if (typeof showToast === 'function') showToast('Please enter a duration between 1 and 180 minutes.', 'error');
+        else alert('Please enter a duration between 1 and 180 minutes.');
+        return;
+      }
+      fetch('/api/admin/rounds/duration', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ round: roundNum, durationMinutes: dur })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          if (typeof showToast === 'function') showToast(`Round ${roundNum} duration updated to ${dur} mins!`, 'success');
+          if (data.roundDurations) globalAdminRoundDurations = data.roundDurations;
+          renderAdminRoundControl();
+        } else {
+          if (typeof showToast === 'function') showToast(data.error || 'Failed to update duration', 'error');
+          else alert(data.error || 'Failed to update duration');
+        }
+      })
+      .catch(err => {
+        console.error("Error saving round duration:", err);
+        if (typeof showToast === 'function') showToast('Network error saving round duration.', 'error');
+      });
+    }
+
     function renderAdminRoundControl() {
       const container = document.getElementById('adminRoundsGridContainer');
       if (!container) return;
@@ -1877,6 +1989,7 @@
       roundDefs.forEach(r => {
         const state = globalAdminRoundState[String(r.round)] || { status: 'Locked' };
         const st = state.status || 'Locked';
+        const dur = (globalAdminRoundDurations && globalAdminRoundDurations[String(r.round)]) || (r.round === 1 ? 30 : (r.round === 2 ? 25 : (r.round === 3 ? 20 : 15)));
         let badgeClass = 'badge-locked';
         if (st === 'Live') badgeClass = 'badge-live';
         else if (st === 'Draft') badgeClass = 'badge-draft';
@@ -1899,6 +2012,14 @@
               <span style="font-size: 0.75rem; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">
                 ${(state.qualifiers || []).length} Qualifiers
               </span>
+            </div>
+            <div style="margin-top: 8px; padding: 6px 8px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); border-radius: 4px; display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+              <span style="font-size: 0.72rem; color: var(--gold-primary); font-family: 'Cinzel', serif; letter-spacing: 0.5px;">TIMER:</span>
+              <div style="display: flex; align-items: center; gap: 4px;">
+                <input type="number" id="roundDurationInput_${r.round}" value="${dur}" min="1" max="180" style="width: 48px; padding: 2px 4px; background: rgba(10, 8, 5, 0.9); border: 1px solid var(--gold-secondary); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; text-align: center; border-radius: 3px;" />
+                <span style="font-size: 0.7rem; color: var(--text-secondary);">min</span>
+                <button type="button" onclick="saveRoundDuration(${r.round})" style="padding: 2px 8px; background: rgba(201, 154, 82, 0.15); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-size: 0.7rem; font-weight: 600; border-radius: 3px; cursor: pointer;">Set</button>
+              </div>
             </div>
           </div>
           <div style="display: flex; gap: 8px; margin-top: 12px;">
@@ -2398,7 +2519,6 @@
           <div style="background:rgba(23,17,12,0.95); border:1px solid var(--gold-primary); padding:1.25rem; border-radius:4px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <span class="admin-portal-badge badge-live">ROUND ${roundNum} ACTIVE RIDDLE</span>
-              <span style="color:var(--gold-primary); font-weight:700;">${rid.points || 100} PTS</span>
             </div>
             <h3 style="margin:0 0 8px 0; font-family:'Cinzel',serif; color:var(--gold-primary);">${escapeHTML(rid.title)}</h3>
             <div style="font-size:0.9rem; line-height:1.6; color:var(--text-primary); margin-bottom:1rem; padding:10px; background:rgba(0,0,0,0.3); border-radius:4px;">
@@ -2462,10 +2582,14 @@
       const chCount = document.getElementById('totalChallengesCount');
       if (chCount) chCount.textContent = keys.length;
       
-      let totalPts = 0;
-      keys.forEach(k => { totalPts += (currentChallenges[k].points || 0); });
-      const ptEl = document.getElementById('totalPointsCount');
-      if (ptEl) ptEl.textContent = totalPts.toLocaleString();
+      const stageEl = document.getElementById('activeRoundStageCount');
+      if (stageEl) {
+        let activeR = 1;
+        if (Array.isArray(unlockedRounds) && unlockedRounds.length > 0) {
+          activeR = Math.max(...unlockedRounds);
+        }
+        stageEl.textContent = `ROUND ${activeR}`;
+      }
     }
 
     function renderChallenges() {
@@ -2557,7 +2681,7 @@
               <div style="margin-bottom: 1.25rem;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.25rem;">
                   <span style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--gold-muted); font-weight: 600;">${escapeHTML(roundTag)}</span>
-                  <span style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--gold-primary); font-weight: 700;">${pts} PTS</span>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--gold-primary); font-weight: 700;">${diff.toUpperCase()}</span>
                 </div>
                 <div style="font-family:'Cinzel',serif; font-size: 1.1rem; font-weight: 700; color:var(--gold-primary); margin-bottom: 0.2rem;">${escapeHTML(displayName)}</div>
                 <div style="font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:var(--text-secondary); margin-bottom: 0.6rem;">${escapeHTML(info.category || '')} • ${diff} • ${info.solves || 0} Solves</div>
@@ -2634,7 +2758,7 @@
           if (currentCategory === hintTargetCategory) {
             selectWindowRiddle(currentCategory);
           }
-          showToast(data.message || `Hint revealed! ${data.cost} points deducted.`);
+          showToast(data.message || `Hint revealed! ${data.penaltyMinutes || 5} minutes deducted.`);
         }
       })
       .catch(err => {
@@ -2914,7 +3038,12 @@
         const div = document.createElement('div');
         div.className = 'team-item';
         const disqBadge = team.disqualified ? `<span style="color:var(--danger); font-size:11px; margin-left:8px; font-weight:bold;">[ DISQUALIFIED ]</span>` : '';
-        div.innerHTML = `<div><strong>${escapeHTML(team.teamName)}</strong>${disqBadge} — Solved: ${solvedCount} Riddles</div><div style="color:${team.disqualified ? 'var(--danger)' : 'var(--gold-primary)'}; font-weight:bold;">${team.score || 0} PTS</div>`;
+        const timer = team.timer || {};
+        let timeStr = `Round ${team.currentRound || 1}`;
+        if (team.disqualified) timeStr = `Disqualified`;
+        else if (timer.solved) timeStr = `✓ Solved (${Math.floor((timer.finalSolveSeconds||0)/60)}m ${(timer.finalSolveSeconds||0)%60}s)`;
+        else if (timer.started) timeStr = `${Math.floor((timer.remainingSeconds||0)/60)}m ${timer.remainingSeconds%60}s remaining`;
+        div.innerHTML = `<div><strong>${escapeHTML(team.teamName)}</strong>${disqBadge} — Solved: ${solvedCount} Riddles</div><div style="color:${team.disqualified ? 'var(--danger)' : 'var(--gold-primary)'}; font-weight:bold; font-family:'JetBrains Mono',monospace;">${timeStr}</div>`;
         list.appendChild(div);
       });
     }
@@ -3002,7 +3131,13 @@
               // Crew has walked the plank
             }
 
-            if (scoreDisplay) scoreDisplay.textContent = `Your Crew Score: ${team.score} PTS`;
+            const curR = team.currentRound || 1;
+            const timer = team.timer || {};
+            let scoreDisplayTxt = `Station: Round ${curR}`;
+            if (team.disqualified) scoreDisplayTxt = `Status: DISQUALIFIED`;
+            else if (timer.solved) scoreDisplayTxt = `Round ${curR} Solved!`;
+            else if (timer.started) scoreDisplayTxt = `Round ${curR} Clock: ${Math.floor((timer.remainingSeconds||0)/60)}m ${timer.remainingSeconds%60}s`;
+            if (scoreDisplay) scoreDisplay.textContent = scoreDisplayTxt;
             if (myTeamInfo) {
               const solvedArr = Array.isArray(team.solvedChallenges) ? team.solvedChallenges : Object.keys(team.solvedChallenges || {});
               const solvedItemsHtml = solvedArr.length > 0 
@@ -3026,9 +3161,13 @@
                 standingStatus = `<span style="color:var(--success); font-size:11px; font-weight:bold;">CLEAN STANDING (0 VIOLATIONS)</span>`;
               }
 
-              const curR = team.currentRound || 1;
               const curGroup = (curR >= 3 ? team.groupRound3 : team.groupRound2) || 'A';
               const assignedRiddleKey = (team.allocatedRiddles && team.allocatedRiddles[curR]) || 'Pending Assignment';
+
+              let clockStatusText = 'WAITING FOR ACTIVATION';
+              if (team.disqualified) clockStatusText = 'DISQUALIFIED';
+              else if (timer.solved) clockStatusText = `SOLVED (${Math.floor((timer.finalSolveSeconds||0)/60)}m ${(timer.finalSolveSeconds||0)%60}s)`;
+              else if (timer.started) clockStatusText = timer.isExpired ? 'TIME EXPIRED' : `${Math.floor((timer.remainingSeconds||0)/60)}m ${timer.remainingSeconds%60}s REMAINING`;
 
               myTeamInfo.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; background:rgba(23,17,12,0.6); padding:1.5rem; border:1px solid var(--border-subtle); border-radius:4px;">
@@ -3039,14 +3178,14 @@
                     </div>
                     <h3 style="font-family:'Cinzel',serif; font-size:2rem; color:var(--gold-primary); margin:0;">${escapeHTML(team.teamName)}</h3>
                     ${team.tagline ? `<div style="font-family:'Rajdhani',sans-serif; font-size:0.95rem; color:var(--text-secondary); font-style:italic; margin-top:2px;">"${escapeHTML(team.tagline)}"</div>` : ''}
-                    <p style="color:var(--text-secondary); font-size:1.05rem; margin-top:0.4rem;">Total Treasure Bounty: <strong style="color:var(--gold-primary);">${team.score} PTS</strong> • Current Station: <strong style="color:var(--gold-primary);">Round ${curR}</strong></p>
+                    <p style="color:var(--text-secondary); font-size:1.05rem; margin-top:0.4rem;">Current Station: <strong style="color:var(--gold-primary);">Round ${curR}</strong> • Clock: <strong style="color:var(--gold-primary); font-family:'JetBrains Mono',monospace;">${clockStatusText}</strong></p>
                     <div style="font-size:0.82rem; font-family:'JetBrains Mono',monospace; color:var(--gold-muted); margin-top:0.2rem;">
                       Active Charted Riddle: <span style="color:var(--text-primary);">${escapeHTML(assignedRiddleKey)}</span>
                     </div>
                   </div>
                   <div style="text-align:right;">
                     <div style="font-size:0.9rem; color:var(--text-secondary);">Hints Unlocked: <strong style="color:var(--gold-primary);">${hintsCount}</strong></div>
-                    <div style="font-size:0.8rem; color:var(--gold-muted); margin-top:0.2rem;">Next Hint Penalty: -${nextHintPenalty} PTS</div>
+                    <div style="font-size:0.8rem; color:var(--gold-muted); margin-top:0.2rem;">Next Hint Penalty: -${nextHintPenalty} MINS</div>
                   </div>
                 </div>
 
@@ -3155,7 +3294,25 @@
       fetch('/api/teams')
         .then(r => r.json())
         .then(teams => {
-          teams.sort((a, b) => (b.score || 0) - (a.score || 0));
+          teams.sort((a, b) => {
+            if (a.disqualified && !b.disqualified) return 1;
+            if (!a.disqualified && b.disqualified) return -1;
+            if (a.isWinner) return -1;
+            if (b.isWinner) return 1;
+            if (a.eliminated && !b.eliminated) return 1;
+            if (!a.eliminated && b.eliminated) return -1;
+            const rA = a.currentRound || 1;
+            const rB = b.currentRound || 1;
+            if (rB !== rA) return rB - rA;
+            const tA = a.timer || {};
+            const tB = b.timer || {};
+            if (tA.solved && !tB.solved) return -1;
+            if (!tA.solved && tB.solved) return 1;
+            if (tA.solved && tB.solved) {
+              return (tA.finalSolveSeconds || 0) - (tB.finalSolveSeconds || 0);
+            }
+            return (b.score || 0) - (a.score || 0);
+          });
           renderStandings(teams);
           renderScoreGraph(teams);
         });
@@ -3168,14 +3325,38 @@
       teams.forEach((t, idx) => {
         const div = document.createElement('div');
         div.className = 'standing-item';
-        const disqBadge = t.disqualified ? `<span style="color:var(--danger); font-size:11px; margin-left:8px; font-weight:bold;">[ DISQUALIFIED ]</span>` : '';
+        let statusBadge = '';
+        if (t.disqualified) {
+          statusBadge = `<span style="background:var(--danger); color:#fff; font-size:11px; padding:2px 6px; border-radius:3px; margin-left:8px; font-weight:bold;">DISQUALIFIED</span>`;
+        } else if (t.eliminated) {
+          statusBadge = `<span style="background:rgba(166,68,68,0.25); border:1px solid #c94444; color:#ff8b8b; font-size:11px; padding:2px 6px; border-radius:3px; margin-left:8px; font-weight:bold;">ELIMINATED</span>`;
+        } else if (t.isWinner) {
+          statusBadge = `<span style="background:rgba(255,215,0,0.25); border:1px solid #ffd700; color:#ffd700; font-size:11px; padding:2px 6px; border-radius:3px; margin-left:8px; font-weight:bold;">CHAMPION</span>`;
+        }
+
+        const timer = t.timer || {};
+        let timeDisplay = `Round ${t.currentRound || 1}`;
+        if (t.disqualified) {
+          timeDisplay = `<span style="color:var(--danger); font-weight:bold;">DISQUALIFIED</span>`;
+        } else if (timer.solved) {
+          const m = Math.floor((timer.finalSolveSeconds || 0) / 60);
+          const s = (timer.finalSolveSeconds || 0) % 60;
+          timeDisplay = `<span style="color:var(--success); font-weight:bold;">✓ Solved (${m}m ${s}s)</span>`;
+        } else if (timer.started) {
+          const rem = timer.remainingSeconds || 0;
+          const m = Math.floor(rem / 60);
+          const s = rem % 60;
+          const penaltyNote = timer.penaltyMinutes > 0 ? ` (-${timer.penaltyMinutes}m hint)` : '';
+          timeDisplay = `<span style="color:var(--gold-primary); font-family:'JetBrains Mono',monospace;">${timer.isExpired ? 'TIME EXPIRED' : `${m}:${s < 10 ? '0' : ''}${s}${penaltyNote}`}</span>`;
+        }
+
         div.innerHTML = `
-          <div>
-            <span style="color:var(--gold-primary); font-weight:bold; margin-right:12px;">#${idx + 1}</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="color:var(--gold-primary); font-weight:bold; min-width: 24px;">#${idx + 1}</span>
             <span class="team-name">${escapeHTML(t.teamName)}</span>
-            ${disqBadge}
+            ${statusBadge}
           </div>
-          <div class="team-score" style="${t.disqualified ? 'color:var(--danger); text-decoration:line-through;' : ''}">${t.score || 0} PTS</div>
+          <div class="team-score" style="font-size:0.88rem; font-family:'JetBrains Mono',monospace;">${timeDisplay}</div>
         `;
         list.appendChild(div);
       });
@@ -3286,7 +3467,7 @@
         });
 
         return {
-          label: `${t.teamName} (${t.score || 0} pts)`,
+          label: `${t.teamName} (Round ${t.currentRound || 1})`,
           data: dataPoints,
           borderColor: color,
           backgroundColor: color,
@@ -3503,6 +3684,32 @@
         fetchChallenges();
         if (typeof fetchTournamentStatus === 'function') fetchTournamentStatus();
       });
+      socket.on('team:disqualified', (data) => {
+        if (myTeamData && myTeamData.team && (myTeamData.team.id === data.teamId || myTeamData.team.teamName === data.teamName)) {
+          lockDisqualified(data);
+        }
+        fetchTeams();
+        if (typeof fetchTournamentStatus === 'function') fetchTournamentStatus();
+      });
+      socket.on('team:reinstated', (data) => {
+        if (myTeamData && myTeamData.team && (myTeamData.team.id === data.teamId || myTeamData.team.teamName === data.teamName)) {
+          unlockReinstated();
+        }
+        fetchTeams();
+        if (typeof fetchTournamentStatus === 'function') fetchTournamentStatus();
+      });
+      socket.on('tournament:round_state', (data) => {
+        if (data && data.roundState) {
+          globalAdminRoundState = data.roundState;
+        } else if (data && data.round) {
+          if (!globalAdminRoundState[String(data.round)]) globalAdminRoundState[String(data.round)] = {};
+          globalAdminRoundState[String(data.round)].status = data.status;
+        }
+        renderRouteMap();
+        renderAdminRoundControl();
+        fetchMyTeam();
+        if (typeof fetchTournamentStatus === 'function') fetchTournamentStatus();
+      });
       socket.on('tournamentWinner', (data) => {
         showCustomConfirm("Tournament Champion!", `${data.winner} has conquered the Final Treasure and won the Lost Code Championship!`, true, null);
       });
@@ -3526,6 +3733,10 @@
       fetch('/api/tournament/status')
         .then(r => r.json())
         .then(data => {
+          if (data.roundState) {
+            globalAdminRoundState = data.roundState;
+            renderRouteMap();
+          }
           renderTournamentBracket(data.teams || [], data.winner);
         })
         .catch(err => console.error("Error fetching tournament status:", err));
@@ -3537,7 +3748,7 @@
       tbody.innerHTML = '';
 
       if (teamsList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-secondary); padding: 1.5rem;">No teams registered yet. Click "Reset 10 Teams" to provision the tournament roster.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-secondary); padding: 1.5rem;">No teams registered yet. Click "Reset 10 Teams" to provision the tournament roster.</td></tr>`;
         return;
       }
 
@@ -3549,12 +3760,44 @@
         const solvesCount = Object.keys(t.roundSolves || {}).length;
 
         let statusHtml = '';
-        if (t.isWinner) {
+        if (t.disqualified) {
+          statusHtml = `<span class="status-tag status-eliminated" style="background:#5a1a1a; color:#ff8b8b; border:1px solid var(--danger);">DISQUALIFIED (${t.violations || 2}/2)</span>`;
+        } else if (t.violations > 0) {
+          statusHtml = `<span class="status-tag" style="background:rgba(201,154,82,0.15); color:var(--gold-primary); border:1px solid var(--gold-primary);">WARNING (1/2)</span>`;
+        } else if (t.isWinner) {
           statusHtml = `<span class="status-tag status-winner">CHAMPION</span>`;
         } else if (t.eliminated) {
           statusHtml = `<span class="status-tag status-eliminated">ELIMINATED (R${t.eliminatedRound || 2})</span>`;
         } else {
           statusHtml = `<span class="status-tag status-active">ADVANCED (R${curR})</span>`;
+        }
+
+        // Individual Timer Display
+        let timerDisplay = '';
+        if (t.timer) {
+          if (t.timer.solved) {
+            const m = Math.floor((t.timer.solveTimeSeconds || 0) / 60);
+            const s = (t.timer.solveTimeSeconds || 0) % 60;
+            const pen = t.timer.hintPenaltiesMinutes > 0 ? ` (+${t.timer.hintPenaltiesMinutes}m)` : '';
+            timerDisplay = `<span style="color:var(--success); font-weight:700; font-family:'JetBrains Mono',monospace;">✓ ${m}m ${s}s${pen}</span>`;
+          } else {
+            const rem = t.timer.remainingSeconds || 0;
+            const m = Math.floor(rem / 60);
+            const s = rem % 60;
+            const pen = t.timer.hintPenaltiesMinutes > 0 ? ` (-${t.timer.hintPenaltiesMinutes}m)` : '';
+            const isZero = rem <= 0;
+            timerDisplay = `<span style="color:${isZero ? 'var(--danger)' : 'var(--gold-primary)'}; font-family:'JetBrains Mono',monospace; font-weight:700;">⏱ ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}${pen}</span>`;
+          }
+        } else {
+          timerDisplay = `<span style="color:var(--text-secondary); font-size:0.8rem;">--:--</span>`;
+        }
+
+        // Actions: REINITIATE TEAM
+        let actionsHtml = '';
+        if (t.disqualified || t.violations > 0) {
+          actionsHtml = `<button type="button" onclick="reinstateCrew('${escapeHTML(t.id)}')" style="padding:0.35rem 0.75rem; background:rgba(201,154,82,0.18); border:1px solid var(--gold-primary); color:var(--gold-primary); font-family:'Cinzel',serif; font-size:0.75rem; font-weight:700; border-radius:3px; cursor:pointer;">REINITIATE TEAM</button>`;
+        } else {
+          actionsHtml = `<span style="color:var(--text-secondary); font-size:0.75rem;">Active</span>`;
         }
 
         const tr = document.createElement('tr');
@@ -3564,8 +3807,9 @@
           <td><span style="font-weight:700; color:var(--text-primary);">Round ${curR}</span></td>
           <td style="font-size:0.78rem; color:var(--text-secondary); max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHTML(allocated)}">${escapeHTML(allocated)}</td>
           <td><span style="color:var(--gold-primary); font-weight:700;">${solvesCount} / 4</span></td>
-          <td><span style="font-weight:700; color:var(--gold-primary);">${t.score || 0}</span></td>
+          <td>${timerDisplay}</td>
           <td>${statusHtml}</td>
+          <td>${actionsHtml}</td>
         `;
         tbody.appendChild(tr);
       });

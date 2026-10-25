@@ -49,6 +49,12 @@ if (fs.existsSync(configFilePath)) {
 if (!Array.isArray(ctfConfig.unlockedRounds)) {
   ctfConfig.unlockedRounds = [1];
 }
+if (!ctfConfig.roundDurations || typeof ctfConfig.roundDurations !== 'object') {
+  ctfConfig.roundDurations = { "1": 30, "2": 25, "3": 20, "4": 15 };
+}
+if (ctfConfig.fullscreenEnforced === undefined) {
+  ctfConfig.fullscreenEnforced = true;
+}
 
 // -----------------------
 // Tournament Engine Persistence Helpers
@@ -169,12 +175,75 @@ function findTeamSlotInRound(assignments, roundNum, teamId) {
 }
 
 // -----------------------
+// Individual Crew Round Timing Model
+// -----------------------
+function getTeamRoundTimer(team, rKey) {
+  if (!team) return null;
+  if (!team.roundTimers) team.roundTimers = {};
+  const duration = (ctfConfig.roundDurations && ctfConfig.roundDurations[rKey]) || (rKey === '1' ? 30 : (rKey === '2' ? 25 : (rKey === '3' ? 20 : 15)));
+  
+  if (!team.roundTimers[rKey]) {
+    team.roundTimers[rKey] = {
+      startedAt: Date.now(),
+      durationMinutes: duration,
+      hintPenaltiesMinutes: 0,
+      solved: false,
+      solvedAt: null,
+      finalSolveSeconds: null
+    };
+  }
+
+  const tState = team.roundTimers[rKey];
+  const allocatedSec = (tState.durationMinutes || duration) * 60;
+  const penaltySec = (tState.hintPenaltiesMinutes || 0) * 60;
+
+  if (tState.solved && tState.solvedAt) {
+    const elapsedSec = Math.max(0, Math.floor((tState.solvedAt - tState.startedAt) / 1000));
+    const remainingSec = Math.max(0, allocatedSec - penaltySec - elapsedSec);
+    return {
+      startedAt: tState.startedAt,
+      durationMinutes: tState.durationMinutes,
+      hintPenaltiesMinutes: tState.hintPenaltiesMinutes || 0,
+      penaltyMinutes: tState.hintPenaltiesMinutes || 0,
+      solved: true,
+      solvedAt: tState.solvedAt,
+      elapsedSeconds: elapsedSec,
+      remainingSeconds: remainingSec,
+      solveTimeSeconds: tState.finalSolveSeconds || (elapsedSec + penaltySec)
+    };
+  } else {
+    const elapsedSec = Math.max(0, Math.floor((Date.now() - tState.startedAt) / 1000));
+    const remainingSec = Math.max(0, allocatedSec - penaltySec - elapsedSec);
+    return {
+      startedAt: tState.startedAt,
+      durationMinutes: tState.durationMinutes,
+      hintPenaltiesMinutes: tState.hintPenaltiesMinutes || 0,
+      penaltyMinutes: tState.hintPenaltiesMinutes || 0,
+      solved: false,
+      solvedAt: null,
+      elapsedSeconds: elapsedSec,
+      remainingSeconds: remainingSec,
+      solveTimeSeconds: null
+    };
+  }
+}
+
+// -----------------------
 // Private Participant Challenge Endpoint (Strict Privacy Enforced)
 // -----------------------
 app.get('/api/team/challenge', (req, res) => {
   const team = getCurrentTeam(req);
   if (!team) {
     return res.status(401).json({ error: 'Authentication required. Please board your ship.' });
+  }
+
+  if (team.disqualified) {
+    return res.status(403).json({
+      success: false,
+      isDisqualified: true,
+      error: 'Your crew has been disqualified due to proctoring violations.',
+      riddle: null
+    });
   }
 
   const requestedRound = parseInt(req.query.round, 10);
@@ -198,20 +267,55 @@ app.get('/api/team/challenge', (req, res) => {
     });
   }
 
+  const assignments = getTournamentAssignments();
+  const slot = findTeamSlotInRound(assignments, roundNum, team.id);
+  const solveRecord = team.roundSolves && team.roundSolves[String(roundNum)];
+  const isQualified = !!(currentRoundState.qualifiers || []).includes(team.id);
+  const isAlreadySolved = !!(
+    (solveRecord && (solveRecord.completed || typeof solveRecord === 'string')) ||
+    (isQualified && (solveRecord || roundStatus === 'Completed'))
+  );
+
+  const timerInfo = getTeamRoundTimer(team, String(roundNum));
+
+  // If already solved, return completed view with solved answer regardless of whether round is still Live
+  if (isAlreadySolved) {
+    const rawRiddle = slot && slot.riddleId ? getRiddleBank()[slot.riddleId] : null;
+    const sanitized = rawRiddle ? {
+      id: rawRiddle.id,
+      title: rawRiddle.title,
+      text: rawRiddle.text,
+      points: 0
+    } : { id: 'solved', title: 'Riddle Completed', text: 'Bounty secured by your crew!' };
+
+    const solvedAns = (typeof solveRecord === 'object' && solveRecord?.answer) ? solveRecord.answer : 'Flag Salvaged';
+    return res.json({
+      success: true,
+      round: roundNum,
+      slotId: slot ? slot.slotId : null,
+      riddle: sanitized,
+      roundStatus,
+      isSolved: true,
+      isQualified: true,
+      isClaimed: true,
+      solvedAnswer: solvedAns,
+      timer: timerInfo,
+      message: 'Your crew has successfully completed this riddle!'
+    });
+  }
+
   if (roundStatus !== 'Live') {
     return res.json({
       success: false,
       round: roundNum,
       roundStatus,
       isEliminated: false,
-      isQualified: !!(currentRoundState.qualifiers || []).includes(team.id),
+      isQualified: false,
+      timer: timerInfo,
       message: `Waters uncharted: Round ${roundNum} is currently ${roundStatus}.`,
       riddle: null
     });
   }
-
-  const assignments = getTournamentAssignments();
-  const slot = findTeamSlotInRound(assignments, roundNum, team.id);
 
   if (!slot || !slot.riddleId) {
     return res.json({
@@ -220,7 +324,8 @@ app.get('/api/team/challenge', (req, res) => {
       slotId: slot ? slot.slotId : null,
       roundStatus,
       isEliminated: false,
-      isQualified: !!(currentRoundState.qualifiers || []).includes(team.id),
+      isQualified: false,
+      timer: timerInfo,
       message: 'The Admiralty has not yet charted a riddle for your crew in this round.',
       riddle: null
     });
@@ -236,7 +341,8 @@ app.get('/api/team/challenge', (req, res) => {
       slotId: slot.slotId,
       roundStatus,
       isEliminated: false,
-      isQualified: !!(currentRoundState.qualifiers || []).includes(team.id),
+      isQualified: false,
+      timer: timerInfo,
       message: 'Riddle configuration is in draft state by the Admiralty.',
       riddle: null
     });
@@ -247,7 +353,6 @@ app.get('/api/team/challenge', (req, res) => {
     id: rawRiddle.id,
     title: rawRiddle.title,
     text: rawRiddle.text,
-    points: rawRiddle.points || 100,
     hints: Array.isArray(rawRiddle.hints) ? rawRiddle.hints.map(h => ({
       text: (team.hintsUnlocked && team.hintsUnlocked[rawRiddle.id]) ? h.text : 'Hint locked. Consult the Admiralty.',
       cost: h.cost || 0,
@@ -262,10 +367,11 @@ app.get('/api/team/challenge', (req, res) => {
     groupId: slot.groupId || null,
     riddle: sanitizedRiddle,
     roundStatus,
+    timer: timerInfo,
     isClaimed: !!slot.claimed,
     claimedBy: slot.claimedBy || null,
     claimedAt: slot.claimedAt || null,
-    isQualified: !!(currentRoundState.qualifiers || []).includes(team.id),
+    isQualified: false,
     isEliminated: false
   });
 });
@@ -297,6 +403,12 @@ app.post('/api/team/submit', (req, res) => {
     return res.status(401).json({ error: 'Authentication required. Please board your ship.' });
   }
 
+  if (team.disqualified) {
+    return res.status(403).json({
+      error: 'Your crew has been disqualified due to proctoring violations and cannot submit flags.'
+    });
+  }
+
   const { answer, round } = req.body || {};
   if (!answer || typeof answer !== 'string' || !answer.trim()) {
     return res.status(400).json({ error: 'Flag or answer cannot be empty.' });
@@ -321,7 +433,8 @@ app.post('/api/team/submit', (req, res) => {
     });
   }
 
-  if (Array.isArray(currentRoundState.qualifiers) && currentRoundState.qualifiers.includes(team.id)) {
+  const existingSolve = team.roundSolves && team.roundSolves[String(roundNum)];
+  if ((existingSolve && existingSolve.completed) || (Array.isArray(currentRoundState.qualifiers) && currentRoundState.qualifiers.includes(team.id))) {
     return res.status(400).json({
       error: `Your crew has already secured qualification for Round ${roundNum}!`
     });
@@ -398,24 +511,66 @@ app.post('/api/team/submit', (req, res) => {
   }
   saveRoundState(roundState);
 
-  // Update team score & solved list
-  const pointsAwarded = riddle.points || 100;
-  team.score = (team.score || 0) + pointsAwarded;
-  if (!Array.isArray(team.scoreHistory)) team.scoreHistory = [];
+  // Stop crew's individual round timer and calculate solve time
   const solveTimestamp = Date.now();
-  team.scoreHistory.push({
-    timestamp: solveTimestamp,
-    time: new Date(solveTimestamp).toLocaleTimeString(),
-    score: team.score,
-    challengeKey: riddle.id,
-    round: roundNum
-  });
+  if (!team.roundTimers) team.roundTimers = {};
+  if (!team.roundTimers[String(roundNum)]) {
+    getTeamRoundTimer(team, String(roundNum));
+  }
+  if (team.roundTimers[String(roundNum)]) {
+    const tTimer = team.roundTimers[String(roundNum)];
+    tTimer.solved = true;
+    tTimer.solvedAt = solveTimestamp;
+    const elapsed = Math.max(0, Math.floor((solveTimestamp - (tTimer.startedAt || solveTimestamp)) / 1000));
+    tTimer.finalSolveSeconds = elapsed + (tTimer.hintPenaltiesMinutes || 0) * 60;
+  }
+
   if (!Array.isArray(team.solvedChallenges)) team.solvedChallenges = [];
   if (!team.solvedChallenges.includes(riddle.id)) {
     team.solvedChallenges.push(riddle.id);
   }
   if (!team.roundSolves) team.roundSolves = {};
-  team.roundSolves[String(roundNum)] = slot.slotId;
+  team.roundSolves[String(roundNum)] = {
+    slotId: slot.slotId,
+    riddleId: riddle.id,
+    answer: answer.trim(),
+    solvedAt: claimTime,
+    completed: true,
+    solveTimeSeconds: team.roundTimers[String(roundNum)]?.finalSolveSeconds || null
+  };
+
+  const pointsEarned = (typeof riddle.points === 'number' && !isNaN(riddle.points)) ? riddle.points : 100;
+  team.score = (team.score || 0) + pointsEarned;
+  if (!Array.isArray(team.scoreHistory)) {
+    team.scoreHistory = [{ timestamp: solveTimestamp - 1000, time: new Date(solveTimestamp - 1000).toLocaleTimeString(), score: team.score - pointsEarned }];
+  }
+  team.scoreHistory.push({ timestamp: solveTimestamp, time: new Date(solveTimestamp).toLocaleTimeString(), score: team.score });
+
+  // Advance team round & unlock next round
+  team.currentRound = Math.max(team.currentRound || 1, roundNum + 1);
+  if (!Array.isArray(team.unlockedRounds)) team.unlockedRounds = [1];
+  if (roundNum < 4 && !team.unlockedRounds.includes(roundNum + 1)) {
+    team.unlockedRounds.push(roundNum + 1);
+    team.unlockedRounds.sort((a, b) => a - b);
+  }
+
+  // Pre-seed next round timer startedAt
+  if (roundNum < 4) {
+    const nextRKey = String(roundNum + 1);
+    const nextDur = (ctfConfig.roundDurations && ctfConfig.roundDurations[nextRKey]) || (nextRKey === '2' ? 25 : (nextRKey === '3' ? 20 : 15));
+    if (!team.roundTimers[nextRKey]) {
+      team.roundTimers[nextRKey] = {
+        startedAt: solveTimestamp,
+        durationMinutes: nextDur,
+        hintPenaltiesMinutes: 0,
+        solved: false,
+        solvedAt: null,
+        finalSolveSeconds: null
+      };
+    }
+  }
+
+  if (typeof team.score !== 'number') team.score = 0;
 
   fs.writeFileSync(path.join(__dirname, 'teams.json'), JSON.stringify(teams, null, 2));
 
@@ -430,15 +585,21 @@ app.post('/api/team/submit', (req, res) => {
   io.emit('teamsUpdate');
   io.emit('scoreboardUpdate');
 
+  const finalSolveSec = team.roundTimers[String(roundNum)]?.finalSolveSeconds || 0;
+  const mins = Math.floor(finalSolveSec / 60);
+  const secs = finalSolveSec % 60;
+  const timeFormatted = `${mins}m ${secs}s`;
+
   return res.json({
     success: true,
     message: isWinner
       ? '🏆 VICTORY! Your crew has solved the final riddle and won the Lost Code Championship!'
-      : `⚓ Treasure secured! Qualification claimed for Round ${roundNum}!`,
+      : `⚓ Treasure secured! Solved in ${timeFormatted}! Qualification claimed for Round ${roundNum}!`,
     qualified: true,
     isWinner,
     slotId: slot.slotId,
-    pointsAwarded
+    solveTime: timeFormatted,
+    solveTimeSeconds: finalSolveSec
   });
 });
 
@@ -757,6 +918,7 @@ app.get('/api/admin/assignments', (req, res) => {
     success: true,
     assignments: getTournamentAssignments(),
     roundState: getRoundState(),
+    roundDurations: ctfConfig.roundDurations || { "1": 30, "2": 25, "3": 20, "4": 15 },
     auditLog: (function() {
       try { return JSON.parse(fs.readFileSync(auditLogFilePath, 'utf8')); } catch(e) { return []; }
     })()
@@ -879,6 +1041,39 @@ app.post('/api/admin/rounds/activate', (req, res) => {
   roundState[rKey].startedAt = new Date().toISOString();
   saveRoundState(roundState);
 
+  // Sync unlockedRounds in ctfConfig
+  if (!Array.isArray(ctfConfig.unlockedRounds)) ctfConfig.unlockedRounds = [1];
+  if (!ctfConfig.unlockedRounds.includes(roundNum)) {
+    ctfConfig.unlockedRounds.push(roundNum);
+    ctfConfig.unlockedRounds.sort((a, b) => a - b);
+    try { fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2)); } catch (e) {}
+  }
+
+  // Sync unlockedRounds and initialize individual timers for all active crews
+  const nowTs = Date.now();
+  const dur = (ctfConfig.roundDurations && ctfConfig.roundDurations[rKey]) || (rKey === '1' ? 30 : (rKey === '2' ? 25 : (rKey === '3' ? 20 : 15)));
+  teams.forEach(t => {
+    if (!isAdminTeam(t) && !t.eliminated) {
+      if (!Array.isArray(t.unlockedRounds)) t.unlockedRounds = [1];
+      if (!t.unlockedRounds.includes(roundNum)) {
+        t.unlockedRounds.push(roundNum);
+        t.unlockedRounds.sort((a, b) => a - b);
+      }
+      if (!t.roundTimers) t.roundTimers = {};
+      if (!t.roundTimers[rKey]) {
+        t.roundTimers[rKey] = {
+          startedAt: nowTs,
+          durationMinutes: dur,
+          hintPenaltiesMinutes: 0,
+          solved: false,
+          solvedAt: null,
+          finalSolveSeconds: null
+        };
+      }
+    }
+  });
+  try { fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2)); } catch (e) {}
+
   logAuditEvent({
     action: 'ROUND_ACTIVATION',
     admin: req.session.teamName || 'admin',
@@ -886,12 +1081,52 @@ app.post('/api/admin/rounds/activate', (req, res) => {
     details: { round: roundNum }
   });
 
-  io.emit('tournament:round_state', { round: roundNum, status: 'Live' });
+  io.emit('tournament:round_state', { round: roundNum, status: 'Live', roundState });
+  io.emit('roundsUpdate', ctfConfig.unlockedRounds);
+  io.emit('teamsUpdate');
+  io.emit('tournamentUpdate');
 
   return res.json({
     success: true,
     message: `Round ${roundNum} is now Live!`,
     roundState: roundState[rKey]
+  });
+});
+
+// Admin Endpoint: Set Individual Round Duration (Timing System)
+app.post('/api/admin/rounds/duration', (req, res) => {
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
+  const { round, durationMinutes } = req.body || {};
+  const roundNum = parseInt(round, 10);
+  const dur = parseInt(durationMinutes, 10);
+  if (!roundNum || roundNum < 1 || roundNum > 4 || !dur || dur <= 0) {
+    return res.status(400).json({ error: 'Valid round (1-4) and positive durationMinutes required.' });
+  }
+  if (!ctfConfig.roundDurations) ctfConfig.roundDurations = {};
+  ctfConfig.roundDurations[String(roundNum)] = dur;
+  
+  try {
+    fs.writeFileSync(configFilePath, JSON.stringify(ctfConfig, null, 2));
+  } catch (err) {
+    console.error('Error saving round duration:', err);
+  }
+
+  // Update ongoing timers for teams in this round that have not solved yet
+  teams.forEach(t => {
+    if (t.roundTimers && t.roundTimers[String(roundNum)] && !t.roundTimers[String(roundNum)].solved) {
+      t.roundTimers[String(roundNum)].durationMinutes = dur;
+    }
+  });
+  try { fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2)); } catch (e) {}
+
+  io.emit('configUpdate', ctfConfig);
+  io.emit('tournamentUpdate');
+  io.emit('teamsUpdate');
+
+  return res.json({
+    success: true,
+    message: `Round ${roundNum} duration updated to ${dur} minutes.`,
+    roundDurations: ctfConfig.roundDurations
   });
 });
 
@@ -973,7 +1208,8 @@ app.get('/api/config', (req, res) => {
   res.json({
     ctfStartTime: ctfConfig.ctfStartTime,
     unlockedRounds: ctfConfig.unlockedRounds || [1],
-    fullscreenEnforced: ctfConfig.fullscreenEnforced !== false
+    fullscreenEnforced: ctfConfig.fullscreenEnforced !== false,
+    roundDurations: ctfConfig.roundDurations || { "1": 30, "2": 25, "3": 20, "4": 15 }
   });
 });
 
@@ -1055,12 +1291,47 @@ app.post('/api/admin/wipe', (req, res) => {
       team.eliminatedRound = null;
       team.eliminatedReason = null;
       team.roundSolves = {};
+      team.roundTimers = {};
+      team.totalHintPenaltyMinutes = 0;
+      team.disqualified = false;
+      team.violations = 0;
+      delete team.disqualifiedAt;
+      delete team.disqualifiedReason;
       team.isWinner = false;
       delete team.wonAt;
   });
   users.forEach(user => {
       user.solvedChallenges = [];
   });
+  
+  // Reset tournament assignments claims
+  const assignments = getTournamentAssignments();
+  if (assignments && assignments.rounds) {
+    Object.keys(assignments.rounds).forEach(r => {
+      const rd = assignments.rounds[r];
+      if (Array.isArray(rd.slots)) {
+        rd.slots.forEach(s => { delete s.claimed; delete s.claimedBy; delete s.claimedAt; });
+      }
+      if (rd.groups) {
+        Object.keys(rd.groups).forEach(g => {
+          if (Array.isArray(rd.groups[g].slots)) {
+            rd.groups[g].slots.forEach(s => { delete s.claimed; delete s.claimedBy; delete s.claimedAt; });
+          }
+        });
+      }
+    });
+    saveTournamentAssignments(assignments);
+  }
+
+  // Reset round state qualifiers & eliminations
+  const roundState = getRoundState();
+  Object.keys(roundState).forEach(r => {
+    roundState[r].status = r === '1' ? 'Ready' : 'Locked';
+    roundState[r].qualifiers = [];
+    roundState[r].eliminations = [];
+  });
+  saveRoundState(roundState);
+
   fs.writeFileSync(path.join(__dirname, 'teams.json'), JSON.stringify(teams, null, 2));
   fs.writeFileSync(path.join(__dirname, 'users.json'), JSON.stringify(users, null, 2));
   io.emit('teamsUpdate');
@@ -1553,7 +1824,9 @@ app.get('/api/teams', (req, res) => {
       eliminatedRound: team.eliminatedRound || null,
       eliminatedReason: team.eliminatedReason || null,
       isWinner: Boolean(team.isWinner),
-      roundSolves: team.roundSolves || {}
+      roundSolves: team.roundSolves || {},
+      timer: getTeamRoundTimer(team, String(team.currentRound || 1)),
+      roundTimers: team.roundTimers || {}
     };
   });
   res.json(safeTeams);
@@ -1572,7 +1845,9 @@ app.get('/api/myteam', (req, res) => {
     myTeam.hintsUnlocked = {};
   }
   const hintsUnlockedCount = Object.keys(myTeam.hintsUnlocked).length;
-  const nextHintCost = (hintsUnlockedCount + 1) * 5;
+  const nextHintPenaltyMinutes = (hintsUnlockedCount + 1) * 5;
+  const curRound = myTeam.currentRound || 1;
+  const timer = getTeamRoundTimer(myTeam, String(curRound));
 
   res.json({
     team: {
@@ -1583,10 +1858,10 @@ app.get('/api/myteam', (req, res) => {
       solvedChallenges,
       hintsUnlocked: myTeam.hintsUnlocked,
       hintsUnlockedCount,
-      nextHintCost,
+      nextHintPenaltyMinutes,
       disqualified: Boolean(myTeam.disqualified),
       violations: myTeam.violations || 0,
-      currentRound: myTeam.currentRound || 1,
+      currentRound: curRound,
       unlockedRounds: myTeam.unlockedRounds || [1],
       allocatedRiddles: myTeam.allocatedRiddles || {},
       groupRound2: myTeam.groupRound2 || 'A',
@@ -1595,6 +1870,9 @@ app.get('/api/myteam', (req, res) => {
       eliminatedRound: myTeam.eliminatedRound || null,
       eliminatedReason: myTeam.eliminatedReason || null,
       roundSolves: myTeam.roundSolves || {},
+      roundTimers: myTeam.roundTimers || {},
+      timer,
+      totalHintPenaltyMinutes: myTeam.totalHintPenaltyMinutes || 0,
       isWinner: Boolean(myTeam.isWinner)
     }
   });
@@ -1615,24 +1893,35 @@ app.get('/api/profile', (req, res) => {
 
 // Tournament Status API
 app.get('/api/tournament/status', (req, res) => {
-  const activeTeams = teams.filter(t => !isAdminTeam(t)).map(t => ({
-    id: t.id,
-    teamName: t.teamName,
-    score: t.score || 0,
-    currentRound: t.currentRound || 1,
-    unlockedRounds: t.unlockedRounds || [1],
-    allocatedRiddles: t.allocatedRiddles || {},
-    groupRound2: t.groupRound2 || 'A',
-    groupRound3: t.groupRound3 || 'A',
-    eliminated: Boolean(t.eliminated),
-    eliminatedRound: t.eliminatedRound || null,
-    eliminatedReason: t.eliminatedReason || null,
-    roundSolves: t.roundSolves || {},
-    isWinner: Boolean(t.isWinner)
-  }));
+  const roundState = getRoundState();
+  const activeTeams = teams.filter(t => !isAdminTeam(t)).map(t => {
+    const curR = t.currentRound || 1;
+    const timer = getTeamRoundTimer(t, String(curR));
+    return {
+      id: t.id,
+      teamName: t.teamName,
+      score: t.score || 0,
+      currentRound: curR,
+      unlockedRounds: t.unlockedRounds || [1],
+      allocatedRiddles: t.allocatedRiddles || {},
+      groupRound2: t.groupRound2 || 'A',
+      groupRound3: t.groupRound3 || 'A',
+      eliminated: Boolean(t.eliminated),
+      eliminatedRound: t.eliminatedRound || null,
+      eliminatedReason: t.eliminatedReason || null,
+      disqualified: Boolean(t.disqualified),
+      violations: t.violations || 0,
+      roundSolves: t.roundSolves || {},
+      roundTimers: t.roundTimers || {},
+      timer,
+      isWinner: Boolean(t.isWinner)
+    };
+  });
 
   res.json({
     teams: activeTeams,
+    roundState,
+    roundDurations: ctfConfig.roundDurations || { "1": 30, "2": 25, "3": 20, "4": 15 },
     winner: activeTeams.find(t => t.isWinner) || null
   });
 });
@@ -1932,17 +2221,33 @@ app.post('/api/challenge/hint/unlock', (req, res) => {
   if (team.disqualified) {
     return res.status(403).json({ error: 'Your crew has been disqualified from the tournament for proctoring violations.' });
   }
-  const { category } = req.body;
-  if (!category) return res.status(400).json({ error: 'Category required.' });
+  const { category, riddleId } = req.body || {};
+  const queryKey = riddleId || category;
+  if (!queryKey) return res.status(400).json({ error: 'Riddle ID or category required.' });
 
   const flagsFilePath = path.join(__dirname, 'private', 'flags.json');
-  if (!fs.existsSync(flagsFilePath)) return res.status(500).json({ error: 'Flags file not found.' });
-  const flagsData = JSON.parse(fs.readFileSync(flagsFilePath, 'utf8'));
-  const challengeObj = flagsData[category];
-  if (!challengeObj) return res.status(404).json({ error: 'Challenge not found.' });
-  if (!challengeObj.hint || !challengeObj.hint.trim()) return res.status(400).json({ error: 'This challenge has no hint.' });
+  let flagsData = {};
+  try { if (fs.existsSync(flagsFilePath)) flagsData = JSON.parse(fs.readFileSync(flagsFilePath, 'utf8')); } catch(e) {}
+  const riddleBank = getRiddleBank();
 
-  const challengeRound = challengeObj.round || 1;
+  let hintText = null;
+  let challengeRound = 1;
+  const challengeObj = flagsData[queryKey];
+  const riddleObj = riddleBank[queryKey] || Object.values(riddleBank).find(r => r.id === queryKey || r.category === queryKey);
+
+  if (challengeObj && challengeObj.hint) {
+    hintText = challengeObj.hint;
+    challengeRound = challengeObj.round || 1;
+  } else if (riddleObj && Array.isArray(riddleObj.hints) && riddleObj.hints.length > 0) {
+    hintText = riddleObj.hints[0].text;
+    challengeRound = riddleObj.targetRound || 1;
+  } else if (riddleObj && riddleObj.text) {
+    hintText = `Intel Clue: Search carefully near ${riddleObj.title}.`;
+    challengeRound = riddleObj.targetRound || 1;
+  } else {
+    return res.status(404).json({ error: 'Challenge or riddle not found.' });
+  }
+
   const unlockedRounds = Array.isArray(ctfConfig.unlockedRounds) ? ctfConfig.unlockedRounds : [1];
   if (!isAdminUser && !unlockedRounds.includes(challengeRound)) {
     return res.status(403).json({ error: "These waters remain locked by the Admiralty! Await captain's orders before seeking clues here." });
@@ -1953,33 +2258,38 @@ app.post('/api/challenge/hint/unlock', (req, res) => {
   }
 
   // If already unlocked for this team, return it without deducting again
-  if (team.hintsUnlocked[category]) {
+  if (team.hintsUnlocked[queryKey]) {
     return res.json({
+      success: true,
       message: 'Hint already unlocked.',
-      hint: challengeObj.hint,
+      hint: hintText,
       cost: 0,
+      penaltyMinutes: 0,
+      timeDeductedMinutes: 0,
       alreadyUnlocked: true,
-      teamScore: team.score,
       hintsUnlockedCount: Object.keys(team.hintsUnlocked).length,
-      nextHintCost: (Object.keys(team.hintsUnlocked).length + 1) * 5
+      nextHintPenaltyMinutes: (Object.keys(team.hintsUnlocked).length + 1) * 5
     });
   }
 
-  // Calculate escalating penalty: 1st hint = 5, 2nd = 10, 3rd = 15...
+  // Calculate escalating time deduction: 1st hint = -5m, 2nd hint = -10m, 3rd = -15m...
   const currentCount = Object.keys(team.hintsUnlocked).length;
-  const cost = (currentCount + 1) * 5;
+  const penaltyMinutes = (currentCount + 1) * 5;
 
-  team.score = (team.score || 0) - cost;
-  team.hintsUnlocked[category] = {
-    cost,
+  const rKey = String(challengeRound);
+  if (!team.roundTimers) team.roundTimers = {};
+  if (!team.roundTimers[rKey]) {
+    getTeamRoundTimer(team, rKey);
+  }
+  if (team.roundTimers[rKey]) {
+    team.roundTimers[rKey].hintPenaltiesMinutes = (team.roundTimers[rKey].hintPenaltiesMinutes || 0) + penaltyMinutes;
+  }
+  team.totalHintPenaltyMinutes = (team.totalHintPenaltyMinutes || 0) + penaltyMinutes;
+
+  team.hintsUnlocked[queryKey] = {
+    penaltyMinutes,
     unlockedAt: Date.now()
   };
-
-  const hintTs = Date.now();
-  if (!team.scoreHistory) {
-    team.scoreHistory = [{ timestamp: hintTs - 1000, time: new Date(hintTs - 1000).toLocaleTimeString(), score: team.score + cost }];
-  }
-  team.scoreHistory.push({ timestamp: hintTs, time: new Date(hintTs).toLocaleTimeString(), score: team.score });
 
   try {
     fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
@@ -1989,13 +2299,16 @@ app.post('/api/challenge/hint/unlock', (req, res) => {
   }
 
   io.emit('teamsUpdate');
+  io.emit('tournamentUpdate');
+
   return res.json({
-    message: `Quartermaster's secret revealed! ${cost} points deducted from your team.`,
-    hint: challengeObj.hint,
-    cost,
-    teamScore: team.score,
+    success: true,
+    message: `Quartermaster's secret revealed! ${penaltyMinutes} minutes deducted from your crew's timer.`,
+    hint: hintText,
+    penaltyMinutes,
+    timeDeductedMinutes: penaltyMinutes,
     hintsUnlockedCount: currentCount + 1,
-    nextHintCost: (currentCount + 2) * 5
+    nextHintPenaltyMinutes: (currentCount + 2) * 5
   });
 });
 
@@ -2021,6 +2334,7 @@ app.post('/api/proctor/violation', (req, res) => {
     team.disqualified = true;
     team.disqualifiedAt = Date.now();
     team.disqualifiedReason = 'Screen departure violation limit exceeded (2/2).';
+    io.emit('team:disqualified', { teamId: team.id, teamName: team.teamName, reason: team.disqualifiedReason });
   }
 
   try {
@@ -2030,6 +2344,7 @@ app.post('/api/proctor/violation', (req, res) => {
   }
 
   io.emit('teamsUpdate');
+  io.emit('tournamentUpdate');
 
   if (isSecondViolation) {
     return res.json({
@@ -2066,8 +2381,10 @@ app.post('/api/admin/teams/reinstate', isAdmin, (req, res) => {
     return res.status(500).json({ error: 'Failed to update teams.' });
   }
 
+  io.emit('team:reinstated', { teamId: targetTeam.id, teamName: targetTeam.teamName });
   io.emit('teamsUpdate');
-  return res.json({ message: `Crew ${targetTeam.teamName} reinstated successfully!` });
+  io.emit('tournamentUpdate');
+  return res.json({ success: true, message: `Crew ${targetTeam.teamName} reinstated successfully!` });
 });
 
 app.get('/dashboard', (req, res) => {

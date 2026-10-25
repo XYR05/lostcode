@@ -3,28 +3,35 @@
     "status": "Draft",
     "startedAt": null,
     "completedAt": null,
-    "qualifiers": [],
-    "eliminated": []
+    "qualifiers": [
+      "crew_7_blackflags"
+    ],
+    "eliminated": [],
+    "eliminations": []
   },
   "2": {
     "status": "Locked",
     "startedAt": null,
     "completedAt": null,
     "qualifiers": [],
-    "eliminated": []
+    "eliminated": [],
+    "eliminations": []
   },
   "3": {
     "status": "Locked",
     "startedAt": null,
     "completedAt": null,
     "qualifiers": [],
-    "eliminated": []
+    "eliminated": [],
+    "eliminations": []
   },
   "4": {
     "status": "Locked",
     "startedAt": null,
     "completedAt": null,
     "winner": null,
-    "eliminated": []
+    "eliminated": [],
+    "qualifiers": [],
+    "eliminations": []
   }
 }
