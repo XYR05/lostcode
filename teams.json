@@ -1,8 +1,8 @@
 [
   {
     "id": "team_admin_1",
-    "teamName": "lostcode",
-    "password": "$2b$10$Sr.1RQq5Nrvsvfu/RhBoheTBXynq4orC26ETCQbYixWz1dzufAPLG",
+    "teamName": "admin@lostcode",
+    "password": "$2b$10$67VNAoR7wC.YPloHrODCuuHZKiyYxs26xmuityXtUkCYtFYCDerNm",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -27,7 +27,8 @@
     "eliminatedRound": null,
     "eliminatedReason": null,
     "isWinner": false,
-    "violations": 0
+    "violations": 0,
+    "tagline": "Admiralty Flagship"
   },
   {
     "id": "crew_1_buccaneers",

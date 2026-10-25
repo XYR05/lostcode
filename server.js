@@ -300,7 +300,7 @@ try {
 function isAdminTeam(team) {
   if (!team) return false;
   const name = (team.teamName || '').toLowerCase().trim();
-  return team.id === 'team_admin_1' || name === 'lostcode' || name === 'admin' || name.includes('admin');
+  return team.id === 'team_admin_1' || name === 'admin@lostcode' || name === 'lostcode' || name === 'admin' || name.includes('admin');
 }
 
 function getCurrentTeam(req) {
@@ -347,7 +347,7 @@ app.post('/api/login', (req, res) => {
     loginKey.toLowerCase() === 'admin' ||
     loginKey.toLowerCase() === 'admin@ctf.com'
   )) {
-    matchedTeam = teams.find(t => t.id === 'team_admin_1' || t.teamName.toLowerCase() === 'lostcode');
+    matchedTeam = teams.find(t => t.id === 'team_admin_1' || isAdminTeam(t));
   }
 
   if (matchedTeam) {
@@ -355,7 +355,7 @@ app.post('/api/login', (req, res) => {
     if (teamPwMatches) {
       req.session.teamId = matchedTeam.id;
       req.session.teamName = matchedTeam.teamName;
-      req.session.isAdmin = (matchedTeam.id === 'team_admin_1' || matchedTeam.teamName.toLowerCase() === 'lostcode');
+      req.session.isAdmin = (matchedTeam.id === 'team_admin_1' || isAdminTeam(matchedTeam));
       req.session.userId = matchedTeam.id;
       return res.json({ message: 'Login successful!', teamName: matchedTeam.teamName });
     }
@@ -713,8 +713,8 @@ app.post('/api/admin/tournament/seed-teams', isAdmin, (req, res) => {
   // Preserve admin team
   const adminTeam = teams.find(t => isAdminTeam(t)) || {
     id: "team_admin_1",
-    teamName: "lostcode",
-    password: bcrypt.hashSync("lostcode123", 10),
+    teamName: "admin@lostcode",
+    password: bcrypt.hashSync("foundcode", 10),
     score: 0,
     solvedChallenges: [],
     hintsUnlocked: {},
@@ -723,8 +723,8 @@ app.post('/api/admin/tournament/seed-teams', isAdmin, (req, res) => {
 
   const adminUser = users.find(u => u.id === 'user_admin_1') || {
     id: "user_admin_1",
-    username: "lostcode",
-    email: "lostcode@lostcode",
+    username: "admin@lostcode",
+    email: "admin@lostcode",
     password: adminTeam.password,
     teamId: "team_admin_1",
     solvedChallenges: []

@@ -1,9 +1,9 @@
 [
   {
     "id": "user_admin_1",
-    "username": "lostcode",
-    "email": "lostcode@lostcode",
-    "password": "$2b$10$Sr.1RQq5Nrvsvfu/RhBoheTBXynq4orC26ETCQbYixWz1dzufAPLG",
+    "username": "admin@lostcode",
+    "email": "admin@lostcode",
+    "password": "$2b$10$67VNAoR7wC.YPloHrODCuuHZKiyYxs26xmuityXtUkCYtFYCDerNm",
     "teamId": "team_admin_1",
     "solvedChallenges": []
   },
