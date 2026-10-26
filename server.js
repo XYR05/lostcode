@@ -109,6 +109,15 @@ function saveRoundState(data) {
   atomicWriteJsonSync(roundStateFilePath, data);
 }
 
+function getConfig() {
+  return ctfConfig;
+}
+
+function saveConfig(data) {
+  ctfConfig = data;
+  atomicWriteJsonSync(configFilePath, data);
+}
+
 function logAuditEvent(event) {
   let log = [];
   if (fs.existsSync(auditLogFilePath)) {
@@ -280,6 +289,75 @@ function getTeamRoundTimer(team, rKey) {
 }
 
 // -----------------------
+// Server-Side Tournament Heartbeat Service & Auto-Disqualification Engine
+// -----------------------
+function checkTeamExpiryAndDisqualify(team, rKey) {
+  if (!team || isAdminTeam(team) || team.eliminated || team.disqualified || team.isWinner) return false;
+  const roundState = getRoundState();
+  const curR = rKey ? String(rKey) : String(team.currentRound || 1);
+  const rState = roundState[curR] || { status: 'Locked' };
+  const isRoundLive = rState.status === 'Live';
+
+  const isRound1TimerRunning = (curR === '1') && Boolean(ctfConfig.ctfStartTime) && isRoundLive && Boolean(team.roundTimers?.[curR]?.startedAt);
+  const isOtherRoundTimerRunning = (curR !== '1') && isRoundLive && Boolean(team.roundTimers?.[curR]?.startedAt);
+
+  if (!isRound1TimerRunning && !isOtherRoundTimerRunning) return false;
+
+  const tTimer = getTeamRoundTimer(team, curR);
+  if (!tTimer || tTimer.solved) return false;
+
+  if (tTimer.remainingSeconds <= 0) {
+    team.disqualified = true;
+    team.disqualifiedAt = Date.now();
+    team.disqualifiedReason = `Round ${curR} timer expired (00:00)! Your crew was out of time and has been defaulted.`;
+    return true;
+  }
+  return false;
+}
+
+let _heartbeatInterval = null;
+function startTournamentHeartbeatService() {
+  if (_heartbeatInterval) clearInterval(_heartbeatInterval);
+  _heartbeatInterval = setInterval(() => {
+    try {
+      let teamsChanged = false;
+      const disqualifiedCrews = [];
+
+      teams.forEach(team => {
+        const curR = String(team.currentRound || 1);
+        if (checkTeamExpiryAndDisqualify(team, curR)) {
+          teamsChanged = true;
+          disqualifiedCrews.push({
+            teamId: team.id,
+            teamName: team.teamName,
+            reason: team.disqualifiedReason
+          });
+        }
+      });
+
+      if (teamsChanged) {
+        try { fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2)); } catch (e) {}
+        disqualifiedCrews.forEach(info => {
+          console.log(`[AUTO-DISQUALIFIED] ${info.teamName}: ${info.reason}`);
+          io.emit('team:disqualified', info);
+        });
+        io.emit('teamsUpdate');
+        io.emit('tournamentUpdate');
+      }
+    } catch (err) {
+      console.error("Error in tournamentHeartbeatService:", err);
+    }
+  }, 1000);
+}
+
+function stopTournamentHeartbeatService() {
+  if (_heartbeatInterval) {
+    clearInterval(_heartbeatInterval);
+    _heartbeatInterval = null;
+  }
+}
+
+// -----------------------
 // Private Participant Challenge Endpoint (Strict Privacy Enforced)
 // -----------------------
 app.get('/api/team/challenge', (req, res) => {
@@ -288,19 +366,32 @@ app.get('/api/team/challenge', (req, res) => {
     return res.status(401).json({ error: 'Authentication required. Please board your ship.' });
   }
 
-  if (team.disqualified) {
-    return res.status(403).json({
-      success: false,
-      isDisqualified: true,
-      error: 'Your crew has been disqualified due to proctoring violations.',
-      riddle: null
-    });
-  }
-
   const requestedRound = parseInt(req.query.round, 10);
   const roundNum = (!isNaN(requestedRound) && requestedRound >= 1 && requestedRound <= 4)
     ? requestedRound
     : (team.currentRound || 1);
+
+  // Check if active timer has expired
+  if (checkTeamExpiryAndDisqualify(team, String(roundNum))) {
+    try { fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2)); } catch (e) {}
+    io.emit('team:disqualified', {
+      teamId: team.id,
+      teamName: team.teamName,
+      reason: team.disqualifiedReason
+    });
+    io.emit('teamsUpdate');
+    io.emit('tournamentUpdate');
+  }
+
+  if (team.disqualified) {
+    return res.status(403).json({
+      success: false,
+      isDisqualified: true,
+      error: team.disqualifiedReason || 'Your crew has been disqualified due to proctoring violations.',
+      reason: team.disqualifiedReason || 'Your crew has been disqualified due to proctoring violations.',
+      riddle: null
+    });
+  }
 
   const curRound = team.currentRound || 1;
   const roundState = getRoundState();
@@ -494,7 +585,8 @@ app.post('/api/team/submit', (req, res) => {
 
   if (team.disqualified) {
     return res.status(403).json({
-      error: 'Your crew has been disqualified due to proctoring violations and cannot submit flags.'
+      error: team.disqualifiedReason || 'Your crew has been disqualified and cannot submit flags.',
+      reason: team.disqualifiedReason || 'Your crew has been disqualified and cannot submit flags.'
     });
   }
 
@@ -513,6 +605,21 @@ app.post('/api/team/submit', (req, res) => {
   const roundNum = (!isNaN(requestedRound) && requestedRound >= 1 && requestedRound <= 4)
     ? requestedRound
     : (team.currentRound || 1);
+
+  // Check if round timer has expired
+  if (checkTeamExpiryAndDisqualify(team, String(roundNum))) {
+    try { fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2)); } catch (e) {}
+    io.emit('team:disqualified', {
+      teamId: team.id,
+      teamName: team.teamName,
+      reason: team.disqualifiedReason
+    });
+    io.emit('teamsUpdate');
+    io.emit('tournamentUpdate');
+    return res.status(403).json({
+      error: team.disqualifiedReason || `Round ${roundNum} timer has expired! Your crew has been defaulted.`
+    });
+  }
 
   const curRound = team.currentRound || 1;
   if (!isAdminSession(req) && roundNum > curRound) {
@@ -1349,7 +1456,8 @@ app.get('/api/config', (req, res) => {
     ctfStartTime: ctfConfig.ctfStartTime,
     unlockedRounds: ctfConfig.unlockedRounds || [1],
     fullscreenEnforced: ctfConfig.fullscreenEnforced !== false,
-    roundDurations: ctfConfig.roundDurations || { "1": 30, "2": 25, "3": 20, "4": 15 }
+    roundDurations: ctfConfig.roundDurations || { "1": 30, "2": 25, "3": 20, "4": 15 },
+    roundState: getRoundState()
   });
 });
 
@@ -1672,6 +1780,12 @@ function ensureTeamTournamentAttributes(team, index) {
     team.eliminatedReason = null;
     changed = true;
   }
+  if (team.disqualified === undefined) {
+    team.disqualified = false;
+    team.disqualifiedAt = null;
+    team.disqualifiedReason = null;
+    changed = true;
+  }
 
   return changed;
 }
@@ -1688,6 +1802,10 @@ try {
   }
 } catch (err) {
   console.error("Error reading teams.json:", err);
+}
+
+function getTeams() {
+  return teams;
 }
 
 // Ensure existing teams have tournament progression attributes
@@ -1813,6 +1931,7 @@ app.get('/api/challenges', (req, res) => {
 
     const roundCounts = { 1: 0, 2: 0, 3: 0, 4: 0 };
     const assignments = getTournamentAssignments();
+    const roundState = getRoundState();
     Object.keys(bank).forEach(key => {
       const item = bank[key];
       const r = item.targetRound || item.round || 1;
@@ -1826,7 +1945,8 @@ app.get('/api/challenges', (req, res) => {
         if (solvedList.includes(key) || solvedList.includes(item.id)) solvesCount++;
       });
 
-      const isRoundUnlocked = isAdminUser || teamUnlockedRounds.includes(r);
+      const isRoundLive = Boolean(roundState[String(r)] && roundState[String(r)].status === 'Live');
+      const isRoundUnlocked = isAdminUser || isRoundLive || teamUnlockedRounds.includes(r);
       const slot = userTeam ? findTeamSlotInRound(assignments, r, userTeam.id) : null;
       const teamAllocatedRiddleId = (slot && slot.riddleId) ? slot.riddleId : (userTeam && userTeam.allocatedRiddles && userTeam.allocatedRiddles[r]);
       const isAllocatedToTeam = Boolean(
@@ -2277,6 +2397,9 @@ app.post('/api/admin/tournament/seed-teams', isAdmin, (req, res) => {
       eliminated: false,
       eliminatedRound: null,
       eliminatedReason: null,
+      disqualified: false,
+      disqualifiedAt: null,
+      disqualifiedReason: null,
       roundSolves: {}
     };
 
@@ -2293,7 +2416,8 @@ app.post('/api/admin/tournament/seed-teams', isAdmin, (req, res) => {
     newUsers.push(user);
   });
 
-  teams = newTeams;
+  teams.length = 0;
+  newTeams.forEach(t => teams.push(t));
   users = newUsers;
 
   // Reset slot claims & round state qualifiers so fresh teams start clean
@@ -2351,7 +2475,10 @@ app.post('/api/challenge/flag', (req, res) => {
   const team = getCurrentTeam(req);
   if (!team) return res.status(403).json({ error: 'Not logged in' });
   if (team.disqualified) {
-    return res.status(403).json({ error: 'Your crew has been disqualified from the tournament for proctoring violations.' });
+    return res.status(403).json({
+      error: team.disqualifiedReason || 'Your crew has been disqualified from the tournament for proctoring violations.',
+      reason: team.disqualifiedReason || 'Your crew has been disqualified from the tournament for proctoring violations.'
+    });
   }
 
   // Elimination check
@@ -2529,7 +2656,10 @@ app.post('/api/challenge/hint/unlock', (req, res) => {
   const team = getCurrentTeam(req);
   if (!team) return res.status(403).json({ error: 'Not logged in' });
   if (team.disqualified) {
-    return res.status(403).json({ error: 'Your crew has been disqualified from the tournament for proctoring violations.' });
+    return res.status(403).json({
+      error: team.disqualifiedReason || 'Your crew has been disqualified from the tournament for proctoring violations.',
+      reason: team.disqualifiedReason || 'Your crew has been disqualified from the tournament for proctoring violations.'
+    });
   }
   const { category, riddleId } = req.body || {};
   const queryKey = riddleId || category;
@@ -2600,6 +2730,15 @@ app.post('/api/challenge/hint/unlock', (req, res) => {
     penaltyMinutes,
     unlockedAt: Date.now()
   };
+
+  // If hint penalty causes active round timer to expire, automatically disqualify crew
+  if (checkTeamExpiryAndDisqualify(team, rKey)) {
+    io.emit('team:disqualified', {
+      teamId: team.id,
+      teamName: team.teamName,
+      reason: team.disqualifiedReason
+    });
+  }
 
   try {
     fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
@@ -2672,17 +2811,17 @@ app.post('/api/proctor/violation', (req, res) => {
 });
 
 // Admin Route: Reinstate Disqualified Crew
-app.post('/api/admin/teams/reinstate', isAdmin, (req, res) => {
-  const { teamId } = req.body;
-  if (!teamId) return res.status(400).json({ error: 'teamId required.' });
+app.post(['/api/admin/teams/reinstate', '/api/admin/teams/reinitiate'], isAdmin, (req, res) => {
+  const teamId = req.body?.teamId || req.body?.teamName;
+  if (!teamId) return res.status(400).json({ error: 'teamId or teamName required.' });
 
   const targetTeam = teams.find(t => t.id === teamId || t.teamName.toLowerCase() === teamId.toLowerCase());
   if (!targetTeam) return res.status(404).json({ error: 'Team not found.' });
 
   targetTeam.disqualified = false;
   targetTeam.violations = 0;
-  delete targetTeam.disqualifiedAt;
-  delete targetTeam.disqualifiedReason;
+  targetTeam.disqualifiedAt = null;
+  targetTeam.disqualifiedReason = null;
 
   try {
     fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
@@ -2698,10 +2837,16 @@ app.post('/api/admin/teams/reinstate', isAdmin, (req, res) => {
 });
 
 // Admin Route: Reverse or Adjust Time for Individual Crew
-app.post('/api/admin/teams/reverse-time', (req, res) => {
+app.post(['/api/admin/teams/reverse-time', '/api/admin/teams/forward-time'], (req, res) => {
   if (!isAdminSession(req)) return res.status(403).json({ error: 'Admiralty authority required.' });
-  const { teamId, round, action, minutes } = req.body || {};
-  if (!teamId) return res.status(400).json({ error: 'teamId required.' });
+  const { round, minutes } = req.body || {};
+  let action = req.body?.action;
+  if (!action) {
+    if (req.path.includes('forward-time')) action = 'add_time';
+    else action = 'deduct_time';
+  }
+  const teamId = req.body?.teamId || req.body?.teamName;
+  if (!teamId) return res.status(400).json({ error: 'teamId or teamName required.' });
 
   const targetTeam = teams.find(t => t.id === teamId || t.teamName.toLowerCase() === teamId.toLowerCase());
   if (!targetTeam) return res.status(404).json({ error: 'Team not found.' });
@@ -2752,6 +2897,16 @@ app.post('/api/admin/teams/reverse-time', (req, res) => {
     }
   }
 
+  // If time deduction caused active round timer to expire, automatically disqualify crew
+  if (checkTeamExpiryAndDisqualify(targetTeam, rKey)) {
+    logMessage += ` Time deduction caused clock to expire (00:00). Crew automatically disqualified.`;
+    io.emit('team:disqualified', {
+      teamId: targetTeam.id,
+      teamName: targetTeam.teamName,
+      reason: targetTeam.disqualifiedReason
+    });
+  }
+
   try {
     fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
   } catch (err) {
@@ -2769,7 +2924,9 @@ app.post('/api/admin/teams/reverse-time', (req, res) => {
     teamId: targetTeam.id,
     teamName: targetTeam.teamName,
     round: rKey,
-    timer: updatedTimer
+    timer: updatedTimer,
+    disqualified: Boolean(targetTeam.disqualified),
+    disqualifiedReason: targetTeam.disqualifiedReason || null
   });
 });
 
@@ -2807,6 +2964,7 @@ server.on('error', (err) => {
 });
 
 if (require.main === module) {
+  startTournamentHeartbeatService();
   server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
@@ -2817,6 +2975,7 @@ module.exports = {
   server,
   io,
   teams,
+  getTeams,
   atomicWriteJsonSync,
   getRiddleBank,
   saveRiddleBank,
@@ -2824,6 +2983,11 @@ module.exports = {
   saveTournamentAssignments,
   getRoundState,
   saveRoundState,
-  logAuditEvent
+  getConfig,
+  saveConfig,
+  logAuditEvent,
+  checkTeamExpiryAndDisqualify,
+  startTournamentHeartbeatService,
+  stopTournamentHeartbeatService
 };
 

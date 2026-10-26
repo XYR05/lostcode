@@ -768,8 +768,9 @@
       </div>
       <div style="background: rgba(166,68,68,0.12); border: 1px solid var(--danger); padding: 1.5rem; border-radius: 4px; margin-bottom: 2rem; color: var(--text-primary); font-size: 1rem; line-height: 1.6;">
         <p style="margin-top: 0; margin-bottom: 0.75rem;">
-          Your crew <strong id="disqualifiedCrewName" style="color: var(--gold-primary);"></strong> has been <strong>permanently disqualified</strong> from the Lost Code Expedition for multiple screen departure violations.
+          Your crew <strong id="disqualifiedCrewName" style="color: var(--gold-primary);"></strong> has been <strong>permanently disqualified</strong> from the Lost Code Expedition.
         </p>
+        <p id="disqualifiedReasonText" style="margin-top: 0; margin-bottom: 0.75rem; color: #ff8b8b; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: 600;"></p>
         <p style="margin-bottom: 0; color: var(--text-secondary); font-size: 0.9rem;">
           Flag submissions, hint unlocks, and tournament participation have been permanently severed by order of the Admiralty.
         </p>
@@ -1254,9 +1255,15 @@
       if (modal) modal.style.display = 'flex';
 
       const nameEl = document.getElementById('disqualifiedCrewName');
+      const teamName = (myTeamData && myTeamData.team && myTeamData.team.teamName) || (info && info.teamName) || 'Your Crew';
       if (nameEl) {
-        const teamName = (myTeamData && myTeamData.team && myTeamData.team.teamName) || (info && info.teamName) || 'Your Crew';
         nameEl.textContent = teamName;
+      }
+
+      const reasonEl = document.getElementById('disqualifiedReasonText');
+      const reasonText = (info && (info.reason || info.disqualifiedReason)) || (myTeamData?.team?.disqualifiedReason) || 'Disqualification issued by the Admiralty.';
+      if (reasonEl) {
+        reasonEl.textContent = `Reason: ${reasonText}`;
       }
 
       const submitFlagBtn = document.getElementById('submitFlagBtn');
@@ -4057,6 +4064,9 @@
         if (Array.isArray(data.unlockedRounds)) {
           unlockedRounds = data.unlockedRounds;
         }
+        if (data.roundState) {
+          globalAdminRoundState = data.roundState;
+        }
         window.fullscreenEnforced = data.fullscreenEnforced !== false;
         updateProctorButton();
         startLocalTimer();
@@ -4138,9 +4148,9 @@
         });
       }
 
-      // Initial tournament fetch for admins
+      // Initial tournament fetch for all users
+      fetchTournamentStatus();
       if (window.isAdminUser) {
-        fetchTournamentStatus();
         fetchAdminTournamentData();
       }
 
@@ -4150,6 +4160,9 @@
         ctfStartTime = data.ctfStartTime;
         if (Array.isArray(data.unlockedRounds)) {
           unlockedRounds = data.unlockedRounds;
+        }
+        if (data.roundState) {
+          globalAdminRoundState = data.roundState;
         }
         window.fullscreenEnforced = data.fullscreenEnforced !== false;
         if (window.fullscreenEnforced === false) {
@@ -4233,6 +4246,7 @@
           if (data.roundState) {
             globalAdminRoundState = data.roundState;
             renderRouteMap();
+            renderAdminRoundControl();
           }
           renderTournamentBracket(data.teams || [], data.winner);
         })
