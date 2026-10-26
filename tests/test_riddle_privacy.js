@@ -2,7 +2,7 @@ const http = require('http');
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const { app, teams, getRiddleBank, saveRiddleBank, getTournamentAssignments, saveTournamentAssignments, getRoundState, saveRoundState } = require('../server.js');
+const { app, teams, getRiddleBank, saveRiddleBank, getTournamentAssignments, saveTournamentAssignments, getRoundState, saveRoundState, getCredentials } = require('../server.js');
 
 async function runTests() {
   console.log('Testing Strict Riddle Privacy & Private Participant Endpoints...');
@@ -75,11 +75,14 @@ async function runTests() {
     const unauthRes = await fetch(`${baseUrl}/api/team/challenge`);
     assert.strictEqual(unauthRes.status, 401, 'Unauthenticated request must return 401');
 
+    const creds = getCredentials();
+    const bucPass = creds.teams.BUCCANEERS || creds.teams.buccaneers;
+
     // 2. Login as BUCCANEERS
     const loginRes = await fetch(`${baseUrl}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ teamName: 'BUCCANEERS', password: 'ahoy123' })
+      body: JSON.stringify({ teamName: 'BUCCANEERS', password: bucPass })
     });
     assert.strictEqual(loginRes.status, 200, 'BUCCANEERS login must succeed');
     const cookie = loginRes.headers.get('set-cookie');
@@ -147,7 +150,7 @@ async function runTests() {
     const adminLoginRes = await fetch(`${baseUrl}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ teamName: 'admin@lostcode', password: 'foundcode' })
+      body: JSON.stringify({ teamName: 'admin@lostcode', password: creds.admin.password })
     });
     assert.strictEqual(adminLoginRes.status, 200);
     const adminCookie = adminLoginRes.headers.get('set-cookie');

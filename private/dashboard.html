@@ -367,6 +367,7 @@
           <option value="tournamentRosterSection">Tournament Roster & Standings</option>
           <option value="riddleBankSection">Challenge Riddle Bank</option>
           <option value="assignmentMatrixSection">Team-to-Riddle Assignment Matrix</option>
+          <option value="credentialsSection">Crew & Admin Credentials Vault</option>
         </select>
         <button id="adminStartCtfBtn" style="padding: 0.65rem 1.4rem; border: 1px solid var(--gold-primary); background: var(--gold-primary); color: #17110c; font-family: 'Cinzel', serif; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 0.85rem; letter-spacing: 0.05em; transition: all 0.2s ease;">Start Tournament</button>
         <button id="adminToggleProctorBtn" type="button" onclick="toggleProctoring()" style="padding: 0.65rem 1.1rem; border: 1px solid var(--gold-primary); background: rgba(201,154,82,0.12); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 700; border-radius: 4px; cursor: pointer;">Fullscreen Proctor: ON</button>
@@ -527,6 +528,74 @@
             </thead>
             <tbody id="assignmentMatrixTableBody">
               <!-- Rendered by renderAssignmentMatrix() -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Crew & Admin Credentials Vault -->
+    <div id="credentialsSection" class="admin-dropdown-section card" style="margin-top: 1.5rem; background: var(--panel-secondary); border: 1px solid var(--border-subtle); padding: 0; border-radius: 4px;">
+      <div class="admin-dropdown-header" onclick="toggleAdminSection('credentialsSection')">
+        <div class="admin-dropdown-title-wrap">
+          <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); display: flex; align-items: center; gap: 8px;">
+            Crew & Admin Credentials Vault
+          </h3>
+          <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 0.85rem;">
+            Export, view, and regenerate cryptographically secure randomized access passwords for participating crews and administrative access.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <div onclick="event.stopPropagation()" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <button type="button" onclick="downloadCredentialsTxt()" style="padding: 0.5rem 0.9rem; background: rgba(201, 154, 82, 0.12); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.8rem; border-radius: 4px; cursor: pointer;">
+              Export credentials.txt
+            </button>
+            <button type="button" onclick="regenerateAllCredentialsConfirm()" style="padding: 0.5rem 0.9rem; background: rgba(166, 68, 68, 0.18); border: 1px solid var(--danger); color: #ff8b8b; font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.8rem; border-radius: 4px; cursor: pointer;">
+              Regenerate All Passwords
+            </button>
+          </div>
+          <svg class="admin-dropdown-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"></path></svg>
+        </div>
+      </div>
+      <div class="admin-dropdown-body" style="padding: 1.25rem;">
+        <!-- Admin Account Credential Card -->
+        <div style="margin-bottom: 1.5rem; padding: 1rem 1.25rem; background: rgba(201, 154, 82, 0.05); border: 1px solid rgba(201, 154, 82, 0.3); border-radius: 4px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--gold-primary); font-family: 'Cinzel', serif; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px;">Admin Access Credentials</div>
+            <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+              <div>
+                <span style="color: var(--text-secondary); font-size: 0.8rem;">Login:</span>
+                <span id="vaultAdminUsername" style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #fff; margin-left: 6px; font-weight: 600;">admin@lostcode</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="color: var(--text-secondary); font-size: 0.8rem;">Password:</span>
+                <span id="vaultAdminPasswordDisplay" style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--gold-primary); background: rgba(0,0,0,0.4); padding: 3px 8px; border-radius: 3px; border: 1px solid var(--border-subtle); letter-spacing: 0.05em;">••••••••</span>
+                <button type="button" id="vaultAdminToggleBtn" onclick="togglePasswordVisibility('admin')" style="padding: 3px 7px; background: transparent; border: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: 0.75rem; border-radius: 3px; cursor: pointer;">Show</button>
+                <button type="button" id="vaultAdminCopyBtn" onclick="copyCredentialText(globalAdminCredentials?.admin?.password, this)" style="padding: 3px 8px; background: rgba(201,154,82,0.15); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-size: 0.75rem; border-radius: 3px; cursor: pointer;">Copy</button>
+              </div>
+            </div>
+          </div>
+          <div>
+            <button type="button" onclick="resetSingleTeamPassword('admin')" style="padding: 0.45rem 0.85rem; background: rgba(201,154,82,0.1); border: 1px solid var(--border-subtle); color: var(--gold-primary); font-size: 0.78rem; font-family: 'Cinzel', serif; border-radius: 3px; cursor: pointer;">
+              Reset Admin Password
+            </button>
+          </div>
+        </div>
+
+        <!-- Crew Credentials Table -->
+        <div style="overflow-x: auto;">
+          <table class="admin-matrix-table" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>CREW</th>
+                <th>LOGIN ID</th>
+                <th>PASSWORD</th>
+                <th>LAST GENERATED</th>
+                <th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="credentialsVaultTableBody">
+              <tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding: 1.5rem;">Loading credentials...</td></tr>
             </tbody>
           </table>
         </div>
@@ -2086,7 +2155,8 @@
         'roundControlDeck',
         'tournamentRosterSection',
         'riddleBankSection',
-        'assignmentMatrixSection'
+        'assignmentMatrixSection',
+        'credentialsSection'
       ];
 
       if (selectedId === 'ALL') {
@@ -2136,6 +2206,10 @@
           }
         })
         .catch(err => console.error("Error fetching riddle bank:", err));
+
+      if (typeof fetchAdminCredentials === 'function') {
+        fetchAdminCredentials();
+      }
     }
 
     function saveRoundDuration(roundNum) {
@@ -2747,6 +2821,225 @@
     function closePreviewModal() {
       const modal = document.getElementById('privatePreviewModal');
       if (modal) modal.style.display = 'none';
+    }
+
+    // =========================================================
+    // CREW & ADMIN CREDENTIALS VAULT
+    // =========================================================
+    let globalAdminCredentials = null;
+    let visiblePasswords = {};
+
+    function fetchAdminCredentials() {
+      fetch('/api/admin/credentials')
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            globalAdminCredentials = data;
+            renderCredentialsVault();
+          }
+        })
+        .catch(err => console.error("Error fetching admin credentials:", err));
+    }
+
+    function togglePasswordVisibility(targetId) {
+      visiblePasswords[targetId] = !visiblePasswords[targetId];
+      renderCredentialsVault();
+    }
+
+    function copyCredentialText(text, btnElement) {
+      if (!text) return;
+      const originalText = btnElement ? btnElement.textContent : '';
+      const setSuccess = () => {
+        if (btnElement) {
+          btnElement.textContent = 'Copied!';
+          btnElement.style.color = '#50fa7b';
+          btnElement.style.borderColor = '#50fa7b';
+          setTimeout(() => {
+            btnElement.textContent = originalText;
+            btnElement.style.color = '';
+            btnElement.style.borderColor = '';
+          }, 2000);
+        }
+        if (typeof showToast === 'function') showToast('Password copied to clipboard!');
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(setSuccess).catch(() => fallbackCopy(text, setSuccess));
+      } else {
+        fallbackCopy(text, setSuccess);
+      }
+    }
+
+    function fallbackCopy(text, cb) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        if (cb) cb();
+      } catch (e) {
+        console.error('Fallback copy failed', e);
+      }
+      document.body.removeChild(ta);
+    }
+
+    function renderCredentialsVault() {
+      if (!globalAdminCredentials) return;
+
+      // Admin account credentials
+      const adminPass = globalAdminCredentials.admin ? globalAdminCredentials.admin.password : '';
+      const adminPassDisplay = document.getElementById('vaultAdminPasswordDisplay');
+      const adminToggleBtn = document.getElementById('vaultAdminToggleBtn');
+      const adminCopyBtn = document.getElementById('vaultAdminCopyBtn');
+
+      if (adminPassDisplay) {
+        if (visiblePasswords['admin']) {
+          adminPassDisplay.textContent = adminPass || 'N/A';
+          if (adminToggleBtn) adminToggleBtn.textContent = 'Hide';
+        } else {
+          adminPassDisplay.textContent = '••••••••';
+          if (adminToggleBtn) adminToggleBtn.textContent = 'Show';
+        }
+      }
+      if (adminCopyBtn) {
+        adminCopyBtn.onclick = function() { copyCredentialText(adminPass, this); };
+      }
+
+      // Teams credentials table
+      const tbody = document.getElementById('credentialsVaultTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const teams = globalAdminCredentials.teams || [];
+      if (teams.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding: 1.5rem;">No team credentials available.</td></tr>';
+        return;
+      }
+
+      const genDateStr = globalAdminCredentials.generatedAt ? new Date(globalAdminCredentials.generatedAt).toLocaleString() : 'Recent';
+
+      teams.forEach(t => {
+        const isVis = !!visiblePasswords[t.teamName];
+        const passText = t.password || '';
+        const masked = isVis ? escapeHTML(passText) : '••••••••';
+        const toggleLabel = isVis ? 'Hide' : 'Show';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <div style="font-family:'Cinzel',serif; font-weight:700; color:var(--gold-primary); font-size:0.9rem;">${escapeHTML(t.displayName || t.teamName)}</div>
+            <div style="font-size:0.75rem; color:var(--text-secondary); font-family:'JetBrains Mono',monospace;">${escapeHTML(t.teamName)}</div>
+          </td>
+          <td>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:#e2d9c8;">${escapeHTML(t.email)}</span>
+          </td>
+          <td>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--gold-primary); background:rgba(0,0,0,0.4); padding:3px 8px; border-radius:3px; border:1px solid var(--border-subtle); min-width:90px; display:inline-block; letter-spacing:0.04em;">${masked}</span>
+              <button type="button" onclick="togglePasswordVisibility('${escapeHTML(t.teamName)}')" style="padding:3px 7px; background:transparent; border:1px solid var(--border-subtle); color:var(--text-secondary); font-size:0.72rem; border-radius:3px; cursor:pointer;">${toggleLabel}</button>
+              <button type="button" onclick="copyCredentialText('${escapeHTML(passText)}', this)" style="padding:3px 8px; background:rgba(201,154,82,0.12); border:1px solid var(--gold-primary); color:var(--gold-primary); font-size:0.72rem; border-radius:3px; cursor:pointer;">Copy</button>
+            </div>
+          </td>
+          <td>
+            <span style="font-size:0.78rem; color:var(--text-secondary); font-family:'JetBrains Mono',monospace;">${escapeHTML(genDateStr)}</span>
+          </td>
+          <td>
+            <button type="button" onclick="resetSingleTeamPassword('${escapeHTML(t.teamName)}')" style="padding:4px 9px; background:rgba(201,154,82,0.1); border:1px solid var(--border-subtle); color:var(--gold-primary); font-size:0.75rem; border-radius:3px; cursor:pointer;">Reset Password</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function resetSingleTeamPassword(teamName) {
+      const displayName = teamName === 'admin' ? 'Administrator' : teamName;
+      showCustomConfirm("Reset Password?", `Generate a new random password for ${displayName}? The existing password will immediately stop working.`, false, (confirmed) => {
+        if (!confirmed) return;
+        fetch('/api/admin/credentials/reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ teamName })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.error) {
+            showCustomConfirm("Reset Failed", data.error, true, null);
+          } else {
+            showToast(`New password generated for ${displayName}!`);
+            fetchAdminCredentials();
+          }
+        })
+        .catch(err => showCustomConfirm("Error", err.message, true, null));
+      });
+    }
+
+    function regenerateAllCredentialsConfirm() {
+      showCustomConfirm("Regenerate All Passwords?", "WARNING: This will generate new random passwords for all 10 tournament crews AND the administrator account! All existing sessions will need the new credentials.", false, (confirmed) => {
+        if (!confirmed) return;
+        fetch('/api/admin/credentials/reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ all: true })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.error) {
+            showCustomConfirm("Regeneration Failed", data.error, true, null);
+          } else {
+            showToast("All credentials regenerated successfully!");
+            fetchAdminCredentials();
+          }
+        })
+        .catch(err => showCustomConfirm("Error", err.message, true, null));
+      });
+    }
+
+    function downloadCredentialsTxt() {
+      if (!globalAdminCredentials) {
+        showToast('Credentials not loaded yet.');
+        return;
+      }
+      const admin = globalAdminCredentials.admin || {};
+      const teams = globalAdminCredentials.teams || [];
+      const timestamp = globalAdminCredentials.generatedAt || new Date().toISOString();
+
+      let text = '======================================================================\n';
+      text += '               LOST CODE CTF - TOURNAMENT ACCESS CREDENTIALS           \n';
+      text += `               Generated: ${new Date(timestamp).toLocaleString()}      \n`;
+      text += '======================================================================\n\n';
+
+      text += 'ADMINISTRATOR ACCOUNT:\n';
+      text += `  Username / Email: ${admin.username || 'admin@lostcode'}\n`;
+      text += `  Password:         ${admin.password || 'N/A'}\n\n`;
+
+      text += '----------------------------------------------------------------------\n';
+      text += `CREW LOGIN CREDENTIALS (${teams.length} TEAMS):\n`;
+      text += '----------------------------------------------------------------------\n\n';
+
+      teams.forEach((t, idx) => {
+        const num = String(idx + 1).padStart(2, '0');
+        text += `[${num}] ${t.displayName || t.teamName} (${t.teamName})\n`;
+        text += `     Login:    ${t.email}\n`;
+        text += `     Password: ${t.password}\n\n`;
+      });
+
+      text += '======================================================================\n';
+      text += 'IMPORTANT: Distribute passwords securely to designated captains only.\n';
+      text += '======================================================================\n';
+
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'lost_code_credentials.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Exported lost_code_credentials.txt!');
     }
 
 

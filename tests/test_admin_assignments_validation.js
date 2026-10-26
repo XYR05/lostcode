@@ -9,7 +9,8 @@ const {
   getTournamentAssignments,
   saveTournamentAssignments,
   getRoundState,
-  saveRoundState
+  saveRoundState,
+  getCredentials
 } = require('../server.js');
 
 async function runTests() {
@@ -27,11 +28,13 @@ async function runTests() {
   const initialAudit = fs.existsSync(auditPath) ? JSON.parse(fs.readFileSync(auditPath, 'utf8')) : [];
 
   try {
+    const creds = getCredentials();
+
     // 1. Admin login
     const adminLogin = await fetch(`${baseUrl}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ teamName: 'admin@lostcode', password: 'foundcode' })
+      body: JSON.stringify({ teamName: 'admin@lostcode', password: creds.admin.password })
     });
     const adminCookie = adminLogin.headers.get('set-cookie');
 

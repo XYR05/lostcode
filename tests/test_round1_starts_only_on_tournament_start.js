@@ -12,14 +12,25 @@ const {
   getRoundState,
   saveRoundState,
   getConfig,
-  saveConfig
+  saveConfig,
+  getCredentials
 } = require('../server.js');
 
-async function loginCrew(baseUrl, name, pw = 'ahoy123') {
+async function loginCrew(baseUrl, name, pw) {
+  let password = pw;
+  if (!password || password === 'ahoy123' || password === 'foundcode') {
+    const creds = getCredentials();
+    if (name.includes('admin')) {
+      password = creds.admin.password;
+    } else {
+      const key = Object.keys(creds.teams || {}).find(k => k.toLowerCase() === name.toLowerCase()) || name;
+      password = (creds.teams && creds.teams[key]) || pw;
+    }
+  }
   const res = await fetch(`${baseUrl}/api/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ teamName: name, password: pw })
+    body: JSON.stringify({ teamName: name, password })
   });
   if (res.status !== 200) {
     const txt = await res.text();

@@ -3,13 +3,15 @@
     "status": "Draft",
     "startedAt": null,
     "completedAt": null,
-    "qualifiers": [],
+    "qualifiers": [
+      "crew_7_blackflags"
+    ],
     "eliminated": [],
     "eliminations": []
   },
   "2": {
     "status": "Locked",
-    "startedAt": null,
+    "startedAt": "2026-10-26T11:40:20.127Z",
     "completedAt": null,
     "qualifiers": [],
     "eliminated": [],

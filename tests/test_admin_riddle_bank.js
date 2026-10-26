@@ -7,7 +7,8 @@ const {
   getTournamentAssignments,
   saveTournamentAssignments,
   getRoundState,
-  saveRoundState
+  saveRoundState,
+  getCredentials
 } = require('../server.js');
 
 async function runTests() {
@@ -27,11 +28,14 @@ async function runTests() {
     const unauthGet = await fetch(`${baseUrl}/api/admin/riddle-bank`);
     assert.strictEqual(unauthGet.status, 403, 'Unauthenticated request must return 403');
 
+    const creds = getCredentials();
+    const bucPass = creds.teams.BUCCANEERS || creds.teams.buccaneers;
+
     // 2. Participant login must also be denied admin access
     const teamLogin = await fetch(`${baseUrl}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ teamName: 'BUCCANEERS', password: 'ahoy123' })
+      body: JSON.stringify({ teamName: 'BUCCANEERS', password: bucPass })
     });
     const teamCookie = teamLogin.headers.get('set-cookie');
     const teamAccess = await fetch(`${baseUrl}/api/admin/riddle-bank`, {
@@ -43,7 +47,7 @@ async function runTests() {
     const adminLogin = await fetch(`${baseUrl}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ teamName: 'admin@lostcode', password: 'foundcode' })
+      body: JSON.stringify({ teamName: 'admin@lostcode', password: creds.admin.password })
     });
     assert.strictEqual(adminLogin.status, 200, 'Admin login must succeed');
     const adminCookie = adminLogin.headers.get('set-cookie');

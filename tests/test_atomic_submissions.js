@@ -8,7 +8,8 @@ const {
   getTournamentAssignments,
   saveTournamentAssignments,
   getRoundState,
-  saveRoundState
+  saveRoundState,
+  getCredentials
 } = require('../server.js');
 
 async function runTests() {
@@ -70,11 +71,15 @@ async function runTests() {
       if (corMem.roundSolves) delete corMem.roundSolves['2'];
     }
 
+    const creds = getCredentials();
+    const bucPass = creds.teams.BUCCANEERS || creds.teams.buccaneers;
+    const corPass = creds.teams.CORSAIRS || creds.teams.corsairs;
+
     // Login buccaneers
     const loginB = await fetch(`${baseUrl}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ teamName: 'BUCCANEERS', password: 'ahoy123' })
+      body: JSON.stringify({ teamName: 'BUCCANEERS', password: bucPass })
     });
     const cookieB = loginB.headers.get('set-cookie');
 
@@ -82,7 +87,7 @@ async function runTests() {
     const loginC = await fetch(`${baseUrl}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ teamName: 'CORSAIRS', password: 'ahoy123' })
+      body: JSON.stringify({ teamName: 'CORSAIRS', password: corPass })
     });
     const cookieC = loginC.headers.get('set-cookie');
 

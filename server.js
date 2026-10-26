@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const path = require("path");
 const express = require('express');
 const fs = require('fs');
@@ -63,6 +64,68 @@ const riddleBankFilePath = path.join(__dirname, 'private', 'riddle_bank.json');
 const tournamentAssignmentsFilePath = path.join(__dirname, 'private', 'tournament_assignments.json');
 const roundStateFilePath = path.join(__dirname, 'private', 'round_state.json');
 const auditLogFilePath = path.join(__dirname, 'private', 'audit_log.json');
+const credentialsFilePath = path.join(__dirname, 'private', 'credentials.json');
+
+function generateRandomPassword(length = 8, prefix = '') {
+  const charset = '23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ';
+  const bytes = crypto.randomBytes(length);
+  let res = prefix;
+  for (let i = 0; i < length; i++) {
+    res += charset[bytes[i] % charset.length];
+  }
+  return res;
+}
+
+function generateTournamentCredentials(existingCreds = null) {
+  const crewNames = [
+    "BUCCANEERS",
+    "CUTTHROATS",
+    "CORSAIRS",
+    "KRAKENS",
+    "SCALLYWAGS",
+    "PRIVATEERS",
+    "BLACKFLAGS",
+    "PLUNDERERS",
+    "DREADSAILS",
+    "SEARAVENS"
+  ];
+
+  const adminPw = (existingCreds && existingCreds.admin && existingCreds.admin.password)
+    ? existingCreds.admin.password
+    : generateRandomPassword(8, 'adm_');
+
+  const teamCreds = {};
+  crewNames.forEach(name => {
+    teamCreds[name] = generateRandomPassword(6, `${name.toLowerCase()}_`);
+  });
+
+  const creds = {
+    generatedAt: new Date().toISOString(),
+    admin: {
+      username: 'admin@lostcode',
+      password: adminPw
+    },
+    teams: teamCreds
+  };
+
+  saveCredentials(creds);
+  return creds;
+}
+
+function getCredentials() {
+  if (fs.existsSync(credentialsFilePath)) {
+    try {
+      return JSON.parse(fs.readFileSync(credentialsFilePath, 'utf8'));
+    } catch (e) {
+      console.error("Error reading credentials.json:", e);
+    }
+  }
+  return generateTournamentCredentials();
+}
+
+function saveCredentials(data) {
+  atomicWriteJsonSync(credentialsFilePath, data);
+}
 
 function atomicWriteJsonSync(filePath, data) {
   const tmpPath = `${filePath}.${Date.now()}.${Math.random().toString(36).substring(2, 8)}.tmp`;
@@ -1841,6 +1904,51 @@ try {
   console.error("Error reading users.json:", err);
 }
 
+function syncTeamsCredentialsOnBoot() {
+  const creds = getCredentials();
+  let updated = false;
+
+  teams.forEach(t => {
+    if (isAdminTeam(t)) {
+      if (!t.password || !bcrypt.compareSync(creds.admin.password, t.password)) {
+        t.password = bcrypt.hashSync(creds.admin.password, 10);
+        updated = true;
+      }
+    } else {
+      const plain = creds.teams[t.teamName.toUpperCase()] || creds.teams[t.teamName];
+      if (plain && (!t.password || !bcrypt.compareSync(plain, t.password))) {
+        t.password = bcrypt.hashSync(plain, 10);
+        updated = true;
+      }
+    }
+  });
+
+  users.forEach(u => {
+    if (u.id === 'user_admin_1' || u.username === 'admin@lostcode') {
+      if (!u.password || !bcrypt.compareSync(creds.admin.password, u.password)) {
+        u.password = bcrypt.hashSync(creds.admin.password, 10);
+        updated = true;
+      }
+    } else {
+      const plain = creds.teams[u.username.toUpperCase()] || creds.teams[u.username];
+      if (plain && (!u.password || !bcrypt.compareSync(plain, u.password))) {
+        u.password = bcrypt.hashSync(plain, 10);
+        updated = true;
+      }
+    }
+  });
+
+  if (updated) {
+    try {
+      fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
+      fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+    } catch (e) {
+      console.error("Error writing updated credentials hashes on boot:", e);
+    }
+  }
+}
+syncTeamsCredentialsOnBoot();
+
 // Helper: Identify admin teams to exclude from public rankings and solve counters
 function isAdminTeam(team) {
   if (!team) return false;
@@ -2352,16 +2460,24 @@ app.post('/api/admin/tournament/seed-teams', isAdmin, (req, res) => {
     "SEARAVENS": "Dark and cunning voyagers"
   };
 
+  // Generate or retrieve tournament credentials
+  const creds = generateTournamentCredentials(req.body?.regenerateAdmin ? null : getCredentials());
+  const adminPlainPw = creds.admin.password;
+  const adminPwHash = bcrypt.hashSync(adminPlainPw, 10);
+
   // Preserve admin team
   const adminTeam = teams.find(t => isAdminTeam(t)) || {
     id: "team_admin_1",
     teamName: "admin@lostcode",
-    password: bcrypt.hashSync("foundcode", 10),
+    password: adminPwHash,
     score: 0,
     solvedChallenges: [],
     hintsUnlocked: {},
     scoreHistory: []
   };
+  if (req.body?.regenerateAdmin || !adminTeam.password) {
+    adminTeam.password = adminPwHash;
+  }
 
   const adminUser = users.find(u => u.id === 'user_admin_1') || {
     id: "user_admin_1",
@@ -2371,6 +2487,9 @@ app.post('/api/admin/tournament/seed-teams', isAdmin, (req, res) => {
     teamId: "team_admin_1",
     solvedChallenges: []
   };
+  if (req.body?.regenerateAdmin || !adminUser.password) {
+    adminUser.password = adminTeam.password;
+  }
 
   const newTeams = [adminTeam];
   const newUsers = [adminUser];
@@ -2378,7 +2497,9 @@ app.post('/api/admin/tournament/seed-teams', isAdmin, (req, res) => {
   crewNames.forEach((name, i) => {
     const teamId = `crew_${i + 1}_${name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
     const alloc = allocateRiddlesForTeamIndex(i);
-    const defaultPw = bcrypt.hashSync("ahoy123", 10);
+    const plainPw = creds.teams[name] || generateRandomPassword(6, `${name.toLowerCase()}_`);
+    creds.teams[name] = plainPw;
+    const defaultPw = bcrypt.hashSync(plainPw, 10);
 
     const team = {
       id: teamId,
@@ -2455,11 +2576,15 @@ app.post('/api/admin/tournament/seed-teams', isAdmin, (req, res) => {
   fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
   fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
 
+  saveCredentials(creds);
+
   io.emit('teamsUpdate');
   io.emit('tournamentUpdate');
 
   res.json({
-    message: 'Successfully seeded 10 pirate crews with pre-bound tournament riddle chains (Password: ahoy123)!',
+    success: true,
+    message: 'Successfully seeded 10 pirate crews with randomized tournament credentials!',
+    credentials: creds,
     crews: teams.filter(t => !isAdminTeam(t)).map(t => ({
       name: t.teamName,
       group: t.groupRound2,
@@ -2930,6 +3055,126 @@ app.post(['/api/admin/teams/reverse-time', '/api/admin/teams/forward-time'], (re
   });
 });
 
+// Admin Route: Get All Tournament Credentials
+app.get('/api/admin/credentials', isAdmin, (req, res) => {
+  const creds = getCredentials();
+  const teamList = Object.keys(creds.teams || {}).map(teamName => {
+    const t = teams.find(x => (x.teamName || '').toUpperCase() === teamName.toUpperCase());
+    return {
+      teamName,
+      displayName: (t && t.displayName) || (t && t.teamName) || teamName,
+      email: `${teamName.toLowerCase()}@lostcode`,
+      password: creds.teams[teamName]
+    };
+  });
+  res.json({
+    success: true,
+    credentials: creds,
+    admin: creds.admin,
+    teams: teamList,
+    generatedAt: creds.generatedAt
+  });
+});
+
+// Admin Route: Reset or Rotate Tournament Credentials
+app.post('/api/admin/credentials/reset', isAdmin, (req, res) => {
+  const { teamName, includeAdmin, all } = req.body || {};
+  const creds = getCredentials();
+
+  if (teamName) {
+    const upperName = teamName.toUpperCase();
+    if (upperName === 'ADMIN' || upperName === 'ADMIN@LOSTCODE') {
+      const newPw = generateRandomPassword(8, 'adm_');
+      creds.admin.password = newPw;
+      saveCredentials(creds);
+
+      const adminTeam = teams.find(t => isAdminTeam(t));
+      if (adminTeam) {
+        adminTeam.password = bcrypt.hashSync(newPw, 10);
+        try { fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2)); } catch (e) {}
+      }
+      const adminUser = users.find(u => u.id === 'user_admin_1' || (u.username && u.username.toLowerCase() === 'admin@lostcode'));
+      if (adminUser) {
+        adminUser.password = bcrypt.hashSync(newPw, 10);
+        try { fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2)); } catch (e) {}
+      }
+
+      logAuditEvent({
+        action: 'RESET_ADMIN_PASSWORD',
+        admin: req.session.teamName || 'admin',
+        reason: 'Admin password rotated',
+        details: { admin: 'admin@lostcode' }
+      });
+
+      return res.json({ success: true, teamName: 'admin', newPassword: newPw, credentials: creds });
+    }
+
+    const newPw = generateRandomPassword(6, `${upperName.toLowerCase()}_`);
+    creds.teams[upperName] = newPw;
+    saveCredentials(creds);
+
+    const targetTeam = teams.find(t => (t.teamName || '').toUpperCase() === upperName);
+    if (targetTeam) {
+      targetTeam.password = bcrypt.hashSync(newPw, 10);
+      try { fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2)); } catch (e) {}
+    }
+    const targetUser = users.find(u => (u.username || '').toUpperCase() === upperName);
+    if (targetUser) {
+      targetUser.password = bcrypt.hashSync(newPw, 10);
+      try { fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2)); } catch (e) {}
+    }
+
+    logAuditEvent({
+      action: 'RESET_TEAM_PASSWORD',
+      admin: req.session.teamName || 'admin',
+      reason: `Password rotated for crew ${upperName}`,
+      details: { teamName: upperName }
+    });
+
+    return res.json({ success: true, teamName: upperName, newPassword: newPw, credentials: creds });
+  } else {
+    const shouldIncludeAdmin = Boolean(all || includeAdmin);
+    const freshCreds = generateTournamentCredentials(shouldIncludeAdmin ? null : creds);
+    saveCredentials(freshCreds);
+
+    teams.forEach(t => {
+      if (isAdminTeam(t)) {
+        if (shouldIncludeAdmin) t.password = bcrypt.hashSync(freshCreds.admin.password, 10);
+      } else {
+        const pw = freshCreds.teams[(t.teamName || '').toUpperCase()];
+        if (pw) t.password = bcrypt.hashSync(pw, 10);
+      }
+    });
+    users.forEach(u => {
+      if (u.id === 'user_admin_1' || (u.username && u.username.toLowerCase() === 'admin@lostcode')) {
+        if (shouldIncludeAdmin) u.password = bcrypt.hashSync(freshCreds.admin.password, 10);
+      } else {
+        const pw = freshCreds.teams[(u.username || '').toUpperCase()];
+        if (pw) u.password = bcrypt.hashSync(pw, 10);
+      }
+    });
+
+    try {
+      fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
+      fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+    } catch (e) {}
+
+    logAuditEvent({
+      action: 'RESET_ALL_CREDENTIALS',
+      admin: req.session.teamName || 'admin',
+      reason: `All tournament passwords rotated (includeAdmin: ${shouldIncludeAdmin})`,
+      details: { includeAdmin: shouldIncludeAdmin }
+    });
+
+    return res.json({
+      success: true,
+      credentials: freshCreds,
+      admin: freshCreds.admin,
+      generatedAt: freshCreds.generatedAt
+    });
+  }
+});
+
 app.get('/dashboard', (req, res) => {
   const team = getCurrentTeam(req);
   if (!team) return res.redirect('/');
@@ -2985,6 +3230,10 @@ module.exports = {
   saveRoundState,
   getConfig,
   saveConfig,
+  getCredentials,
+  saveCredentials,
+  generateRandomPassword,
+  generateTournamentCredentials,
   logAuditEvent,
   checkTeamExpiryAndDisqualify,
   startTournamentHeartbeatService,

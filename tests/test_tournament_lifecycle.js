@@ -10,7 +10,8 @@ const {
   getTournamentAssignments,
   saveTournamentAssignments,
   getRoundState,
-  saveRoundState
+  saveRoundState,
+  getCredentials
 } = require('../server.js');
 
 async function runTournamentLifecycleSimulation() {
@@ -46,11 +47,21 @@ async function runTournamentLifecycleSimulation() {
 
   try {
     // Helper to log in a crew and get cookies
-    async function loginCrew(name, pw = 'ahoy123') {
+    async function loginCrew(name, pw) {
+      let password = pw;
+      const creds = getCredentials();
+      if (!password || password === 'ahoy123' || password === 'foundcode') {
+        if (name.includes('admin')) {
+          password = creds.admin.password;
+        } else {
+          const key = Object.keys(creds.teams || {}).find(k => k.toLowerCase() === name.toLowerCase()) || name;
+          password = (creds.teams && creds.teams[key]) || pw;
+        }
+      }
       const res = await fetch(`${baseUrl}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ teamName: name, password: pw })
+        body: JSON.stringify({ teamName: name, password })
       });
       assert.strictEqual(res.status, 200, `Login failed for crew ${name}`);
       return res.headers.get('set-cookie');

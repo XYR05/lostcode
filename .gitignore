@@ -1,6 +1,7 @@
 # Ignore temporary node scripts created by AI
 *.js
 !server.js
+!scripts/*.js
 !tests/**/*.js
 !tests/*.js
 
@@ -16,6 +17,7 @@ changes.txt
 cookie.txt
 public/downloads/
 node_modules/
+.vscode/
 
 sessions/
 *.txt

@@ -1,6 +1,6 @@
 const assert = require('assert');
 const http = require('http');
-const { app } = require('../server.js');
+const { app, getCredentials } = require('../server.js');
 
 async function testToggleProctoring() {
   console.log('Testing Admin Fullscreen Proctor Toggle & Violation Bypass...');
@@ -10,11 +10,13 @@ async function testToggleProctoring() {
   const baseUrl = `http://localhost:${server.address().port}`;
 
   try {
+    const creds = getCredentials();
+
     // 1. Admin login
     const loginRes = await fetch(`${baseUrl}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: 'admin@lostcode', password: 'foundcode' })
+      body: JSON.stringify({ username: 'admin@lostcode', password: creds.admin.password })
     });
     assert.strictEqual(loginRes.status, 200);
     const adminCookie = loginRes.headers.get('set-cookie');
@@ -40,10 +42,11 @@ async function testToggleProctoring() {
     assert.strictEqual(cfgOff.fullscreenEnforced, false);
 
     // 5. Test regular team departure violation while proctoring is OFF -> must be ignored
+    const bucPass = creds.teams.BUCCANEERS || creds.teams.buccaneers;
     const teamLogin = await fetch(`${baseUrl}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: 'BUCCANEERS', password: 'ahoy123' })
+      body: JSON.stringify({ username: 'BUCCANEERS', password: bucPass })
     });
     const teamCookie = teamLogin.headers.get('set-cookie');
 

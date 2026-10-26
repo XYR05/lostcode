@@ -1,6 +1,6 @@
 const assert = require('assert');
 const http = require('http');
-const { app } = require('../server.js');
+const { app, getCredentials } = require('../server.js');
 
 async function runTests() {
   console.log('--- Starting Timing & Disqualification Test Suite ---');
@@ -9,11 +9,13 @@ async function runTests() {
   const baseUrl = `http://localhost:${server.address().port}`;
 
   try {
+    const creds = getCredentials();
+
     // 1. Admin login
     const adminLogin = await fetch(`${baseUrl}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: 'admin@lostcode', password: 'foundcode' })
+      body: JSON.stringify({ username: 'admin@lostcode', password: creds.admin.password })
     });
     assert.strictEqual(adminLogin.status, 200, 'Admin login failed');
     const adminCookie = adminLogin.headers.get('set-cookie');
@@ -32,10 +34,11 @@ async function runTests() {
     });
 
     // 2. Team login
+    const bfPass = creds.teams.BLACKFLAGS || creds.teams.blackflags;
     const teamLogin = await fetch(`${baseUrl}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: 'BLACKFLAGS', password: 'ahoy123' })
+      body: JSON.stringify({ username: 'BLACKFLAGS', password: bfPass })
     });
     assert.strictEqual(teamLogin.status, 200, 'Team login failed');
     const teamCookie = teamLogin.headers.get('set-cookie');

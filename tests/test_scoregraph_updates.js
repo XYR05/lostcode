@@ -10,7 +10,8 @@ const {
   getTournamentAssignments,
   saveTournamentAssignments,
   getRoundState,
-  saveRoundState
+  saveRoundState,
+  getCredentials
 } = require('../server.js');
 
 async function testScoreGraphUpdates() {
@@ -28,11 +29,14 @@ async function testScoreGraphUpdates() {
   const initialTeams = JSON.parse(fs.readFileSync(teamsPath, 'utf8'));
 
   try {
+    const creds = getCredentials();
+    const bucPassword = creds.teams.BUCCANEERS || creds.teams.buccaneers;
+
     // 1. Login as BUCCANEERS
     const loginRes = await fetch(`${baseUrl}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ teamName: 'BUCCANEERS', password: 'ahoy123' })
+      body: JSON.stringify({ teamName: 'BUCCANEERS', password: bucPassword })
     });
     assert.strictEqual(loginRes.status, 200, 'BUCCANEERS login must succeed');
     const cookie = loginRes.headers.get('set-cookie');
