@@ -1,5 +1,245 @@
 [
   {
+    "id": "audit_1793003309285_b6t3",
+    "timestamp": "2026-10-26T08:28:29.286Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 2 successfully activated to Live state",
+    "details": {
+      "round": 2
+    }
+  },
+  {
+    "id": "audit_1793003309266_8ntt",
+    "timestamp": "2026-10-26T08:28:29.266Z",
+    "action": "START_TOURNAMENT",
+    "admin": "admin@lostcode",
+    "reason": "Tournament started by Admiralty. Round 1 individual timers started for active crews.",
+    "details": {
+      "startedAt": 1793003309262
+    }
+  },
+  {
+    "id": "audit_1793003309227_z033",
+    "timestamp": "2026-10-26T08:28:29.227Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
+    "id": "audit_1793003297696_6ilr",
+    "timestamp": "2026-10-26T08:28:17.696Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 2 successfully activated to Live state",
+    "details": {
+      "round": 2
+    }
+  },
+  {
+    "id": "audit_1793003297647_hs8c",
+    "timestamp": "2026-10-26T08:28:17.647Z",
+    "action": "START_TOURNAMENT",
+    "admin": "admin@lostcode",
+    "reason": "Tournament started by Admiralty. Round 1 individual timers started for active crews.",
+    "details": {
+      "startedAt": 1793003297642
+    }
+  },
+  {
+    "id": "audit_1793003297628_pn1p",
+    "timestamp": "2026-10-26T08:28:17.628Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
+    "id": "audit_1793003286584_r1dt",
+    "timestamp": "2026-10-26T08:28:06.584Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 2 successfully activated to Live state",
+    "details": {
+      "round": 2
+    }
+  },
+  {
+    "id": "audit_1793003285783_q4ag",
+    "timestamp": "2026-10-26T08:28:05.783Z",
+    "action": "START_TOURNAMENT",
+    "admin": "admin@lostcode",
+    "reason": "Tournament started by Admiralty. Round 1 individual timers started for active crews.",
+    "details": {
+      "startedAt": 1793003285776
+    }
+  },
+  {
+    "id": "audit_1793003285718_bybk",
+    "timestamp": "2026-10-26T08:28:05.718Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
+    "id": "audit_1793003279180_x24o",
+    "timestamp": "2026-10-26T08:27:59.180Z",
+    "action": "START_TOURNAMENT",
+    "admin": "admin@lostcode",
+    "reason": "Tournament started by Admiralty. Round 1 individual timers started for active crews.",
+    "details": {
+      "startedAt": 1793003279175
+    }
+  },
+  {
+    "id": "audit_1793003279149_6tzk",
+    "timestamp": "2026-10-26T08:27:59.149Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
+    "id": "audit_1793003254090_ch5z",
+    "timestamp": "2026-10-26T08:27:34.090Z",
+    "action": "TEST_AUDIT",
+    "admin": "admin@lostcode",
+    "reason": "Automated test audit event",
+    "details": {
+      "test": true
+    }
+  },
+  {
+    "id": "audit_1793002698560_2jdu",
+    "timestamp": "2026-10-26T08:18:18.560Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 2 successfully activated to Live state",
+    "details": {
+      "round": 2
+    }
+  },
+  {
+    "id": "audit_1793002698540_sor8",
+    "timestamp": "2026-10-26T08:18:18.540Z",
+    "action": "START_TOURNAMENT",
+    "admin": "admin@lostcode",
+    "reason": "Tournament started by Admiralty. Round 1 individual timers started for active crews.",
+    "details": {
+      "startedAt": 1793002698535
+    }
+  },
+  {
+    "id": "audit_1793002698489_tpq2",
+    "timestamp": "2026-10-26T08:18:18.489Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
+    "id": "audit_1793002686648_g7tr",
+    "timestamp": "2026-10-26T08:18:06.648Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 2 successfully activated to Live state",
+    "details": {
+      "round": 2
+    }
+  },
+  {
+    "id": "audit_1793002686563_xelf",
+    "timestamp": "2026-10-26T08:18:06.563Z",
+    "action": "START_TOURNAMENT",
+    "admin": "admin@lostcode",
+    "reason": "Tournament started by Admiralty. Round 1 individual timers started for active crews.",
+    "details": {
+      "startedAt": 1793002686558
+    }
+  },
+  {
+    "id": "audit_1793002686541_wl81",
+    "timestamp": "2026-10-26T08:18:06.541Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
+    "id": "audit_1793002675380_uqs0",
+    "timestamp": "2026-10-26T08:17:55.380Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 2 successfully activated to Live state",
+    "details": {
+      "round": 2
+    }
+  },
+  {
+    "id": "audit_1793002674542_age3",
+    "timestamp": "2026-10-26T08:17:54.542Z",
+    "action": "START_TOURNAMENT",
+    "admin": "admin@lostcode",
+    "reason": "Tournament started by Admiralty. Round 1 individual timers started for active crews.",
+    "details": {
+      "startedAt": 1793002674534
+    }
+  },
+  {
+    "id": "audit_1793002674440_za9q",
+    "timestamp": "2026-10-26T08:17:54.440Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
+    "id": "audit_1793002667905_jl7w",
+    "timestamp": "2026-10-26T08:17:47.905Z",
+    "action": "START_TOURNAMENT",
+    "admin": "admin@lostcode",
+    "reason": "Tournament started by Admiralty. Round 1 individual timers started for active crews.",
+    "details": {
+      "startedAt": 1793002667900
+    }
+  },
+  {
+    "id": "audit_1793002667876_b6cz",
+    "timestamp": "2026-10-26T08:17:47.876Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
+    "id": "audit_1793002642563_l95z",
+    "timestamp": "2026-10-26T08:17:22.563Z",
+    "action": "TEST_AUDIT",
+    "admin": "admin@lostcode",
+    "reason": "Automated test audit event",
+    "details": {
+      "test": true
+    }
+  },
+  {
     "id": "audit_1792965975250_xq3j",
     "timestamp": "2026-10-25T22:06:15.250Z",
     "action": "ROUND_ACTIVATION",

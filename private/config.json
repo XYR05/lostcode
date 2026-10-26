@@ -1,10 +1,7 @@
 {
   "ctfStartTime": null,
   "unlockedRounds": [
-    1,
-    2,
-    3,
-    4
+    1
   ],
   "fullscreenEnforced": false,
   "roundDurations": {

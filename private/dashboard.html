@@ -2771,7 +2771,7 @@
     function updateStatsOverview() {
       const keys = Object.keys(currentChallenges);
       const chCount = document.getElementById('totalChallengesCount');
-      if (chCount) chCount.textContent = keys.length;
+      if (chCount) chCount.textContent = keys.length > 0 ? keys.length : (chCount.textContent || 19);
       
       const stageEl = document.getElementById('activeRoundStageCount');
       if (stageEl) {
@@ -4276,8 +4276,10 @@
           statusHtml = `<span class="status-tag status-winner">CHAMPION</span>`;
         } else if (t.eliminated) {
           statusHtml = `<span class="status-tag status-eliminated">ELIMINATED (R${t.eliminatedRound || 2})</span>`;
-        } else {
+        } else if (curR > 1) {
           statusHtml = `<span class="status-tag status-active">ADVANCED (R${curR})</span>`;
+        } else {
+          statusHtml = `<span class="status-tag status-active">ACTIVE</span>`;
         }
 
         // Individual Timer Display

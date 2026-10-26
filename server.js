@@ -1792,10 +1792,6 @@ app.post('/api/login', (req, res) => {
 });
 
 app.get('/api/challenges', (req, res) => {
-  const flagsFilePath = path.join(__dirname, 'private', 'flags.json');
-  if (!fs.existsSync(flagsFilePath)) return res.json({});
-  const flagsData = JSON.parse(fs.readFileSync(flagsFilePath, 'utf8'));
-
   const userTeam = getCurrentTeam(req);
   const isAdminUser = isAdminSession(req);
   const globalUnlockedRounds = Array.isArray(ctfConfig.unlockedRounds) ? ctfConfig.unlockedRounds : [1];
@@ -1804,7 +1800,65 @@ app.get('/api/challenges', (req, res) => {
   const hintsUnlockedCount = (userTeam && userTeam.hintsUnlocked) ? Object.keys(userTeam.hintsUnlocked).length : 0;
   const nextHintCost = (hintsUnlockedCount + 1) * 5;
 
+  const bank = getRiddleBank();
   const safeData = {};
+
+  if (bank && Object.keys(bank).length > 0) {
+    const roundNames = {
+      1: 'Round 1: Setting Sail',
+      2: 'Round 2: High Seas',
+      3: "Round 3: Dead Man's Creek",
+      4: 'Round 4: Treasure Island'
+    };
+
+    const roundCounts = { 1: 0, 2: 0, 3: 0, 4: 0 };
+    Object.keys(bank).forEach(key => {
+      const item = bank[key];
+      const r = item.targetRound || item.round || 1;
+      roundCounts[r] = (roundCounts[r] || 0) + 1;
+      const riddleNum = item.riddleNumber || roundCounts[r];
+
+      let solvesCount = 0;
+      teams.forEach(team => {
+        if (isAdminTeam(team)) return;
+        const solvedList = Array.isArray(team.solvedChallenges) ? team.solvedChallenges : Object.keys(team.solvedChallenges || {});
+        if (solvedList.includes(key) || solvedList.includes(item.id)) solvesCount++;
+      });
+
+      const isRoundUnlocked = isAdminUser || teamUnlockedRounds.includes(r);
+      const isAllocatedToTeam = Boolean(isAdminUser || (userTeam && userTeam.allocatedRiddles && userTeam.allocatedRiddles[r] === key));
+      const isHintUnlocked = Boolean(userTeam && userTeam.hintsUnlocked && (userTeam.hintsUnlocked[key] || userTeam.hintsUnlocked[item.id]));
+      const rawHintText = (Array.isArray(item.hints) && item.hints[0] && item.hints[0].text) ? item.hints[0].text : (item.hint || '');
+      const hasHint = Boolean(rawHintText && rawHintText.trim());
+
+      safeData[key] = {
+        id: item.id || key,
+        title: item.title || key,
+        subtitle: item.title || key,
+        text: isRoundUnlocked ? (item.text || '') : "These waters remain sealed by the Admiralty. Advance your crew to unlock this riddle.",
+        points: item.points || 100,
+        difficulty: item.difficulty || (r === 1 ? 'EASY' : (r === 2 ? 'MEDIUM' : (r === 3 ? 'HARD' : 'EXPERT'))),
+        round: r,
+        roundName: item.roundName || roundNames[r] || `Round ${r}`,
+        riddleNumber: riddleNum,
+        category: item.category || key,
+        hint: isRoundUnlocked ? (isHintUnlocked ? rawHintText : null) : null,
+        adminHint: isAdminUser ? rawHintText : null,
+        hasHint: isRoundUnlocked ? hasHint : false,
+        hintUnlocked: isRoundUnlocked ? isHintUnlocked : false,
+        solves: solvesCount,
+        nextHintCost: nextHintCost,
+        unlocked: isRoundUnlocked,
+        allocatedToTeam: isAllocatedToTeam
+      };
+    });
+    return res.json(safeData);
+  }
+
+  const flagsFilePath = path.join(__dirname, 'private', 'flags.json');
+  if (!fs.existsSync(flagsFilePath)) return res.json({});
+  const flagsData = JSON.parse(fs.readFileSync(flagsFilePath, 'utf8'));
+
   for (const key in flagsData) {
     let solvesCount = 0;
     teams.forEach(team => {
