@@ -1,5 +1,7 @@
 const http = require('http');
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 const { app, getRiddleBank, saveRiddleBank, getTournamentAssignments, saveTournamentAssignments, getRoundState, saveRoundState } = require('../server.js');
 
 async function runTests() {
@@ -10,6 +12,20 @@ async function runTests() {
   await new Promise(resolve => server.listen(0, resolve));
   const port = server.address().port;
   const baseUrl = `http://localhost:${port}`;
+
+  const teamsPath = path.join(__dirname, '../teams.json');
+  const initialTeams = JSON.parse(fs.readFileSync(teamsPath, 'utf8'));
+
+  // Ensure BUCCANEERS is in Round 1 for the privacy test
+  const cleanTeams = JSON.parse(JSON.stringify(initialTeams));
+  const b = cleanTeams.find(t => t.teamName === 'BUCCANEERS');
+  if (b) {
+    b.currentRound = 1;
+    b.unlockedRounds = [1];
+    b.solvedChallenges = [];
+    b.roundSolves = {};
+  }
+  fs.writeFileSync(teamsPath, JSON.stringify(cleanTeams, null, 2));
 
   // Backup initial states BEFORE any mutations
   const initialRiddleBank = JSON.parse(JSON.stringify(getRiddleBank()));
@@ -112,6 +128,7 @@ async function runTests() {
     saveRiddleBank(initialRiddleBank);
     saveTournamentAssignments(initialAssignments);
     saveRoundState(initialRoundState);
+    fs.writeFileSync(teamsPath, JSON.stringify(initialTeams, null, 2));
     server.close();
   }
 }

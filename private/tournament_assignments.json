@@ -10,7 +10,10 @@
         {
           "slotId": "R1_S1",
           "riddleId": "riddle_r1_compass",
-          "assignedTeamId": "crew_1_buccaneers"
+          "assignedTeamId": "crew_1_buccaneers",
+          "claimed": true,
+          "claimedBy": "crew_1_buccaneers",
+          "claimedAt": "2026-10-26T09:47:33.165Z"
         },
         {
           "slotId": "R1_S2",

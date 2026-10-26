@@ -144,6 +144,14 @@ async function run() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Cookie': adminCookie }
   });
+  const roundStatePath = path.join(__dirname, '../private/round_state.json');
+  const cleanRoundState = {
+    "1": { status: "Draft", startedAt: null, completedAt: null, qualifiers: [], eliminated: [], eliminations: [] },
+    "2": { status: "Locked", startedAt: null, completedAt: null, qualifiers: [], eliminated: [], eliminations: [] },
+    "3": { status: "Locked", startedAt: null, completedAt: null, qualifiers: [], eliminated: [], eliminations: [] },
+    "4": { status: "Locked", startedAt: null, completedAt: null, qualifiers: [], eliminated: [], eliminations: [] }
+  };
+  fs.writeFileSync(roundStatePath, JSON.stringify(cleanRoundState, null, 2));
 
   console.log('\n>>> ALL REQUIREMENTS FOR ROUND 1 ON TOURNAMENT START & OTHER ROUNDS ON ACTIVATE VERIFIED 100%! <<<');
 }

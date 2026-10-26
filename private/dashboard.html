@@ -209,7 +209,7 @@
             <div style="display: flex; align-items: center; gap: 8px;">
               <span class="window-round-badge" id="windowRoundBadge">①</span>
               <span class="window-round-name" id="windowRoundName">ROUND 1: SETTING SAIL</span>
-              <span class="window-group-pill" id="windowGroupPill">GROUP A</span>
+              <span class="window-group-pill" id="windowGroupPill" style="display: none;">GROUP A</span>
             </div>
             <div id="windowStatusPillWrap"></div>
           </div>
@@ -243,7 +243,6 @@
           <!-- Challenge Header -->
           <div class="window-header">
             <div class="window-title-wrap">
-              <span class="window-accent-badge">EXPEDITION RIDDLE</span>
               <h3 id="windowChallengeTitle">THE FORGED MANIFEST</h3>
             </div>
             <div class="window-subtitle" id="windowChallengeSubtitle">
@@ -259,7 +258,6 @@
           <!-- Captain's Brief / Physical Field Directive -->
           <div class="window-section" id="windowCaptainBriefSection">
             <div class="window-section-title">
-              <span class="window-tag-badge">DIRECTIVE</span>
               <span>CAPTAIN'S FIELD BRIEF</span>
             </div>
             <div class="window-text" id="windowChallengeDescription"></div>
@@ -279,7 +277,6 @@
           <!-- Submit Flag Box -->
           <div class="window-flag-box">
             <div class="flag-header">
-              <span class="window-tag-badge">CLAIM</span>
               <span>SUBMIT SALVAGED FIELD FLAG</span>
             </div>
             <input type="text" id="windowFlagInput" class="flag-input" placeholder="lostcode{answer_found_in_field}" autocomplete="off" />
@@ -1642,9 +1639,10 @@
 
       const groupEl = document.getElementById('windowGroupPill');
       if (groupEl) {
-        if (window.isAdminUser) {
-          groupEl.textContent = 'ADMIRALTY FLEET';
+        if (window.isAdminUser || roundNum === 1 || roundNum === 4) {
+          groupEl.style.display = 'none';
         } else {
+          groupEl.style.display = 'inline-block';
           groupEl.textContent = `GROUP ${curGroup}`;
         }
       }
