@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lost Code // Treasure Expedition</title>
-  <link rel="stylesheet" href="/dashboard-styles.css?v=22" />
+  <link rel="stylesheet" href="/dashboard-styles.css?v=24" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="/socket.io/socket.io.js"></script>
 </head>
@@ -84,7 +84,7 @@
   <section id="challenges-section" class="info-section challenges-expedition-section" style="display: none; padding: 15px 0 35px 0;">
     
     <!-- Top Action Bar with Flowchart button -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 10px; flex-wrap: wrap; gap: 8px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 0 10px; flex-wrap: wrap; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 8px;">
         <span style="font-size: 24px;">🧭</span>
         <h2 style="font-family: 'Cinzel', serif; font-size: 1.25rem; color: var(--gold-primary); margin: 0; letter-spacing: 0.08em;">
@@ -114,13 +114,13 @@
       <!-- SVG Red Dotted Trails connecting islands across compass rose -->
       <svg class="map-dotted-trails-svg" viewBox="0 0 1000 562" preserveAspectRatio="none">
         <!-- Leg 1: Round 1 (Setting Sail) to Round 2 (High Seas) -->
-        <path d="M 280,180 Q 480,120 680,225" class="red-trail-path"></path>
+        <path d="M 280,165 Q 480,120 680,210" class="red-trail-path"></path>
 
         <!-- Leg 2: Round 2 (High Seas) to Round 3 (Dead Man's Creek) -->
-        <path d="M 650,220 C 560,290 460,240 330,345" class="red-trail-path"></path>
+        <path d="M 650,210 C 560,280 460,250 330,370" class="red-trail-path"></path>
 
         <!-- Leg 3: Round 3 (Dead Man's Creek) to Round 4 (Treasure Island) -->
-        <path d="M 330,350 Q 500,440 680,395" class="red-trail-path"></path>
+        <path d="M 330,375 Q 500,450 680,405" class="red-trail-path"></path>
       </svg>
 
       <!-- Island 1: Top-Left (Round 1: Setting Sail) -->
@@ -201,8 +201,6 @@
 
       <!-- FLOATING CHALLENGE WINDOW (Dynamic Left/Right Docking) -->
       <div class="map-challenge-window" id="mapChallengeWindow" style="display: none;">
-        <button type="button" class="window-close-btn" onclick="closeChallengeWindow()" aria-label="Close window">&times;</button>
-        
         <!-- Round Stage & Group Banner -->
         <div class="window-stage-banner" id="windowStageBanner">
           <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
@@ -211,7 +209,10 @@
               <span class="window-round-name" id="windowRoundName">ROUND 1: SETTING SAIL</span>
               <span class="window-group-pill" id="windowGroupPill" style="display: none;">GROUP A</span>
             </div>
-            <div id="windowStatusPillWrap"></div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div id="windowStatusPillWrap"></div>
+              <button type="button" class="window-close-btn" onclick="closeChallengeWindow()" aria-label="Close window">&times;</button>
+            </div>
           </div>
           <div class="window-quota-rule" id="windowQuotaRule">
             10 Crews • 10 Riddles • 0 Eliminations (All hands advance into the voyage)
@@ -3619,8 +3620,18 @@
     // Scoreboard Tabs & Graph
     let scoreChart;
     const pirateColors = [
-      '#C99A52', '#31584F', '#E4D5B8', '#8D6A3D', '#5B8A68',
-      '#A64444', '#D4A373', '#4A7C59', '#9381FF', '#B8860B'
+      'rgba(229, 169, 60, 0.75)',  // Spanish Doubloon Gold
+      'rgba(214, 64, 69, 0.75)',   // Corsair Blood Crimson
+      'rgba(0, 180, 216, 0.75)',   // Caribbean Sea Cyan
+      'rgba(157, 78, 221, 0.75)',  // Abyssal Royal Violet
+      'rgba(42, 157, 143, 0.75)',  // Seafoam Isle Green
+      'rgba(58, 134, 255, 0.75)',  // Admiralty Royal Blue
+      'rgba(226, 232, 240, 0.75)', // Ghost Pearl Silver
+      'rgba(251, 133, 0, 0.75)',   // Burning Torch Orange
+      'rgba(6, 214, 160, 0.75)',   // St. Elmo's Emerald Phosphor
+      'rgba(212, 140, 70, 0.75)',  // Antique Compass Brass
+      'rgba(231, 111, 81, 0.75)',  // Sunken Coral Rust
+      'rgba(168, 85, 247, 0.75)'   // Phantom Amethyst
     ];
 
     let currentStandingsTeams = [];
