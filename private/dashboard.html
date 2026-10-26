@@ -64,7 +64,7 @@
 
     <div class="stats-row">
       <div class="stat-card">
-        <div class="stat-value" id="totalChallengesCount">19</div>
+        <div class="stat-value" id="totalChallengesCount">--</div>
         <div class="stat-label">RIDDLES</div>
       </div>
       <div class="stat-card">
@@ -2767,7 +2767,13 @@
     function updateStatsOverview() {
       const keys = Object.keys(currentChallenges);
       const chCount = document.getElementById('totalChallengesCount');
-      if (chCount) chCount.textContent = keys.length > 0 ? keys.length : (chCount.textContent || 19);
+      if (chCount) {
+        if (window.isAdminUser) {
+          chCount.textContent = keys.length > 0 ? keys.length : 19;
+        } else {
+          chCount.textContent = keys.length > 0 ? keys.length : 4;
+        }
+      }
       
       const stageEl = document.getElementById('activeRoundStageCount');
       if (stageEl) {
@@ -2791,7 +2797,7 @@
 
     function renderAdminChallenges() {
       const adminList = document.getElementById('adminChallengesList');
-      if (!adminList) return;
+      if (!adminList || !window.isAdminUser) return;
       adminList.innerHTML = '';
 
       const roundDefs = {

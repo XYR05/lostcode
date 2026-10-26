@@ -122,6 +122,44 @@ async function runTests() {
     assert.strictEqual(lockedData.roundStatus, 'Locked', 'Should report Locked status');
     assert.strictEqual(lockedData.riddle, null, 'Riddle must be null when locked');
 
+    // Restore round status for /api/challenges test
+    roundState['1'].status = 'Live';
+    saveRoundState(roundState);
+
+    // 7. Verify GET /api/challenges team allocation privacy:
+    // Unauthenticated GET /api/challenges must return empty {}
+    const unauthChallRes = await fetch(`${baseUrl}/api/challenges`);
+    assert.strictEqual(unauthChallRes.status, 200);
+    const unauthChallData = await unauthChallRes.json();
+    assert.strictEqual(Object.keys(unauthChallData).length, 0, 'Unauthenticated user must receive no challenges');
+
+    // Authenticated BUCCANEERS GET /api/challenges must only return BUCCANEERS allocated riddles
+    const bucChallRes = await fetch(`${baseUrl}/api/challenges`, {
+      headers: { 'Cookie': cookie }
+    });
+    assert.strictEqual(bucChallRes.status, 200);
+    const bucChallData = await bucChallRes.json();
+    const bucKeys = Object.keys(bucChallData);
+    assert.ok(bucKeys.includes('test_r1_buccaneers'), 'BUCCANEERS must see their allocated Round 1 riddle');
+    assert.ok(!bucKeys.includes('test_r1_cutthroats'), 'BUCCANEERS must NOT see Cutthroats riddle');
+
+    // Admin GET /api/challenges must see all riddles across rounds
+    const adminLoginRes = await fetch(`${baseUrl}/api/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ teamName: 'admin@lostcode', password: 'foundcode' })
+    });
+    assert.strictEqual(adminLoginRes.status, 200);
+    const adminCookie = adminLoginRes.headers.get('set-cookie');
+    const adminChallRes = await fetch(`${baseUrl}/api/challenges`, {
+      headers: { 'Cookie': adminCookie }
+    });
+    assert.strictEqual(adminChallRes.status, 200);
+    const adminChallData = await adminChallRes.json();
+    const adminKeys = Object.keys(adminChallData);
+    assert.ok(adminKeys.includes('test_r1_buccaneers'), 'Admin must see test_r1_buccaneers');
+    assert.ok(adminKeys.includes('test_r1_cutthroats'), 'Admin must see test_r1_cutthroats');
+
     console.log('✅ Strict Riddle Privacy & Private Participant Endpoints verified successfully!');
   } finally {
     if (b && bBackup) {

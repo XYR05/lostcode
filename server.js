@@ -1812,6 +1812,7 @@ app.get('/api/challenges', (req, res) => {
     };
 
     const roundCounts = { 1: 0, 2: 0, 3: 0, 4: 0 };
+    const assignments = getTournamentAssignments();
     Object.keys(bank).forEach(key => {
       const item = bank[key];
       const r = item.targetRound || item.round || 1;
@@ -1826,7 +1827,19 @@ app.get('/api/challenges', (req, res) => {
       });
 
       const isRoundUnlocked = isAdminUser || teamUnlockedRounds.includes(r);
-      const isAllocatedToTeam = Boolean(isAdminUser || (userTeam && userTeam.allocatedRiddles && userTeam.allocatedRiddles[r] === key));
+      const slot = userTeam ? findTeamSlotInRound(assignments, r, userTeam.id) : null;
+      const teamAllocatedRiddleId = (slot && slot.riddleId) ? slot.riddleId : (userTeam && userTeam.allocatedRiddles && userTeam.allocatedRiddles[r]);
+      const isAllocatedToTeam = Boolean(
+        isAdminUser || (
+          userTeam && teamAllocatedRiddleId && (teamAllocatedRiddleId === key || teamAllocatedRiddleId === item.id)
+        )
+      );
+
+      // Non-admin participants only see the riddles allocated specifically to their team
+      if (!isAdminUser && !isAllocatedToTeam) {
+        return;
+      }
+
       const isHintUnlocked = Boolean(userTeam && userTeam.hintsUnlocked && (userTeam.hintsUnlocked[key] || userTeam.hintsUnlocked[item.id]));
       const rawHintText = (Array.isArray(item.hints) && item.hints[0] && item.hints[0].text) ? item.hints[0].text : (item.hint || '');
       const hasHint = Boolean(rawHintText && rawHintText.trim());
@@ -1871,7 +1884,17 @@ app.get('/api/challenges', (req, res) => {
 
     const roundNum = flagsData[key].round || 1;
     const isRoundUnlocked = isAdminUser || teamUnlockedRounds.includes(roundNum);
-    const isAllocatedToTeam = Boolean(isAdminUser || (userTeam && userTeam.allocatedRiddles && userTeam.allocatedRiddles[roundNum] === key));
+    const slot = userTeam ? findTeamSlotInRound(assignments, roundNum, userTeam.id) : null;
+    const teamAllocatedRiddleId = (slot && slot.riddleId) ? slot.riddleId : (userTeam && userTeam.allocatedRiddles && userTeam.allocatedRiddles[roundNum]);
+    const isAllocatedToTeam = Boolean(
+      isAdminUser || (
+        userTeam && teamAllocatedRiddleId && teamAllocatedRiddleId === key
+      )
+    );
+
+    if (!isAdminUser && !isAllocatedToTeam) {
+      continue;
+    }
 
     const hasHint = Boolean(flagsData[key].hint && flagsData[key].hint.trim());
     const isHintUnlocked = Boolean(userTeam && userTeam.hintsUnlocked && userTeam.hintsUnlocked[key]);
