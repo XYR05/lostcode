@@ -343,9 +343,8 @@
             <div style="display: flex; align-items: center; gap: 8px;">
               <span>CREW & STANDING</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 36px; margin-right: 4px;">
+            <div style="display: flex; align-items: center; margin-right: 4px;">
               <span>ROUNDS COMPLETED</span>
-              <span>TIME LEFT / CLOCK</span>
             </div>
           </div>
           <div class="standings-list" id="standingsList"></div>
@@ -3817,35 +3816,22 @@
           </div>
           <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: flex-end;">
             <span style="background: rgba(201, 154, 82, 0.12); border: 1px solid var(--border-subtle); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; padding: 4px 10px; border-radius: 3px; letter-spacing: 0.05em;">${roundsCompleted} / 4 COMPLETED</span>
-            <div style="font-size: 0.92rem; font-family: 'JetBrains Mono', monospace; font-weight: 700; min-width: 140px; text-align: right;">
-              <span style="color: var(--gold-muted); font-size: 0.72rem; letter-spacing: 0.05em; margin-right: 5px;">TIME LEFT:</span>
-              <span id="standingClock_${t.id}" style="color:${clock.color};">${clock.text}</span>
-            </div>
           </div>
         `;
         list.appendChild(div);
       });
 
-      startStandingsLiveTicker();
+      if (standingsTickInterval) {
+        clearInterval(standingsTickInterval);
+        standingsTickInterval = null;
+      }
     }
 
     function startStandingsLiveTicker() {
-      if (standingsTickInterval) return;
-      standingsTickInterval = setInterval(() => {
-        const tab = document.getElementById('standings');
-        if (!tab || !tab.classList.contains('active')) return;
-        if (!Array.isArray(currentStandingsTeams) || currentStandingsTeams.length === 0) return;
-
-        currentStandingsTeams.forEach(t => {
-          const el = document.getElementById(`standingClock_${t.id}`);
-          if (!el) return;
-          const clock = getTeamClockDetails(t);
-          if (el.textContent !== clock.text) {
-            el.textContent = clock.text;
-            el.style.color = clock.color;
-          }
-        });
-      }, 1000);
+      if (standingsTickInterval) {
+        clearInterval(standingsTickInterval);
+        standingsTickInterval = null;
+      }
     }
 
     function renderScoreGraph(teams) {
