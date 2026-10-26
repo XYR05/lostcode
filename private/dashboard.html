@@ -315,13 +315,13 @@
   <!-- 7. SCOREBOARD / LEADERBOARD SECTION                    -->
   <!-- ====================================================== -->
   <section id="scoreboard-section" class="info-section" style="display: none;">
-    <div id="teamScoreDisplay">Your Crew Score: N/A</div>
+    <div id="teamScoreDisplay" style="display: none;"></div>
 
     <div class="card">
       <div class="card-header">
         <h2>Crew Rankings</h2>
         <div class="tabs" style="margin-bottom: 1rem; margin-top: 1rem;">
-          <button class="tab-btn active" data-tab="score-graph">Score Graph</button>
+          <button class="tab-btn active" data-tab="score-graph">Progression Graph</button>
           <button class="tab-btn" data-tab="standings">Current Standings</button>
         </div>
       </div>
@@ -481,7 +481,6 @@
               <tr>
                 <th>TITLE / CODE</th>
                 <th>TARGET ROUND</th>
-                <th>POINTS</th>
                 <th>STATUS</th>
                 <th>ANSWER RULE</th>
                 <th>ACTIONS</th>
@@ -1036,16 +1035,13 @@
             </select>
           </div>
           <div style="flex:1;">
-            <label style="display:block; font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.8rem; color:var(--admin-text-secondary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.04em;">Points</label>
-            <input type="number" id="riddleModalPoints" value="100" style="width:100%; padding:0.6rem; background:var(--admin-bg-base); border:1px solid var(--admin-border-subtle); color:var(--admin-text-primary); border-radius:4px;" />
-          </div>
-          <div style="flex:1;">
             <label style="display:block; font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.8rem; color:var(--admin-text-secondary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.04em;">Status</label>
             <select id="riddleModalStatus" style="width:100%; padding:0.6rem; background:var(--admin-bg-base); border:1px solid var(--admin-border-subtle); color:var(--admin-text-primary); border-radius:4px;">
               <option value="draft">Draft (Unpublished)</option>
               <option value="published">Published</option>
             </select>
           </div>
+          <input type="hidden" id="riddleModalPoints" value="100" />
         </div>
         <div style="display:flex; gap:20px; align-items:center; background:rgba(0,0,0,0.25); padding:10px 14px; border-radius:4px; border:1px solid var(--admin-border-subtle);">
           <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--admin-text-secondary); cursor:pointer;">
@@ -2327,7 +2323,7 @@
       const keys = Object.keys(globalAdminRiddles);
 
       if (keys.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--admin-text-secondary); padding: 1.5rem; font-family:'Rajdhani',sans-serif;">The Riddle Bank is empty. Click "+ New Riddle" to begin creating competition riddles.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--admin-text-secondary); padding: 1.5rem; font-family:'Rajdhani',sans-serif;">The Riddle Bank is empty. Click "+ New Riddle" to begin creating competition riddles.</td></tr>`;
         return;
       }
 
@@ -2347,7 +2343,6 @@
             <div style="font-size: 0.75rem; color: var(--admin-text-muted); font-family: 'JetBrains Mono', monospace;">${escapeHTML(rid.id)}</div>
           </td>
           <td><span style="font-family: 'Rajdhani', sans-serif; font-weight: 600; color: var(--admin-text-primary);">Round ${rid.targetRound || 1}</span></td>
-          <td><span style="font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--admin-gold);">${rid.points || 100} pts</span></td>
           <td>${stBadge}</td>
           <td style="font-size: 0.78rem; color: var(--admin-text-secondary); font-family: 'Rajdhani', sans-serif;">${ruleText}</td>
           <td>
@@ -2361,7 +2356,7 @@
       });
 
       if (renderedCount === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--admin-text-secondary); padding: 1.5rem; font-family:'Rajdhani',sans-serif;">No riddles found matching the selected round filter.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--admin-text-secondary); padding: 1.5rem; font-family:'Rajdhani',sans-serif;">No riddles found matching the selected round filter.</td></tr>`;
       }
     }
 
@@ -2382,7 +2377,7 @@
         document.getElementById('riddleModalText').value = rid.text || '';
         document.getElementById('riddleModalAnswer').value = rid.expectedAnswer || '';
         document.getElementById('riddleModalRound').value = String(rid.targetRound || 1);
-        document.getElementById('riddleModalPoints').value = rid.points || 100;
+        if (document.getElementById('riddleModalPoints')) document.getElementById('riddleModalPoints').value = rid.points || 100;
         document.getElementById('riddleModalStatus').value = rid.status || 'draft';
         document.getElementById('riddleModalTrim').checked = !!(rid.answerMatchingRule && rid.answerMatchingRule.trim);
         document.getElementById('riddleModalCase').checked = !!(rid.answerMatchingRule && rid.answerMatchingRule.caseSensitive);
@@ -2393,7 +2388,7 @@
         document.getElementById('riddleModalText').value = '';
         document.getElementById('riddleModalAnswer').value = '';
         document.getElementById('riddleModalRound').value = document.getElementById('riddleBankRoundFilter') ? (document.getElementById('riddleBankRoundFilter').value === 'ALL' ? '1' : document.getElementById('riddleBankRoundFilter').value) : '1';
-        document.getElementById('riddleModalPoints').value = '100';
+        if (document.getElementById('riddleModalPoints')) document.getElementById('riddleModalPoints').value = '100';
         document.getElementById('riddleModalStatus').value = 'draft';
         document.getElementById('riddleModalTrim').checked = true;
         document.getElementById('riddleModalCase').checked = false;
@@ -2413,7 +2408,8 @@
       const text = document.getElementById('riddleModalText').value.trim();
       const expectedAnswer = document.getElementById('riddleModalAnswer').value.trim();
       const targetRound = parseInt(document.getElementById('riddleModalRound').value, 10);
-      const points = parseInt(document.getElementById('riddleModalPoints').value, 10) || 100;
+      const pointsEl = document.getElementById('riddleModalPoints');
+      const points = pointsEl ? (parseInt(pointsEl.value, 10) || 100) : 100;
       const status = document.getElementById('riddleModalStatus').value;
       const trim = document.getElementById('riddleModalTrim').checked;
       const caseSensitive = document.getElementById('riddleModalCase').checked;

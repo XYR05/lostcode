@@ -2666,7 +2666,7 @@ app.post('/api/challenge/flag', (req, res) => {
   const currentRoundNum = challengeRound;
   team.roundSolves[currentRoundNum] = Date.now();
 
-  let advanceMessage = `Correct flag! ${pointsEarned} points added to your crew.`;
+  let advanceMessage = 'Correct flag! Challenge solved.';
 
   // Advance tournament rounds and apply group elimination engine
   if (!isAdminUser) {
