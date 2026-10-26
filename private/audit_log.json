@@ -1,5 +1,155 @@
 [
   {
+    "id": "audit_1793008472699_9qe8",
+    "timestamp": "2026-10-26T09:54:32.699Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 2 successfully activated to Live state",
+    "details": {
+      "round": 2
+    }
+  },
+  {
+    "id": "audit_1793008472696_eadc",
+    "timestamp": "2026-10-26T09:54:32.696Z",
+    "action": "START_TOURNAMENT",
+    "admin": "admin@lostcode",
+    "reason": "Tournament started by Admiralty. Round 1 individual timers started for active crews.",
+    "details": {
+      "startedAt": 1793008472696
+    }
+  },
+  {
+    "id": "audit_1793008472689_xrcw",
+    "timestamp": "2026-10-26T09:54:32.689Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
+    "id": "audit_1793008471239_3byb",
+    "timestamp": "2026-10-26T09:54:31.239Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 2 successfully activated to Live state",
+    "details": {
+      "round": 2
+    }
+  },
+  {
+    "id": "audit_1793008471230_d5nt",
+    "timestamp": "2026-10-26T09:54:31.230Z",
+    "action": "START_TOURNAMENT",
+    "admin": "admin@lostcode",
+    "reason": "Tournament started by Admiralty. Round 1 individual timers started for active crews.",
+    "details": {
+      "startedAt": 1793008471229
+    }
+  },
+  {
+    "id": "audit_1793008471228_8pgb",
+    "timestamp": "2026-10-26T09:54:31.228Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
+    "id": "audit_1793008469834_q1ft",
+    "timestamp": "2026-10-26T09:54:29.834Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 2 successfully activated to Live state",
+    "details": {
+      "round": 2
+    }
+  },
+  {
+    "id": "audit_1793008469700_gxk7",
+    "timestamp": "2026-10-26T09:54:29.700Z",
+    "action": "START_TOURNAMENT",
+    "admin": "admin@lostcode",
+    "reason": "Tournament started by Admiralty. Round 1 individual timers started for active crews.",
+    "details": {
+      "startedAt": 1793008469700
+    }
+  },
+  {
+    "id": "audit_1793008469691_da3y",
+    "timestamp": "2026-10-26T09:54:29.691Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
+    "id": "audit_1793008468825_xwl1",
+    "timestamp": "2026-10-26T09:54:28.825Z",
+    "action": "START_TOURNAMENT",
+    "admin": "admin@lostcode",
+    "reason": "Tournament started by Admiralty. Round 1 individual timers started for active crews.",
+    "details": {
+      "startedAt": 1793008468824
+    }
+  },
+  {
+    "id": "audit_1793008468818_99r1",
+    "timestamp": "2026-10-26T09:54:28.818Z",
+    "action": "ROUND_ACTIVATION",
+    "admin": "admin@lostcode",
+    "reason": "Round 1 successfully activated to Live state",
+    "details": {
+      "round": 1
+    }
+  },
+  {
+    "id": "audit_1793008459850_06c4",
+    "timestamp": "2026-10-26T09:54:19.850Z",
+    "action": "TEST_AUDIT",
+    "admin": "admin@lostcode",
+    "reason": "Automated test audit event",
+    "details": {
+      "test": true
+    }
+  },
+  {
+    "id": "audit_1793008415844_v1vp",
+    "timestamp": "2026-10-26T09:53:35.844Z",
+    "action": "TEST_AUDIT",
+    "admin": "admin@lostcode",
+    "reason": "Automated test audit event",
+    "details": {
+      "test": true
+    }
+  },
+  {
+    "id": "audit_1793008315840_xsup",
+    "timestamp": "2026-10-26T09:51:55.840Z",
+    "action": "TEST_AUDIT",
+    "admin": "admin@lostcode",
+    "reason": "Automated test audit event",
+    "details": {
+      "test": true
+    }
+  },
+  {
+    "id": "audit_1793008213553_qwf9",
+    "timestamp": "2026-10-26T09:50:13.553Z",
+    "action": "TEST_AUDIT",
+    "admin": "admin@lostcode",
+    "reason": "Automated test audit event",
+    "details": {
+      "test": true
+    }
+  },
+  {
     "id": "audit_1793008014757_zzzh",
     "timestamp": "2026-10-26T09:46:54.757Z",
     "action": "ROUND_ACTIVATION",

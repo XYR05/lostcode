@@ -10,10 +10,7 @@
         {
           "slotId": "R1_S1",
           "riddleId": "riddle_r1_compass",
-          "assignedTeamId": "crew_1_buccaneers",
-          "claimed": true,
-          "claimedBy": "crew_1_buccaneers",
-          "claimedAt": "2026-10-26T09:47:33.165Z"
+          "assignedTeamId": "crew_1_buccaneers"
         },
         {
           "slotId": "R1_S2",
@@ -81,13 +78,10 @@
           "slots": [
             {
               "slotId": "R2_GA_S1",
-              "riddleId": "riddle_r2_astrolabe",
+              "riddleId": "riddle_r2_ga_s1",
               "eligibleTeams": [
                 "crew_1_buccaneers",
-                "crew_3_corsairs",
-                "crew_5_scallywags",
-                "crew_7_blackflags",
-                "crew_9_dreadsails"
+                "crew_3_corsairs"
               ]
             },
             {

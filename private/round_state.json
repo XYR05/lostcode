@@ -1,17 +1,15 @@
 {
   "1": {
-    "status": "Live",
-    "startedAt": "2026-10-26T09:46:53.515Z",
+    "status": "Draft",
+    "startedAt": null,
     "completedAt": null,
-    "qualifiers": [
-      "crew_1_buccaneers"
-    ],
+    "qualifiers": [],
     "eliminated": [],
     "eliminations": []
   },
   "2": {
-    "status": "Live",
-    "startedAt": "2026-10-26T09:46:54.756Z",
+    "status": "Locked",
+    "startedAt": null,
     "completedAt": null,
     "qualifiers": [],
     "eliminated": [],

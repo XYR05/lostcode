@@ -2,7 +2,7 @@ const http = require('http');
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const { app, getRiddleBank, saveRiddleBank, getTournamentAssignments, saveTournamentAssignments, getRoundState, saveRoundState } = require('../server.js');
+const { app, teams, getRiddleBank, saveRiddleBank, getTournamentAssignments, saveTournamentAssignments, getRoundState, saveRoundState } = require('../server.js');
 
 async function runTests() {
   console.log('Testing Strict Riddle Privacy & Private Participant Endpoints...');
@@ -17,15 +17,14 @@ async function runTests() {
   const initialTeams = JSON.parse(fs.readFileSync(teamsPath, 'utf8'));
 
   // Ensure BUCCANEERS is in Round 1 for the privacy test
-  const cleanTeams = JSON.parse(JSON.stringify(initialTeams));
-  const b = cleanTeams.find(t => t.teamName === 'BUCCANEERS');
+  const b = teams.find(t => t.teamName === 'BUCCANEERS');
+  const bBackup = b ? JSON.parse(JSON.stringify(b)) : null;
   if (b) {
     b.currentRound = 1;
     b.unlockedRounds = [1];
     b.solvedChallenges = [];
     b.roundSolves = {};
   }
-  fs.writeFileSync(teamsPath, JSON.stringify(cleanTeams, null, 2));
 
   // Backup initial states BEFORE any mutations
   const initialRiddleBank = JSON.parse(JSON.stringify(getRiddleBank()));
@@ -87,7 +86,7 @@ async function runTests() {
     assert.ok(cookie, 'Must set session cookie');
 
     // 3. Authenticated request for team challenge
-    const challengeRes = await fetch(`${baseUrl}/api/team/challenge`, {
+    const challengeRes = await fetch(`${baseUrl}/api/team/challenge?round=1`, {
       headers: { 'Cookie': cookie }
     });
     assert.strictEqual(challengeRes.status, 200, 'Authenticated request should return 200');
@@ -106,7 +105,7 @@ async function runTests() {
     assert.ok(!serialized.includes('test_r1_cutthroats'), 'Other team riddle must not leak');
 
     // 5. Query tampering check (?teamId=crew_2_cutthroats)
-    const tamperedRes = await fetch(`${baseUrl}/api/team/challenge?teamId=crew_2_cutthroats`, {
+    const tamperedRes = await fetch(`${baseUrl}/api/team/challenge?round=1&teamId=crew_2_cutthroats`, {
       headers: { 'Cookie': cookie }
     });
     const tamperedData = await tamperedRes.json();
@@ -116,7 +115,7 @@ async function runTests() {
     roundState['1'].status = 'Locked';
     saveRoundState(roundState);
 
-    const lockedRes = await fetch(`${baseUrl}/api/team/challenge`, {
+    const lockedRes = await fetch(`${baseUrl}/api/team/challenge?round=1`, {
       headers: { 'Cookie': cookie }
     });
     const lockedData = await lockedRes.json();
@@ -125,10 +124,12 @@ async function runTests() {
 
     console.log('✅ Strict Riddle Privacy & Private Participant Endpoints verified successfully!');
   } finally {
+    if (b && bBackup) {
+      Object.assign(b, bBackup);
+    }
     saveRiddleBank(initialRiddleBank);
     saveTournamentAssignments(initialAssignments);
     saveRoundState(initialRoundState);
-    fs.writeFileSync(teamsPath, JSON.stringify(initialTeams, null, 2));
     server.close();
   }
 }

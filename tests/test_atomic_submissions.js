@@ -54,13 +54,21 @@ async function runTests() {
 
     const roundState = getRoundState();
     roundState['2'].status = 'Live';
+    roundState['2'].qualifiers = [];
+    roundState['2'].eliminations = [];
     saveRoundState(roundState);
 
     // Set test crews currentRound to 2 for Round 2 competition
     const bucMem = teams.find(t => t.id === 'crew_1_buccaneers');
-    if (bucMem) bucMem.currentRound = 2;
+    if (bucMem) {
+      bucMem.currentRound = 2;
+      if (bucMem.roundSolves) delete bucMem.roundSolves['2'];
+    }
     const corMem = teams.find(t => t.id === 'crew_3_corsairs');
-    if (corMem) corMem.currentRound = 2;
+    if (corMem) {
+      corMem.currentRound = 2;
+      if (corMem.roundSolves) delete corMem.roundSolves['2'];
+    }
 
     // Login buccaneers
     const loginB = await fetch(`${baseUrl}/api/login`, {

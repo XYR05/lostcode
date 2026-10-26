@@ -65,6 +65,8 @@ async function testScoreGraphUpdates() {
     // Reset Buccaneers score to 0 for a clean test
     const bucMem = teams.find(t => t.id === 'crew_1_buccaneers');
     bucMem.score = 0;
+    bucMem.currentRound = 1;
+    bucMem.roundSolves = {};
     bucMem.solvedChallenges = [];
     bucMem.scoreHistory = [{ timestamp: Date.now() - 5000, time: '12:00:00 AM', score: 0 }];
     fs.writeFileSync(teamsPath, JSON.stringify(teams, null, 2), 'utf8');

@@ -397,5 +397,19 @@
     ],
     "createdAt": "2026-10-25T15:20:00.000Z",
     "updatedAt": "2026-10-25T15:20:00.000Z"
+  },
+  "riddle_r2_ga_s1": {
+    "id": "riddle_r2_ga_s1",
+    "title": "Dead Man Reef",
+    "text": "Text",
+    "expectedAnswer": "An ocean wave",
+    "targetRound": 2,
+    "status": "published",
+    "answerMatchingRule": {
+      "caseSensitive": false,
+      "trim": true
+    },
+    "points": 250,
+    "hints": []
   }
 }
