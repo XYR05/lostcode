@@ -355,25 +355,33 @@
   <!-- ====================================================== -->
   <section id="admin-section" class="info-section" style="display: none;">
     <!-- Admin Portal Header & Action Bar -->
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 1.25rem;">
-      <div>
-        <h2 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); letter-spacing: 0.05em;">Admin Portal</h2>
-        <p style="color: var(--text-secondary); margin: 0.4rem 0 0 0; font-size: 0.92rem;">Manage tournament rounds, configure challenge riddles, and monitor team progression.</p>
+    <div class="admin-toolbar-wrapper">
+      <div class="admin-header-titles">
+        <h2>Admin Portal</h2>
+        <p>Manage tournament rounds, configure challenge riddles, and monitor team progression.</p>
       </div>
-      <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
-        <select id="adminSectionSelector" onchange="filterAdminSections(this.value)" style="padding: 0.65rem 1rem; border: 1px solid var(--gold-primary); background: rgba(201,154,82,0.12); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 700; border-radius: 4px; cursor: pointer;">
-          <option value="ALL">Show: All Sections</option>
-          <option value="roundControlDeck">Tournament Round Controls</option>
-          <option value="tournamentRosterSection">Tournament Roster & Standings</option>
-          <option value="riddleBankSection">Challenge Riddle Bank</option>
-          <option value="assignmentMatrixSection">Team-to-Riddle Assignment Matrix</option>
-          <option value="credentialsSection">Crew & Admin Credentials Vault</option>
-        </select>
-        <button id="adminStartCtfBtn" style="padding: 0.65rem 1.4rem; border: 1px solid var(--gold-primary); background: var(--gold-primary); color: #17110c; font-family: 'Cinzel', serif; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 0.85rem; letter-spacing: 0.05em; transition: all 0.2s ease;">Start Tournament</button>
-        <button id="adminToggleProctorBtn" type="button" onclick="toggleProctoring()" style="padding: 0.65rem 1.1rem; border: 1px solid var(--gold-primary); background: rgba(201,154,82,0.12); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 700; border-radius: 4px; cursor: pointer;">Fullscreen Proctor: ON</button>
-        <button type="button" onclick="fetchTournamentStatus()" style="padding: 0.65rem 1.1rem; border: 1px solid var(--border-subtle); background: rgba(201,154,82,0.08); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 700; border-radius: 4px; cursor: pointer;">Refresh Teams</button>
-        <button type="button" onclick="seedDefaultTournamentCrews()" style="padding: 0.65rem 1.1rem; border: 1px solid var(--border-subtle); background: transparent; color: var(--text-secondary); font-family: 'Cinzel', serif; font-size: 0.82rem; border-radius: 4px; cursor: pointer;">Reset 10 Teams</button>
-        <button id="adminWipeDataBtn" style="padding: 0.65rem 1.1rem; border: 1px solid var(--border-subtle); background: transparent; color: var(--text-secondary); font-family: 'Cinzel', serif; font-size: 0.82rem; border-radius: 4px; cursor: pointer;">Wipe Data</button>
+      <div class="admin-toolbar-controls">
+        <div class="admin-toolbar-group">
+          <select id="adminSectionSelector" onchange="filterAdminSections(this.value)" class="admin-select-custom">
+            <option value="ALL">Show: All Sections</option>
+            <option value="roundControlDeck">Tournament Round Controls</option>
+            <option value="tournamentRosterSection">Tournament Roster & Standings</option>
+            <option value="riddleBankSection">Challenge Riddle Bank</option>
+            <option value="assignmentMatrixSection">Team-to-Riddle Assignment Matrix</option>
+            <option value="credentialsSection">Crew & Admin Credentials Vault</option>
+          </select>
+        </div>
+        <div class="admin-toolbar-divider"></div>
+        <div class="admin-toolbar-group">
+          <button id="adminStartCtfBtn" class="btn-admin-primary">Start Tournament</button>
+          <button id="adminToggleProctorBtn" type="button" onclick="toggleProctoring()" class="btn-admin-secondary">Fullscreen Proctor: ON</button>
+          <button type="button" onclick="fetchTournamentStatus()" class="btn-admin-secondary">Refresh Teams</button>
+        </div>
+        <div class="admin-toolbar-divider"></div>
+        <div class="admin-toolbar-group">
+          <button type="button" onclick="seedDefaultTournamentCrews()" class="btn-admin-caution">Reset 10 Teams</button>
+          <button id="adminWipeDataBtn" class="btn-admin-caution">Wipe Data</button>
+        </div>
       </div>
     </div>
     
@@ -381,10 +389,10 @@
     <div id="roundControlDeck" class="admin-dropdown-section">
       <div class="admin-dropdown-header" onclick="toggleAdminSection('roundControlDeck')">
         <div class="admin-dropdown-title-wrap">
-          <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); display: flex; align-items: center; gap: 8px;">
+          <h3 class="admin-dropdown-heading">
             Tournament Round Controls
           </h3>
-          <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 0.85rem;">
+          <p class="admin-dropdown-subtext">
             Rounds remain locked until activated by an administrator. Activating a round opens access to its assigned challenges for participants.
           </p>
         </div>
@@ -401,13 +409,13 @@
     </div>
 
     <!-- 2. Tournament Roster & Standings Monitor -->
-    <div id="tournamentRosterSection" class="admin-dropdown-section tournament-bracket-card" style="margin-top: 1.5rem;">
+    <div id="tournamentRosterSection" class="admin-dropdown-section">
       <div class="admin-dropdown-header" onclick="toggleAdminSection('tournamentRosterSection')">
         <div class="admin-dropdown-title-wrap">
-          <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); display: flex; align-items: center; gap: 8px;">
+          <h3 class="admin-dropdown-heading">
             Tournament Roster & Standings Monitor
           </h3>
-          <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 0.85rem;">
+          <p class="admin-dropdown-subtext">
             Live 10-team tracking: Groups A & B, assigned riddles, active round status, and qualification state.
           </p>
         </div>
@@ -440,26 +448,26 @@
     </div>
 
     <!-- 3. Riddle Bank Suite -->
-    <div id="riddleBankSection" class="admin-dropdown-section card" style="margin-top: 1.5rem; background: var(--panel-secondary); border: 1px solid var(--border-subtle); padding: 0; border-radius: 4px;">
+    <div id="riddleBankSection" class="admin-dropdown-section">
       <div class="admin-dropdown-header" onclick="toggleAdminSection('riddleBankSection')">
         <div class="admin-dropdown-title-wrap">
-          <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); display: flex; align-items: center; gap: 8px;">
+          <h3 class="admin-dropdown-heading">
             Challenge Riddle Bank
           </h3>
-          <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 0.85rem;">
+          <p class="admin-dropdown-subtext">
             Create, edit, and publish competition riddles. Draft riddles cannot be viewed or submitted by teams.
           </p>
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
-          <div onclick="event.stopPropagation()" style="display: flex; gap: 10px; align-items: center;">
-            <select id="riddleBankRoundFilter" onchange="filterRiddleBank()" style="padding: 0.5rem 0.8rem; background: var(--panel-bg); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.8rem; border-radius: 4px; cursor: pointer;">
+          <div onclick="event.stopPropagation()" style="display: flex; gap: 8px; align-items: center;">
+            <select id="riddleBankRoundFilter" onchange="filterRiddleBank()" class="admin-select-custom" style="padding: 0.45rem 0.8rem; font-size: 0.8rem;">
               <option value="ALL">All Rounds</option>
               <option value="1">Round 1 (Qualifying)</option>
               <option value="2">Round 2 (Group Stage)</option>
               <option value="3">Round 3 (Semifinals)</option>
               <option value="4">Round 4 (Finals)</option>
             </select>
-            <button type="button" onclick="openNewRiddleModal()" style="padding: 0.5rem 1rem; background: var(--gold-primary); border: none; color: var(--bg-primary); font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.8rem; border-radius: 4px; cursor: pointer;">
+            <button type="button" onclick="openNewRiddleModal()" class="btn-admin-primary" style="padding: 0.45rem 0.9rem; font-size: 0.8rem;">
               + New Riddle
             </button>
           </div>
@@ -488,25 +496,25 @@
     </div>
 
     <!-- 4. Team-to-Riddle Assignment Matrix -->
-    <div id="assignmentMatrixSection" class="admin-dropdown-section card" style="margin-top: 1.5rem; background: var(--panel-secondary); border: 1px solid var(--border-subtle); padding: 0; border-radius: 4px;">
+    <div id="assignmentMatrixSection" class="admin-dropdown-section">
       <div class="admin-dropdown-header" onclick="toggleAdminSection('assignmentMatrixSection')">
         <div class="admin-dropdown-title-wrap">
-          <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); display: flex; align-items: center; gap: 8px;">
+          <h3 class="admin-dropdown-heading">
             Team-to-Riddle Assignment Matrix
           </h3>
-          <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 0.85rem;">
+          <p class="admin-dropdown-subtext">
             Pre-configure team riddle assignments per round. When a round is set to Live, assignments are locked and can only be modified via administrative override.
           </p>
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
-          <div onclick="event.stopPropagation()" style="display: flex; gap: 10px; align-items: center;">
-            <select id="matrixRoundFilter" onchange="renderAssignmentMatrix()" style="padding: 0.5rem 0.8rem; background: var(--panel-bg); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.8rem; border-radius: 4px; cursor: pointer;">
+          <div onclick="event.stopPropagation()" style="display: flex; gap: 8px; align-items: center;">
+            <select id="matrixRoundFilter" onchange="renderAssignmentMatrix()" class="admin-select-custom" style="padding: 0.45rem 0.8rem; font-size: 0.8rem;">
               <option value="1">Round 1 (10 Teams - 10 Riddles)</option>
               <option value="2">Round 2 (2 Groups of 5 - 3 Slots Each)</option>
               <option value="3">Round 3 (2 Groups of 3 - 1 Slot Each)</option>
               <option value="4">Round 4 (Finals - 1 Shared Riddle)</option>
             </select>
-            <button type="button" onclick="validateRoundModal(document.getElementById('matrixRoundFilter').value)" style="padding: 0.5rem 1rem; background: rgba(201, 154, 82, 0.08); border: 1px solid var(--border-subtle); color: var(--gold-primary); font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.8rem; border-radius: 4px; cursor: pointer;">
+            <button type="button" onclick="validateRoundModal(document.getElementById('matrixRoundFilter').value)" class="btn-admin-secondary" style="padding: 0.45rem 0.9rem; font-size: 0.8rem;">
               Validate Checklist
             </button>
           </div>
@@ -535,22 +543,22 @@
     </div>
 
     <!-- 5. Crew & Admin Credentials Vault -->
-    <div id="credentialsSection" class="admin-dropdown-section card" style="margin-top: 1.5rem; background: var(--panel-secondary); border: 1px solid var(--border-subtle); padding: 0; border-radius: 4px;">
+    <div id="credentialsSection" class="admin-dropdown-section">
       <div class="admin-dropdown-header" onclick="toggleAdminSection('credentialsSection')">
         <div class="admin-dropdown-title-wrap">
-          <h3 style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); display: flex; align-items: center; gap: 8px;">
+          <h3 class="admin-dropdown-heading">
             Crew & Admin Credentials Vault
           </h3>
-          <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 0.85rem;">
+          <p class="admin-dropdown-subtext">
             Export, view, and regenerate cryptographically secure randomized access passwords for participating crews and administrative access.
           </p>
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
           <div onclick="event.stopPropagation()" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-            <button type="button" onclick="downloadCredentialsTxt()" style="padding: 0.5rem 0.9rem; background: rgba(201, 154, 82, 0.12); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.8rem; border-radius: 4px; cursor: pointer;">
+            <button type="button" onclick="downloadCredentialsTxt()" class="btn-admin-secondary" style="padding: 0.45rem 0.85rem; font-size: 0.8rem;">
               Export credentials.txt
             </button>
-            <button type="button" onclick="regenerateAllCredentialsConfirm()" style="padding: 0.5rem 0.9rem; background: rgba(166, 68, 68, 0.18); border: 1px solid var(--danger); color: #ff8b8b; font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.8rem; border-radius: 4px; cursor: pointer;">
+            <button type="button" onclick="regenerateAllCredentialsConfirm()" class="btn-admin-caution" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; border-color: rgba(166,68,68,0.4); color: #ff9b9b;">
               Regenerate All Passwords
             </button>
           </div>
@@ -559,24 +567,24 @@
       </div>
       <div class="admin-dropdown-body" style="padding: 1.25rem;">
         <!-- Admin Account Credential Card -->
-        <div style="margin-bottom: 1.5rem; padding: 1rem 1.25rem; background: rgba(201, 154, 82, 0.05); border: 1px solid rgba(201, 154, 82, 0.3); border-radius: 4px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div style="margin-bottom: 1.5rem; padding: 1rem 1.25rem; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--admin-border-warm); border-radius: 4px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--gold-primary); font-family: 'Cinzel', serif; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px;">Admin Access Credentials</div>
+            <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--admin-text-muted); font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 4px;">Admin Access Credentials</div>
             <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
               <div>
-                <span style="color: var(--text-secondary); font-size: 0.8rem;">Login:</span>
-                <span id="vaultAdminUsername" style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #fff; margin-left: 6px; font-weight: 600;">admin@lostcode</span>
+                <span style="color: var(--admin-text-secondary); font-size: 0.8rem; font-family: 'Rajdhani', sans-serif;">Login:</span>
+                <span id="vaultAdminUsername" style="font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; color: #fff; margin-left: 6px; font-weight: 600;">admin@lostcode</span>
               </div>
               <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="color: var(--text-secondary); font-size: 0.8rem;">Password:</span>
-                <span id="vaultAdminPasswordDisplay" style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--gold-primary); background: rgba(0,0,0,0.4); padding: 3px 8px; border-radius: 3px; border: 1px solid var(--border-subtle); letter-spacing: 0.05em;">••••••••</span>
-                <button type="button" id="vaultAdminToggleBtn" onclick="togglePasswordVisibility('admin')" style="padding: 3px 7px; background: transparent; border: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: 0.75rem; border-radius: 3px; cursor: pointer;">Show</button>
-                <button type="button" id="vaultAdminCopyBtn" onclick="copyCredentialText(globalAdminCredentials?.admin?.password, this)" style="padding: 3px 8px; background: rgba(201,154,82,0.15); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-size: 0.75rem; border-radius: 3px; cursor: pointer;">Copy</button>
+                <span style="color: var(--admin-text-secondary); font-size: 0.8rem; font-family: 'Rajdhani', sans-serif;">Password:</span>
+                <span id="vaultAdminPasswordDisplay" style="font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; color: var(--admin-gold); background: var(--admin-bg-base); padding: 3px 8px; border-radius: 3px; border: 1px solid var(--admin-border-subtle); letter-spacing: 0.05em;">••••••••</span>
+                <button type="button" id="vaultAdminToggleBtn" onclick="togglePasswordVisibility('admin')" class="btn-table-action">Show</button>
+                <button type="button" id="vaultAdminCopyBtn" onclick="copyCredentialText(globalAdminCredentials?.admin?.password, this)" class="btn-table-action" style="color: var(--admin-gold);">Copy</button>
               </div>
             </div>
           </div>
           <div>
-            <button type="button" onclick="resetSingleTeamPassword('admin')" style="padding: 0.45rem 0.85rem; background: rgba(201,154,82,0.1); border: 1px solid var(--border-subtle); color: var(--gold-primary); font-size: 0.78rem; font-family: 'Cinzel', serif; border-radius: 3px; cursor: pointer;">
+            <button type="button" onclick="resetSingleTeamPassword('admin')" class="btn-admin-secondary" style="font-size: 0.78rem; padding: 0.4rem 0.8rem;">
               Reset Admin Password
             </button>
           </div>
@@ -645,62 +653,62 @@
 
   <!-- ADMIRALTY CHRONOMETER: REVERSE / ADJUST TIME MODAL -->
   <div id="reverseTimeModal" class="modal" style="display: none; z-index: 10003;">
-    <div class="modal-content" style="max-width: 520px; text-align: left; background: var(--panel-bg); border: 1px solid var(--gold-primary); box-shadow: 0 10px 40px rgba(0,0,0,0.85); padding: 1.75rem;">
-      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px; margin-bottom: 1rem;">
+    <div class="modal-content chronometer-modal-content">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--admin-border-subtle); padding-bottom: 12px; margin-bottom: 1rem;">
         <div style="display: flex; align-items: center; gap: 10px;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold-primary)" stroke-width="2">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--admin-gold)" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
             <polyline points="12 6 12 12 16 14"></polyline>
           </svg>
-          <h3 class="modal-title" style="margin: 0; font-family: 'Cinzel', serif; color: var(--gold-primary); font-size: 1.2rem;">Admiralty Chronometer</h3>
+          <h3 class="modal-title" style="margin: 0; font-family: 'Cinzel', serif; color: var(--admin-gold); font-size: 1.15rem; letter-spacing: 0.04em;">Admiralty Chronometer</h3>
         </div>
-        <button class="close-btn" style="position: static; font-size: 1.4rem;" onclick="closeReverseTimeModal()">&times;</button>
+        <button class="close-btn" style="position: static; font-size: 1.3rem; color: var(--admin-text-muted);" onclick="closeReverseTimeModal()">&times;</button>
       </div>
 
       <div style="margin-bottom: 1rem;">
-        <div style="font-family: 'Cinzel', serif; font-size: 1.15rem; color: #fff; font-weight: 700;" id="revModalTeamName">BLACKFLAGS</div>
-        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--gold-muted); margin-top: 2px;" id="revModalRoundInfo">Round 1 • Active Clock</div>
+        <div style="font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--admin-text-primary); font-weight: 700;" id="revModalTeamName">BLACKFLAGS</div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--admin-text-secondary); margin-top: 2px;" id="revModalRoundInfo">Round 1 • Active Clock</div>
       </div>
 
-      <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px; margin-bottom: 1.25rem; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;">
+      <div class="chronometer-stat-card">
         <div>
-          <span style="color: var(--text-secondary);">Active Clock:</span><br/>
-          <strong id="revModalClockDisplay" style="color: var(--gold-primary); font-size: 1.1rem;">--:--</strong>
+          <span style="color: var(--admin-text-secondary); font-size: 0.78rem; font-family: 'Rajdhani', sans-serif;">Active Clock</span><br/>
+          <strong id="revModalClockDisplay" style="color: var(--admin-gold); font-size: 1.25rem; font-family: 'JetBrains Mono', monospace;">--:--</strong>
         </div>
         <div>
-          <span style="color: var(--text-secondary);">Hint Penalties:</span><br/>
-          <strong id="revModalHintPenaltyDisplay" style="color: #ff8b8b; font-size: 1.1rem;">0m</strong>
+          <span style="color: var(--admin-text-secondary); font-size: 0.78rem; font-family: 'Rajdhani', sans-serif;">Hint Penalties</span><br/>
+          <strong id="revModalHintPenaltyDisplay" style="color: #ff8b8b; font-size: 1.25rem; font-family: 'JetBrains Mono', monospace;">0m</strong>
         </div>
       </div>
 
       <div style="margin-bottom: 1rem;">
-        <div style="font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--gold-primary); font-weight: 700; margin-bottom: 8px; letter-spacing: 0.05em;">QUICK TIME REVERSAL ACTIONS</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-          <button type="button" onclick="executeReverseTimeAction('refund_hints')" style="padding: 9px 10px; background: rgba(46, 139, 87, 0.2); border: 1px solid #2e8b57; color: #4ade80; font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; border-radius: 4px; cursor: pointer;">
-            ↺ Refund All Hints
-          </button>
-          <button type="button" onclick="executeReverseTimeAction('reset_clock')" style="padding: 9px 10px; background: rgba(201, 154, 82, 0.15); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; border-radius: 4px; cursor: pointer;">
-            🔄 Full Clock Reset
-          </button>
+        <div style="font-family: 'Rajdhani', sans-serif; font-size: 0.76rem; color: var(--admin-text-muted); font-weight: 700; margin-bottom: 8px; letter-spacing: 0.06em; text-transform: uppercase;">Time Adjustments</div>
+        <div class="chronometer-preset-grid">
+          <button type="button" class="btn-chrono-time-add" onclick="executeReverseTimeAction('add_time', 5)">+5m</button>
+          <button type="button" class="btn-chrono-time-add" onclick="executeReverseTimeAction('add_time', 10)">+10m</button>
+          <button type="button" class="btn-chrono-time-deduct" onclick="executeReverseTimeAction('deduct_time', 5)">-5m</button>
+          <button type="button" class="btn-chrono-time-deduct" onclick="executeReverseTimeAction('deduct_time', 10)">-10m</button>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px;">
-          <button type="button" onclick="executeReverseTimeAction('add_time', 5)" style="padding: 7px 4px; background: rgba(201,154,82,0.1); border: 1px solid var(--border-subtle); color: var(--gold-primary); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; border-radius: 3px; cursor: pointer;">+5m Time</button>
-          <button type="button" onclick="executeReverseTimeAction('add_time', 10)" style="padding: 7px 4px; background: rgba(201,154,82,0.1); border: 1px solid var(--border-subtle); color: var(--gold-primary); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; border-radius: 3px; cursor: pointer;">+10m Time</button>
-          <button type="button" onclick="executeReverseTimeAction('deduct_time', 5)" style="padding: 7px 4px; background: rgba(166,68,68,0.1); border: 1px solid rgba(166,68,68,0.4); color: #ff8b8b; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; border-radius: 3px; cursor: pointer;">-5m Deduct</button>
-          <button type="button" onclick="executeReverseTimeAction('deduct_time', 10)" style="padding: 7px 4px; background: rgba(166,68,68,0.1); border: 1px solid rgba(166,68,68,0.4); color: #ff8b8b; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; border-radius: 3px; cursor: pointer;">-10m Deduct</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <button type="button" class="btn-chrono-protocol" onclick="executeReverseTimeAction('refund_hints')">
+            Refund Hint Penalties
+          </button>
+          <button type="button" class="btn-chrono-protocol" onclick="executeReverseTimeAction('reset_clock')">
+            Reset Clock to Default
+          </button>
         </div>
       </div>
 
-      <div style="margin-bottom: 1.25rem; padding: 10px; background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: 4px;">
-        <label style="display: block; font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--gold-muted); margin-bottom: 6px;">CUSTOM MINUTE ADJUSTMENT (+/- mins):</label>
+      <div style="margin-bottom: 1.25rem; padding: 10px 12px; background: rgba(0,0,0,0.25); border: 1px solid var(--admin-border-subtle); border-radius: 4px;">
+        <label style="display: block; font-family: 'Rajdhani', sans-serif; font-size: 0.75rem; color: var(--admin-text-secondary); margin-bottom: 6px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">Custom Minute Adjustment (+/- min):</label>
         <div style="display: flex; gap: 8px;">
-          <input type="number" id="customReverseMinutesInput" placeholder="+5 or -5" style="flex: 1; padding: 6px 10px; background: rgba(10,8,5,0.9); border: 1px solid var(--gold-secondary); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; border-radius: 3px;" />
-          <button type="button" onclick="executeCustomReverseTime()" style="padding: 6px 14px; background: var(--gold-primary); border: 1px solid var(--gold-primary); color: #17110c; font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; border-radius: 3px; cursor: pointer;">Apply</button>
+          <input type="number" id="customReverseMinutesInput" placeholder="+5 or -5" style="flex: 1; padding: 6px 10px; background: var(--admin-bg-base); border: 1px solid var(--admin-border-warm); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; border-radius: 3px;" />
+          <button type="button" onclick="executeCustomReverseTime()" class="btn-admin-primary" style="padding: 6px 16px; font-size: 0.8rem;">Apply</button>
         </div>
       </div>
 
       <div style="display: flex; justify-content: flex-end;">
-        <button type="button" onclick="closeReverseTimeModal()" style="padding: 6px 16px; background: transparent; border: 1px solid var(--border-subtle); color: var(--text-secondary); font-family: 'Cinzel', serif; font-size: 0.8rem; border-radius: 3px; cursor: pointer;">Close</button>
+        <button type="button" onclick="closeReverseTimeModal()" class="btn-admin-secondary" style="padding: 6px 16px; font-size: 0.8rem;">Close</button>
       </div>
     </div>
   </div>
@@ -1006,21 +1014,21 @@
       <div class="antique-modal-body">
         <input type="hidden" id="riddleModalId" value="" />
         <div>
-          <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Riddle Title or Internal Reference *</label>
-          <input type="text" id="riddleModalTitle" placeholder="e.g. The Cipher of the Black Pearl" style="width:100%; padding:0.6rem; background:rgba(0,0,0,0.4); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px;" />
+          <label style="display:block; font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.8rem; color:var(--admin-text-secondary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.04em;">Riddle Title or Internal Reference *</label>
+          <input type="text" id="riddleModalTitle" placeholder="e.g. The Cipher of the Black Pearl" style="width:100%; padding:0.6rem; background:var(--admin-bg-base); border:1px solid var(--admin-border-subtle); color:var(--admin-text-primary); border-radius:4px;" />
         </div>
         <div>
-          <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Riddle / Challenge Description</label>
-          <textarea id="riddleModalText" rows="3" placeholder="Enter riddle text or clue description..." style="width:100%; padding:0.6rem; background:rgba(0,0,0,0.4); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px; font-family:inherit;"></textarea>
+          <label style="display:block; font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.8rem; color:var(--admin-text-secondary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.04em;">Riddle / Challenge Description</label>
+          <textarea id="riddleModalText" rows="3" placeholder="Enter riddle text or clue description..." style="width:100%; padding:0.6rem; background:var(--admin-bg-base); border:1px solid var(--admin-border-subtle); color:var(--admin-text-primary); border-radius:4px; font-family:inherit;"></textarea>
         </div>
         <div>
-          <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Expected Answer / Flag</label>
-          <input type="text" id="riddleModalAnswer" placeholder="e.g. FLAG{GOLDEN_COMPASS} or phrase" style="width:100%; padding:0.6rem; background:rgba(0,0,0,0.4); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px;" />
+          <label style="display:block; font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.8rem; color:var(--admin-text-secondary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.04em;">Expected Answer / Flag</label>
+          <input type="text" id="riddleModalAnswer" placeholder="e.g. FLAG{GOLDEN_COMPASS} or phrase" style="width:100%; padding:0.6rem; background:var(--admin-bg-base); border:1px solid var(--admin-border-subtle); color:var(--admin-text-primary); border-radius:4px;" />
         </div>
         <div style="display:flex; gap:12px; flex-wrap:wrap;">
           <div style="flex:1;">
-            <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Target Round</label>
-            <select id="riddleModalRound" style="width:100%; padding:0.6rem; background:var(--panel-bg); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px;">
+            <label style="display:block; font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.8rem; color:var(--admin-text-secondary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.04em;">Target Round</label>
+            <select id="riddleModalRound" style="width:100%; padding:0.6rem; background:var(--admin-bg-base); border:1px solid var(--admin-border-subtle); color:var(--admin-text-primary); border-radius:4px;">
               <option value="1">Round 1 (Individual Qualifying)</option>
               <option value="2">Round 2 (Group Stage - 2x5 Groups)</option>
               <option value="3">Round 3 (Semifinals - 2x3 Groups)</option>
@@ -1028,30 +1036,30 @@
             </select>
           </div>
           <div style="flex:1;">
-            <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Points</label>
-            <input type="number" id="riddleModalPoints" value="100" style="width:100%; padding:0.6rem; background:rgba(0,0,0,0.4); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px;" />
+            <label style="display:block; font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.8rem; color:var(--admin-text-secondary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.04em;">Points</label>
+            <input type="number" id="riddleModalPoints" value="100" style="width:100%; padding:0.6rem; background:var(--admin-bg-base); border:1px solid var(--admin-border-subtle); color:var(--admin-text-primary); border-radius:4px;" />
           </div>
           <div style="flex:1;">
-            <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Status</label>
-            <select id="riddleModalStatus" style="width:100%; padding:0.6rem; background:var(--panel-bg); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px;">
+            <label style="display:block; font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.8rem; color:var(--admin-text-secondary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.04em;">Status</label>
+            <select id="riddleModalStatus" style="width:100%; padding:0.6rem; background:var(--admin-bg-base); border:1px solid var(--admin-border-subtle); color:var(--admin-text-primary); border-radius:4px;">
               <option value="draft">Draft (Unpublished)</option>
               <option value="published">Published</option>
             </select>
           </div>
         </div>
-        <div style="display:flex; gap:20px; align-items:center; background:rgba(0,0,0,0.25); padding:10px 14px; border-radius:4px;">
-          <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--text-secondary); cursor:pointer;">
+        <div style="display:flex; gap:20px; align-items:center; background:rgba(0,0,0,0.25); padding:10px 14px; border-radius:4px; border:1px solid var(--admin-border-subtle);">
+          <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--admin-text-secondary); cursor:pointer;">
             <input type="checkbox" id="riddleModalTrim" checked /> Auto-trim whitespace
           </label>
-          <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--text-secondary); cursor:pointer;">
+          <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--admin-text-secondary); cursor:pointer;">
             <input type="checkbox" id="riddleModalCase" /> Case-sensitive matching
           </label>
         </div>
         <div id="riddleModalError" style="display:none; color:#ff6b6b; font-size:0.85rem;"></div>
       </div>
       <div class="antique-modal-footer">
-        <button type="button" onclick="closeNewRiddleModal()" style="padding:0.6rem 1.2rem; background:transparent; border:1px solid var(--border-subtle); color:var(--text-secondary); font-family:'Cinzel',serif; border-radius:4px; cursor:pointer;">Cancel</button>
-        <button type="button" onclick="saveRiddleForm()" style="padding:0.6rem 1.5rem; background:var(--gold-primary); border:none; color:var(--bg-primary); font-family:'Cinzel',serif; font-weight:700; border-radius:4px; cursor:pointer;">Save Riddle</button>
+        <button type="button" onclick="closeNewRiddleModal()" class="btn-admin-secondary" style="padding:0.5rem 1.1rem;">Cancel</button>
+        <button type="button" onclick="saveRiddleForm()" class="btn-admin-primary" style="padding:0.5rem 1.3rem;">Save Riddle</button>
       </div>
     </div>
   </div>
@@ -1066,14 +1074,14 @@
         <button type="button" class="antique-modal-close-btn" onclick="closeValidationModal()">&times;</button>
       </div>
       <div class="antique-modal-body">
-        <div style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:4px;">
+        <div style="font-size:0.85rem; color:var(--admin-text-secondary); margin-bottom:6px; font-family:'Rajdhani',sans-serif;">
           Pre-launch validation requires all teams, groups, slots, and published riddles to be verified before activating this round.
         </div>
         <div id="valChecklistContainer" style="display:flex; flex-direction:column; gap:8px;"></div>
       </div>
       <div class="antique-modal-footer">
-        <button type="button" onclick="closeValidationModal()" style="padding:0.6rem 1.2rem; background:transparent; border:1px solid var(--border-subtle); color:var(--text-secondary); font-family:'Cinzel',serif; border-radius:4px; cursor:pointer;">Close</button>
-        <button type="button" id="valModalActivateBtn" onclick="activateRoundAction(currentValRound)" style="padding:0.6rem 1.5rem; background:var(--gold-primary); border:1px solid var(--gold-primary); color:#17110c; font-family:'Cinzel',serif; font-weight:700; border-radius:4px; cursor:pointer;">Activate Round</button>
+        <button type="button" onclick="closeValidationModal()" class="btn-admin-secondary" style="padding:0.5rem 1.1rem;">Close</button>
+        <button type="button" id="valModalActivateBtn" onclick="activateRoundAction(currentValRound)" class="btn-admin-primary" style="padding:0.5rem 1.3rem;">Activate Round</button>
       </div>
     </div>
   </div>
@@ -1088,28 +1096,28 @@
         <button type="button" class="antique-modal-close-btn" onclick="closeOverrideModal()">&times;</button>
       </div>
       <div class="antique-modal-body">
-        <p style="font-size:0.85rem; color:#ffb86c; margin:0;">
+        <p style="font-size:0.85rem; color:var(--admin-warning); margin:0 0 10px 0; font-family:'Rajdhani',sans-serif; font-weight:600;">
           Live round assignments are locked. Any override here alters the live competition structure and will be permanently recorded in the Audit Log.
         </p>
         <input type="hidden" id="overrideRoundInput" />
         <input type="hidden" id="overrideSlotIdInput" />
         <div>
-          <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Target Slot</label>
-          <div id="overrideSlotDisplay" style="font-family:'JetBrains Mono',monospace; font-size:0.9rem; color:var(--text-primary); background:rgba(0,0,0,0.3); padding:8px 12px; border-radius:4px;"></div>
+          <label style="display:block; font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.8rem; color:var(--admin-text-secondary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.04em;">Target Slot</label>
+          <div id="overrideSlotDisplay" style="font-family:'JetBrains Mono',monospace; font-size:0.88rem; color:var(--admin-text-primary); background:rgba(0,0,0,0.3); padding:8px 12px; border-radius:4px; border:1px solid var(--admin-border-subtle);"></div>
         </div>
         <div>
-          <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Reassign to Riddle</label>
-          <select id="overrideRiddleSelect" style="width:100%; padding:0.6rem; background:var(--panel-bg); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px;"></select>
+          <label style="display:block; font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.8rem; color:var(--admin-text-secondary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.04em;">Reassign to Riddle</label>
+          <select id="overrideRiddleSelect" style="width:100%; padding:0.6rem; background:var(--admin-bg-base); border:1px solid var(--admin-border-subtle); color:var(--admin-text-primary); border-radius:4px;"></select>
         </div>
         <div>
-          <label style="display:block; font-family:'Cinzel',serif; font-size:0.8rem; color:var(--gold-primary); margin-bottom:4px;">Reason for Override *</label>
-          <textarea id="overrideReasonInput" rows="3" placeholder="State reason for administrative override (required for audit log)..." style="width:100%; padding:0.6rem; background:rgba(0,0,0,0.4); border:1px solid var(--border-subtle); color:var(--text-primary); border-radius:4px; font-family:inherit;"></textarea>
+          <label style="display:block; font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.8rem; color:var(--admin-text-secondary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.04em;">Reason for Override *</label>
+          <textarea id="overrideReasonInput" rows="3" placeholder="State reason for administrative override (required for audit log)..." style="width:100%; padding:0.6rem; background:var(--admin-bg-base); border:1px solid var(--admin-border-subtle); color:var(--admin-text-primary); border-radius:4px; font-family:inherit;"></textarea>
         </div>
         <div id="overrideErrorMsg" style="display:none; color:#ff6b6b; font-size:0.85rem;"></div>
       </div>
       <div class="antique-modal-footer">
-        <button type="button" onclick="closeOverrideModal()" style="padding:0.6rem 1.2rem; background:transparent; border:1px solid var(--border-subtle); color:var(--text-secondary); font-family:'Cinzel',serif; border-radius:4px; cursor:pointer;">Cancel</button>
-        <button type="button" onclick="submitOverrideAction()" style="padding:0.6rem 1.5rem; background:var(--gold-primary); border:1px solid var(--gold-primary); color:#17110c; font-family:'Cinzel',serif; font-weight:700; border-radius:4px; cursor:pointer;">Confirm & Log Override</button>
+        <button type="button" onclick="closeOverrideModal()" class="btn-admin-secondary" style="padding:0.5rem 1.1rem;">Cancel</button>
+        <button type="button" onclick="submitOverrideAction()" class="btn-admin-primary" style="padding:0.5rem 1.3rem;">Confirm & Log Override</button>
       </div>
     </div>
   </div>
@@ -1127,7 +1135,7 @@
         <!-- Rendered by previewTeamChallenge() -->
       </div>
       <div class="antique-modal-footer">
-        <button type="button" onclick="closePreviewModal()" style="padding:0.6rem 1.2rem; background:var(--gold-primary); border:none; color:var(--bg-primary); font-family:'Cinzel',serif; font-weight:700; border-radius:4px; cursor:pointer;">Done</button>
+        <button type="button" onclick="closePreviewModal()" class="btn-admin-primary" style="padding:0.5rem 1.3rem;">Done</button>
       </div>
     </div>
   </div>
@@ -2276,31 +2284,31 @@
                 <div class="admin-round-desc">${escapeHTML(r.meta)}</div>
               </div>
             </div>
-            <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
+            <div class="admin-round-status-row" style="margin-top: 10px;">
               <span class="admin-portal-badge ${badgeClass}">${st}</span>
-              <span style="font-size: 0.75rem; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">
+              <span style="font-size: 0.75rem; color: var(--admin-text-secondary); font-family: 'JetBrains Mono', monospace;">
                 ${(state.qualifiers || []).length} Qualifiers
               </span>
             </div>
-            <div style="margin-top: 8px; padding: 6px 8px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); border-radius: 4px; display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-              <span style="font-size: 0.72rem; color: var(--gold-primary); font-family: 'Cinzel', serif; letter-spacing: 0.5px;">TIMER:</span>
-              <div style="display: flex; align-items: center; gap: 4px;">
-                <input type="number" id="roundDurationInput_${r.round}" value="${dur}" min="1" max="180" style="width: 48px; padding: 2px 4px; background: rgba(10, 8, 5, 0.9); border: 1px solid var(--gold-secondary); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; text-align: center; border-radius: 3px;" />
-                <span style="font-size: 0.7rem; color: var(--text-secondary);">min</span>
-                <button type="button" onclick="saveRoundDuration(${r.round})" style="padding: 2px 8px; background: rgba(201, 154, 82, 0.15); border: 1px solid var(--gold-primary); color: var(--gold-primary); font-size: 0.7rem; font-weight: 600; border-radius: 3px; cursor: pointer;">Set</button>
+            <div class="admin-round-timer-row" style="margin-top: 8px;">
+              <span style="font-size: 0.74rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Timer:</span>
+              <div style="display: flex; align-items: center; gap: 5px;">
+                <input type="number" id="roundDurationInput_${r.round}" value="${dur}" min="1" max="180" class="admin-round-timer-input" />
+                <span style="font-size: 0.72rem; color: var(--admin-text-muted);">min</span>
+                <button type="button" onclick="saveRoundDuration(${r.round})" class="admin-round-timer-setbtn">Set</button>
               </div>
             </div>
           </div>
-          <div style="display: flex; gap: 8px; margin-top: 12px;">
-            <button type="button" onclick="validateRoundModal(${r.round})" style="flex: 1; padding: 0.5rem; background: rgba(201, 154, 82, 0.08); border: 1px solid var(--border-subtle); color: var(--gold-primary); font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; border-radius: 4px; cursor: pointer;">
+          <div class="admin-round-actions-row">
+            <button type="button" onclick="validateRoundModal(${r.round})" class="btn-admin-secondary" style="flex: 1; justify-content: center; padding: 0.45rem;">
               Checklist
             </button>
             ${st !== 'Live' && st !== 'Completed' ? `
-              <button type="button" onclick="activateRoundAction(${r.round})" style="flex: 1; padding: 0.5rem; background: var(--gold-primary); border: 1px solid var(--gold-primary); color: #17110c; font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; border-radius: 4px; cursor: pointer;">
+              <button type="button" onclick="activateRoundAction(${r.round})" class="btn-admin-primary" style="flex: 1; justify-content: center; padding: 0.45rem;">
                 Activate
               </button>
             ` : `
-              <button type="button" disabled style="flex: 1; padding: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); color: var(--text-secondary); font-family: 'Cinzel', serif; font-size: 0.78rem; border-radius: 4px;">
+              <button type="button" disabled class="btn-admin-secondary" style="flex: 1; justify-content: center; padding: 0.45rem; opacity: 0.6; cursor: default;">
                 ${st === 'Live' ? 'Active' : 'Completed'}
               </button>
             `}
@@ -2319,7 +2327,7 @@
       const keys = Object.keys(globalAdminRiddles);
 
       if (keys.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary); padding: 1.5rem;">The Riddle Bank is empty. Click "+ New Riddle" to begin creating competition riddles.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--admin-text-secondary); padding: 1.5rem; font-family:'Rajdhani',sans-serif;">The Riddle Bank is empty. Click "+ New Riddle" to begin creating competition riddles.</td></tr>`;
         return;
       }
 
@@ -2335,17 +2343,17 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>
-            <div style="font-weight: 700; color: var(--gold-primary); font-family: 'Cinzel', serif;">${escapeHTML(rid.title)}</div>
-            <div style="font-size: 0.75rem; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">${escapeHTML(rid.id)}</div>
+            <div style="font-weight: 600; color: var(--admin-text-primary); font-family: 'Rajdhani', sans-serif; font-size: 0.92rem;">${escapeHTML(rid.title)}</div>
+            <div style="font-size: 0.75rem; color: var(--admin-text-muted); font-family: 'JetBrains Mono', monospace;">${escapeHTML(rid.id)}</div>
           </td>
-          <td><span style="font-weight: 700;">Round ${rid.targetRound || 1}</span></td>
-          <td><span style="color: var(--gold-primary); font-weight: 700;">${rid.points || 100}</span></td>
+          <td><span style="font-family: 'Rajdhani', sans-serif; font-weight: 600; color: var(--admin-text-primary);">Round ${rid.targetRound || 1}</span></td>
+          <td><span style="font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--admin-gold);">${rid.points || 100} pts</span></td>
           <td>${stBadge}</td>
-          <td style="font-size: 0.78rem; color: var(--text-secondary);">${ruleText}</td>
+          <td style="font-size: 0.78rem; color: var(--admin-text-secondary); font-family: 'Rajdhani', sans-serif;">${ruleText}</td>
           <td>
             <div style="display: flex; gap: 6px;">
-              <button type="button" onclick="openNewRiddleModal('${rid.id}')" style="padding: 4px 8px; background: rgba(201,154,82,0.15); border: 1px solid var(--border-subtle); color: var(--gold-primary); font-size: 0.75rem; border-radius: 3px; cursor: pointer;">Edit</button>
-              <button type="button" onclick="deleteRiddleAction('${rid.id}')" style="padding: 4px 8px; background: transparent; border: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: 0.75rem; border-radius: 3px; cursor: pointer;">Delete</button>
+              <button type="button" onclick="openNewRiddleModal('${rid.id}')" class="btn-table-action">Edit</button>
+              <button type="button" onclick="deleteRiddleAction('${rid.id}')" class="btn-table-action">Delete</button>
             </div>
           </td>
         `;
@@ -2353,7 +2361,7 @@
       });
 
       if (renderedCount === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary); padding: 1.5rem;">No riddles found matching the selected round filter.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--admin-text-secondary); padding: 1.5rem; font-family:'Rajdhani',sans-serif;">No riddles found matching the selected round filter.</td></tr>`;
       }
     }
 
@@ -2540,7 +2548,7 @@
 
         // Build interactive riddle selection dropdown
         const roundRiddles = Object.values(globalAdminRiddles).filter(r => String(r.targetRound) === String(filter));
-        let selectHtml = `<select onchange="assignSlotRiddle(${filter}, '${row.slotId}', this.value)" style="width:100%; max-width:240px; padding:5px 8px; font-size:0.8rem; background:rgba(20,16,11,0.9); border:1px solid var(--border-subtle); color:var(--gold-primary); border-radius:3px;">`;
+        let selectHtml = `<select onchange="assignSlotRiddle(${filter}, '${row.slotId}', this.value)" style="width:100%; max-width:240px; padding:5px 8px; font-size:0.8rem; background:var(--admin-bg-base); border:1px solid var(--admin-border-subtle); color:var(--admin-text-primary); border-radius:3px; font-family:'Rajdhani',sans-serif;">`;
         selectHtml += `<option value="">-- No Riddle Assigned --</option>`;
 
         let hasCurrentRiddle = false;
@@ -2557,23 +2565,23 @@
         }
         selectHtml += `</select>`;
 
-        let statusText = '<span style="color:var(--text-secondary);">Unclaimed</span>';
+        let statusText = '<span style="color:var(--admin-text-secondary); font-family:\'Rajdhani\',sans-serif;">Unclaimed</span>';
         if (row.claimed) {
           const claimTeamName = getAdminCrewName(row.claimedBy);
-          statusText = `<span style="color:var(--gold-primary); font-weight:700;">Claimed by ${escapeHTML(claimTeamName)}</span>`;
+          statusText = `<span style="color:var(--admin-gold); font-weight:600; font-family:\'Rajdhani\',sans-serif;">Claimed by ${escapeHTML(claimTeamName)}</span>`;
         }
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><strong style="color:var(--gold-primary); font-family:'Cinzel',serif;">${escapeHTML(teamName)}</strong></td>
+          <td><strong style="color:var(--admin-text-primary); font-family:'Rajdhani',sans-serif; font-size:0.92rem; font-weight:600;">${escapeHTML(teamName)}</strong></td>
           <td><span class="badge-group-pill badge-group-a">${escapeHTML(row.group)}</span></td>
-          <td><span style="font-family:'JetBrains Mono',monospace; font-size:0.8rem;">${escapeHTML(row.slotId)}</span></td>
+          <td><span style="font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--admin-text-secondary);">${escapeHTML(row.slotId)}</span></td>
           <td>${selectHtml}</td>
           <td>${statusText}</td>
           <td>
             <div style="display:flex; gap:6px;">
-              <button type="button" onclick="previewTeamChallenge('${row.teamId}', ${filter})" style="padding:4px 8px; background:rgba(201,154,82,0.1); border:1px solid var(--border-subtle); color:var(--gold-primary); font-size:0.75rem; border-radius:3px; cursor:pointer;">Preview</button>
-              <button type="button" onclick="openOverrideModal(${filter}, '${row.slotId}')" style="padding:4px 8px; background:transparent; border:1px solid var(--border-subtle); color:var(--text-secondary); font-size:0.75rem; border-radius:3px; cursor:pointer;">Override</button>
+              <button type="button" onclick="previewTeamChallenge('${row.teamId}', ${filter})" class="btn-table-action">Preview</button>
+              <button type="button" onclick="openOverrideModal(${filter}, '${row.slotId}')" class="btn-table-action">Override</button>
             </div>
           </td>
         `;
@@ -2930,24 +2938,24 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>
-            <div style="font-family:'Cinzel',serif; font-weight:700; color:var(--gold-primary); font-size:0.9rem;">${escapeHTML(t.displayName || t.teamName)}</div>
-            <div style="font-size:0.75rem; color:var(--text-secondary); font-family:'JetBrains Mono',monospace;">${escapeHTML(t.teamName)}</div>
+            <div style="font-family:'Rajdhani',sans-serif; font-weight:700; color:var(--admin-text-primary); font-size:0.92rem;">${escapeHTML(t.displayName || t.teamName)}</div>
+            <div style="font-size:0.75rem; color:var(--admin-text-secondary); font-family:'JetBrains Mono',monospace;">${escapeHTML(t.teamName)}</div>
           </td>
           <td>
-            <span style="font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:#e2d9c8;">${escapeHTML(t.email)}</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--admin-text-primary);">${escapeHTML(t.email)}</span>
           </td>
           <td>
             <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--gold-primary); background:rgba(0,0,0,0.4); padding:3px 8px; border-radius:3px; border:1px solid var(--border-subtle); min-width:90px; display:inline-block; letter-spacing:0.04em;">${masked}</span>
-              <button type="button" onclick="togglePasswordVisibility('${escapeHTML(t.teamName)}')" style="padding:3px 7px; background:transparent; border:1px solid var(--border-subtle); color:var(--text-secondary); font-size:0.72rem; border-radius:3px; cursor:pointer;">${toggleLabel}</button>
-              <button type="button" onclick="copyCredentialText('${escapeHTML(passText)}', this)" style="padding:3px 8px; background:rgba(201,154,82,0.12); border:1px solid var(--gold-primary); color:var(--gold-primary); font-size:0.72rem; border-radius:3px; cursor:pointer;">Copy</button>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--admin-gold); background:var(--admin-bg-base); padding:3px 8px; border-radius:3px; border:1px solid var(--admin-border-subtle); min-width:90px; display:inline-block; letter-spacing:0.04em;">${masked}</span>
+              <button type="button" onclick="togglePasswordVisibility('${escapeHTML(t.teamName)}')" class="btn-table-action">${toggleLabel}</button>
+              <button type="button" onclick="copyCredentialText('${escapeHTML(passText)}', this)" class="btn-table-action" style="color:var(--admin-gold);">Copy</button>
             </div>
           </td>
           <td>
-            <span style="font-size:0.78rem; color:var(--text-secondary); font-family:'JetBrains Mono',monospace;">${escapeHTML(genDateStr)}</span>
+            <span style="font-size:0.78rem; color:var(--admin-text-secondary); font-family:'JetBrains Mono',monospace;">${escapeHTML(genDateStr)}</span>
           </td>
           <td>
-            <button type="button" onclick="resetSingleTeamPassword('${escapeHTML(t.teamName)}')" style="padding:4px 9px; background:rgba(201,154,82,0.1); border:1px solid var(--border-subtle); color:var(--gold-primary); font-size:0.75rem; border-radius:3px; cursor:pointer;">Reset Password</button>
+            <button type="button" onclick="resetSingleTeamPassword('${escapeHTML(t.teamName)}')" class="btn-table-action">Reset Password</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -4616,18 +4624,18 @@
         // Actions: REINITIATE TEAM & REVERSE TIME
         let actionsHtml = `<div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">`;
         if (t.disqualified || t.violations > 0) {
-          actionsHtml += `<button type="button" onclick="reinstateCrew('${escapeHTML(t.id)}')" style="padding:0.35rem 0.65rem; background:rgba(201,154,82,0.18); border:1px solid var(--gold-primary); color:var(--gold-primary); font-family:'Cinzel',serif; font-size:0.75rem; font-weight:700; border-radius:3px; cursor:pointer;">REINITIATE</button>`;
+          actionsHtml += `<button type="button" onclick="reinstateCrew('${escapeHTML(t.id)}')" class="btn-table-reinitiate">Reinitiate</button>`;
         }
-        actionsHtml += `<button type="button" onclick="openReverseTimeModal('${escapeHTML(t.id)}', '${escapeHTML(t.teamName)}', ${curR})" style="padding:0.35rem 0.65rem; background:rgba(201,154,82,0.1); border:1px solid var(--gold-primary); color:var(--gold-primary); font-family:'Cinzel',serif; font-size:0.75rem; font-weight:600; border-radius:3px; cursor:pointer;" title="Reverse or adjust round timer for this crew">⏱ REVERSE TIME</button>`;
+        actionsHtml += `<button type="button" onclick="openReverseTimeModal('${escapeHTML(t.id)}', '${escapeHTML(t.teamName)}', ${curR})" class="btn-table-action" title="Reverse or adjust round timer for this crew">Reverse Time</button>`;
         actionsHtml += `</div>`;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td style="font-family:'Cinzel',serif; font-weight:700; color:var(--gold-primary);">${escapeHTML(t.teamName)}</td>
+          <td style="font-family:'Rajdhani',sans-serif; font-weight:700; color:var(--admin-text-primary); font-size:0.95rem;">${escapeHTML(t.teamName)}</td>
           <td><span class="badge-group-pill ${groupClass}">GROUP ${escapeHTML(group)}</span></td>
-          <td><span style="font-weight:700; color:var(--text-primary);">Round ${curR}</span></td>
-          <td style="font-size:0.78rem; color:var(--text-secondary); max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHTML(allocated)}">${escapeHTML(allocated)}</td>
-          <td><span style="color:var(--gold-primary); font-weight:700;">${solvesCount} / 4</span></td>
+          <td><span style="font-family:'Rajdhani',sans-serif; font-weight:600; color:var(--admin-text-primary);">Round ${curR}</span></td>
+          <td style="font-size:0.82rem; color:var(--admin-text-secondary); max-width:200px; display:inline-block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHTML(allocated)}">${escapeHTML(allocated)}</td>
+          <td><span style="font-family:'JetBrains Mono',monospace; color:var(--admin-gold); font-weight:600; font-size:0.88rem;">${solvesCount} / 4</span></td>
           <td id="rosterTimer_${t.id}">${timerDisplay}</td>
           <td>${statusHtml}</td>
           <td>${actionsHtml}</td>
