@@ -1,7 +1,7 @@
 {
   "riddle_r1_1": {
     "id": "riddle_r1_1",
-    "title": "Captain's Encrypted Transmission & The Silent Guardian",
+    "title": "The Silent Guardian",
     "text": "Decode the 4-byte binary signal to identify the sentinel, evaluate the four logic gates, and apply the calculated Caesar shift to reveal the deck coordinates.",
     "expectedAnswer": "lostcode{fire_alarm}",
     "targetRound": 1,
@@ -17,8 +17,9 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.195Z",
-    "updatedAt": "2026-10-27T20:33:31.195Z"
+    "createdAt": "2026-10-27T21:13:20.748Z",
+    "updatedAt": "2026-10-27T21:13:20.749Z",
+    "solves": 0
   },
   "riddle_r1_2": {
     "id": "riddle_r1_2",
@@ -38,8 +39,9 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.195Z",
-    "updatedAt": "2026-10-27T20:33:31.195Z"
+    "createdAt": "2026-10-27T21:13:20.749Z",
+    "updatedAt": "2026-10-27T21:13:20.749Z",
+    "solves": 0
   },
   "riddle_r1_3": {
     "id": "riddle_r1_3",
@@ -59,12 +61,13 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.195Z",
-    "updatedAt": "2026-10-27T20:33:31.195Z"
+    "createdAt": "2026-10-27T21:13:20.749Z",
+    "updatedAt": "2026-10-27T21:13:20.749Z",
+    "solves": 0
   },
   "riddle_r1_4": {
     "id": "riddle_r1_4",
-    "title": "The Hidden Passage",
+    "title": "The Visual Signal Conduit",
     "text": "Translate the 4-byte binary transmission, solve the IPv4 cryptographic lock to determine the Caesar shift, and trace the passage carrying visual signals.",
     "expectedAnswer": "lostcode{hdmi}",
     "targetRound": 1,
@@ -80,8 +83,9 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.195Z",
-    "updatedAt": "2026-10-27T20:33:31.195Z"
+    "createdAt": "2026-10-27T21:13:20.749Z",
+    "updatedAt": "2026-10-27T21:13:20.749Z",
+    "solves": 0
   },
   "riddle_r1_5": {
     "id": "riddle_r1_5",
@@ -101,12 +105,13 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.195Z",
-    "updatedAt": "2026-10-27T20:33:31.195Z"
+    "createdAt": "2026-10-27T21:13:20.752Z",
+    "updatedAt": "2026-10-27T21:13:20.752Z",
+    "solves": 0
   },
   "riddle_r1_6": {
     "id": "riddle_r1_6",
-    "title": "The View from A606",
+    "title": "The Glass Horizon",
     "text": "Unlock the 4-byte XOR cipher using the alphabet's 21st letter to find your room, then look beyond the glass to identify the tricolour banner's maker.",
     "expectedAnswer": "lost_code{view-indian-flag}",
     "targetRound": 1,
@@ -122,13 +127,14 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.195Z",
-    "updatedAt": "2026-10-27T20:33:31.195Z"
+    "createdAt": "2026-10-27T21:13:20.752Z",
+    "updatedAt": "2026-10-27T21:13:20.752Z",
+    "solves": 0
   },
   "riddle_r1_7": {
     "id": "riddle_r1_7",
-    "title": "The Protocol of Vision & Mission",
-    "text": "Decode the threshold's ASCII bytes to navigate to the chamber, then locate the board that speaks of the voyage ahead and institutional dreams.",
+    "title": "The Institutional Charter",
+    "text": "Decode the threshold's ASCII bytes to navigate to the chamber, then locate the framed charter surface that speaks of the voyage ahead and institutional dreams.",
     "expectedAnswer": "lost_code{white board}",
     "targetRound": 1,
     "status": "published",
@@ -139,16 +145,17 @@
     },
     "hints": [
       {
-        "text": "Arrr, the Captain’s code has already revealed the way! Seek the place where a room’s number guides your feet, then search for a board that speaks not in words alone, but in the dreams and direction of your crew.",
+        "text": "Arrr, the Captain’s code has already revealed the way! Seek the place where a room’s number guides your feet, then search for a display that speaks not in words alone, but in the dreams and direction of your crew.",
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.195Z",
-    "updatedAt": "2026-10-27T20:33:31.195Z"
+    "createdAt": "2026-10-27T21:13:20.752Z",
+    "updatedAt": "2026-10-27T21:13:20.752Z",
+    "solves": 0
   },
   "riddle_r1_8": {
     "id": "riddle_r1_8",
-    "title": "Mark of Trust",
+    "title": "The Tested Standard",
     "text": "Follow the rhyming clues of six steps and eight points to discover the Indian standards quality seal on the safety guardian.",
     "expectedAnswer": "lost_code{fire hydrant - ISI mark}",
     "targetRound": 1,
@@ -164,8 +171,9 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.195Z",
-    "updatedAt": "2026-10-27T20:33:31.195Z"
+    "createdAt": "2026-10-27T21:13:20.752Z",
+    "updatedAt": "2026-10-27T21:13:20.752Z",
+    "solves": 0
   },
   "riddle_r1_9": {
     "id": "riddle_r1_9",
@@ -185,8 +193,9 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.195Z",
-    "updatedAt": "2026-10-27T20:33:31.195Z"
+    "createdAt": "2026-10-27T21:13:20.752Z",
+    "updatedAt": "2026-10-27T21:13:20.752Z",
+    "solves": 0
   },
   "riddle_r1_10": {
     "id": "riddle_r1_10",
@@ -206,13 +215,14 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.195Z",
-    "updatedAt": "2026-10-27T20:33:31.195Z"
+    "createdAt": "2026-10-27T21:13:20.752Z",
+    "updatedAt": "2026-10-27T21:13:20.752Z",
+    "solves": 0
   },
   "riddle_r2_g1_1": {
     "id": "riddle_r2_g1_1",
-    "title": "The Heart-Smile Passage",
-    "text": "Apply Ohm's law to calculate the current, double the result, and search the passage opening beside the heart-smile sign.",
+    "title": "The Dual Current Conduit",
+    "text": "Apply Ohm's law to calculate the current from three volts and six ohms, double the discovered value to find your deck, and navigate to where art meets an unexpected conduit opening.",
     "expectedAnswer": "lost_code{pipelines - in hole}",
     "targetRound": 2,
     "status": "published",
@@ -223,12 +233,13 @@
     },
     "hints": [
       {
-        "text": "Arrr, mateys! Let Ohm’s law chart your course: divide the volts by the resistance, then double the current you discover. Follow the number to the place where a heart smiles, and seek the passage nearby—but beware, the secret lies beside the sign, not beyond the door!",
+        "text": "Arrr, mateys! Let Ohm’s law chart your course: divide the volts by the resistance, then double the current to discover your deck. Seek the artwork of good cheer, and find the conduit opening nearby—the bounty lies beside the sign, not beyond the door!",
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.195Z",
-    "updatedAt": "2026-10-27T20:33:31.195Z"
+    "createdAt": "2026-10-27T21:13:20.752Z",
+    "updatedAt": "2026-10-27T21:13:20.752Z",
+    "solves": 0
   },
   "riddle_r2_g1_2": {
     "id": "riddle_r2_g1_2",
@@ -248,12 +259,13 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.195Z",
-    "updatedAt": "2026-10-27T20:33:31.195Z"
+    "createdAt": "2026-10-27T21:13:20.752Z",
+    "updatedAt": "2026-10-27T21:13:20.752Z",
+    "solves": 0
   },
   "riddle_r2_g1_3": {
     "id": "riddle_r2_g1_3",
-    "title": "The Garden Contradiction",
+    "title": "The Anchored Vessel",
     "text": "Correct the corrupted first byte of the transmission, follow the path of light toward green giants, and discover the vessel cradled in wood.",
     "expectedAnswer": "lost_code{garden bowl}",
     "targetRound": 2,
@@ -269,13 +281,14 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.195Z",
-    "updatedAt": "2026-10-27T20:33:31.195Z"
+    "createdAt": "2026-10-27T21:13:20.752Z",
+    "updatedAt": "2026-10-27T21:13:20.752Z",
+    "solves": 0
   },
   "riddle_r2_g2_1": {
     "id": "riddle_r2_g2_1",
-    "title": "The Backside of the Secret Board",
-    "text": "Analyze the 2D even-parity matrix to locate and repair the corrupted bit, restoring the three-letter board acronym.",
+    "title": "The 2D Parity Matrix",
+    "text": "Analyze the 2D even-parity matrix to locate and repair the corrupted bit, restoring the three-letter department acronym.",
     "expectedAnswer": "lostcode{crcboard}",
     "targetRound": 2,
     "status": "published",
@@ -290,8 +303,9 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.195Z",
-    "updatedAt": "2026-10-27T20:33:31.195Z"
+    "createdAt": "2026-10-27T21:13:20.752Z",
+    "updatedAt": "2026-10-27T21:13:20.752Z",
+    "solves": 0
   },
   "riddle_r2_g2_2": {
     "id": "riddle_r2_g2_2",
@@ -311,12 +325,13 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.196Z",
-    "updatedAt": "2026-10-27T20:33:31.196Z"
+    "createdAt": "2026-10-27T21:13:20.752Z",
+    "updatedAt": "2026-10-27T21:13:20.752Z",
+    "solves": 0
   },
   "riddle_r2_g2_3": {
     "id": "riddle_r2_g2_3",
-    "title": "The Cipher of C",
+    "title": "The Emerald Monolith",
     "text": "Calculate the total equivalent resistance of the series-parallel circuit, convert to hexadecimal, and find the giant white landmark on the green.",
     "expectedAnswer": "lostcode{letterc}",
     "targetRound": 2,
@@ -332,12 +347,13 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.196Z",
-    "updatedAt": "2026-10-27T20:33:31.196Z"
+    "createdAt": "2026-10-27T21:13:20.752Z",
+    "updatedAt": "2026-10-27T21:13:20.752Z",
+    "solves": 0
   },
   "riddle_r3_g1_1": {
     "id": "riddle_r3_g1_1",
-    "title": "The Motherboard's Hidden Code",
+    "title": "The Silicon Relic",
     "text": "Decode the binary log to identify the department guardian, solve the hardware riddle poem, and locate the mounted circuit relic along the first-floor corridor.",
     "expectedAnswer": "lostcode{motherboard}",
     "targetRound": 3,
@@ -353,12 +369,13 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.196Z",
-    "updatedAt": "2026-10-27T20:33:31.196Z"
+    "createdAt": "2026-10-27T21:13:20.752Z",
+    "updatedAt": "2026-10-27T21:13:20.752Z",
+    "solves": 0
   },
   "riddle_r3_g2_1": {
     "id": "riddle_r3_g2_1",
-    "title": "The Last View",
+    "title": "The Refraction Paradox",
     "text": "Translate the binary level coordinates, compute the glass refraction paradox binary 1s, and apply the combined Caesar shift to decrypt the final storage landmark.",
     "expectedAnswer": "lostcode{lastrack}",
     "targetRound": 3,
@@ -374,11 +391,12 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.196Z",
-    "updatedAt": "2026-10-27T20:33:31.196Z"
+    "createdAt": "2026-10-27T21:13:20.752Z",
+    "updatedAt": "2026-10-27T21:13:20.752Z",
+    "solves": 0
   },
-  "riddle_r4_treasurechest": {
-    "id": "riddle_r4_treasurechest",
+  "riddle_r4_final": {
+    "id": "riddle_r4_final",
     "title": "The Grand Pirate Coffer",
     "text": "Iron-bound oak locked tight with three heavy brass keys, buried in white sands beneath the skull-shaped palm trees. Filled with rubies, emeralds, gold ingots, and ancient maps untold, I crown the grand champions who conquer the Lost Code. What legendary prize am I?",
     "expectedAnswer": "lostcode{treasure_chest}",
@@ -395,7 +413,8 @@
         "cost": 0
       }
     ],
-    "createdAt": "2026-10-27T20:33:31.199Z",
-    "updatedAt": "2026-10-27T20:33:31.199Z"
+    "createdAt": "2026-10-27T21:13:20.752Z",
+    "updatedAt": "2026-10-27T21:13:20.752Z",
+    "solves": 0
   }
 }

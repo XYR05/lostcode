@@ -40,7 +40,10 @@
         {
           "slotId": "R1_S7",
           "riddleId": "riddle_r1_7",
-          "assignedTeamId": "crew_7_blackflags"
+          "assignedTeamId": "crew_7_blackflags",
+          "claimed": true,
+          "claimedBy": "crew_7_blackflags",
+          "claimedAt": "2026-10-27T21:17:55.201Z"
         },
         {
           "slotId": "R1_S8",
@@ -219,7 +222,7 @@
       "slots": [
         {
           "slotId": "R4_FINAL_S1",
-          "riddleId": "riddle_r4_treasurechest",
+          "riddleId": "riddle_r4_final",
           "eligibleTeams": []
         }
       ]

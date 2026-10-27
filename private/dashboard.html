@@ -379,6 +379,7 @@
         </div>
         <div class="admin-toolbar-divider"></div>
         <div class="admin-toolbar-group">
+          <button type="button" onclick="clearAllTestSubmissionsConfirm()" class="btn-admin-caution" title="Remove all test answers and solves submitted by teams">Clear Test Answers</button>
           <button type="button" onclick="seedDefaultTournamentCrews()" class="btn-admin-caution">Reset 10 Teams</button>
           <button id="adminWipeDataBtn" class="btn-admin-caution">Wipe Data</button>
         </div>
@@ -4646,6 +4647,7 @@
           actionsHtml += `<button type="button" onclick="reinstateCrew('${escapeHTML(t.id)}')" class="btn-table-reinitiate">Reinitiate</button>`;
         }
         actionsHtml += `<button type="button" onclick="openReverseTimeModal('${escapeHTML(t.id)}', '${escapeHTML(t.teamName)}', ${curR})" class="btn-table-action" title="Reverse or adjust round timer for this crew">Reverse Time</button>`;
+        actionsHtml += `<button type="button" onclick="clearCrewSubmissionsConfirm('${escapeHTML(t.id)}', '${escapeHTML(t.teamName)}')" class="btn-table-action" style="color:var(--danger); border-color:rgba(166,68,68,0.4);" title="Remove filled test answers and reset this crew back to Round 1">Clear Solves</button>`;
         actionsHtml += `</div>`;
 
         const tr = document.createElement('tr');
@@ -4725,6 +4727,62 @@
             showCustomConfirm("Error", err.message, true, null);
           });
       });
+    }
+
+    function clearAllTestSubmissionsConfirm() {
+      showCustomConfirm(
+        "Clear All Test Answers?",
+        "Are you sure you want to remove all filled answers and solves across all teams? This resets all crew progression to Round 1 for testing while preserving tournament configurations and credentials.",
+        false,
+        (confirmed) => {
+          if (!confirmed) return;
+          fetch('/api/admin/submissions/clear', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ teamId: 'ALL' })
+          })
+          .then(r => r.json())
+          .then(data => {
+            if (data.error) {
+              showCustomConfirm("Error", data.error, true, null);
+            } else {
+              showCustomConfirm("Submissions Cleared", data.message || "All test answers have been cleared!", true, null);
+              if (typeof fetchTournamentStatus === 'function') fetchTournamentStatus();
+            }
+          })
+          .catch(err => {
+            showCustomConfirm("Error", "Failed to clear submissions: " + err.message, true, null);
+          });
+        }
+      );
+    }
+
+    function clearCrewSubmissionsConfirm(teamId, teamName) {
+      showCustomConfirm(
+        `Clear Solves for ${teamName}?`,
+        `Are you sure you want to remove all filled test answers and solves for crew ${teamName}? They will be reset back to Round 1.`,
+        false,
+        (confirmed) => {
+          if (!confirmed) return;
+          fetch('/api/admin/submissions/clear', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ teamId: teamId })
+          })
+          .then(r => r.json())
+          .then(data => {
+            if (data.error) {
+              showCustomConfirm("Error", data.error, true, null);
+            } else {
+              showCustomConfirm("Crew Reset", data.message || `Test submissions cleared for ${teamName}!`, true, null);
+              if (typeof fetchTournamentStatus === 'function') fetchTournamentStatus();
+            }
+          })
+          .catch(err => {
+            showCustomConfirm("Error", "Failed to clear submissions: " + err.message, true, null);
+          });
+        }
+      );
     }
   </script>
 </body>

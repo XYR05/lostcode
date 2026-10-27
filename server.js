@@ -1791,6 +1791,178 @@ app.post('/api/admin/wipe', (req, res) => {
   res.json({ message: 'All scores, solves, and tournament rounds have been securely reset to Round 1.' });
 });
 
+// Clear test submissions / filled answers endpoint for Admiralty testing
+app.post('/api/admin/submissions/clear', (req, res) => {
+  if (!isAdminSession(req)) return res.status(403).json({ error: 'Forbidden' });
+
+  const targetTeamId = req.body && req.body.teamId ? String(req.body.teamId).trim() : 'ALL';
+  const targetRound = req.body && req.body.round ? parseInt(req.body.round, 10) : null;
+
+  const targetTeams = (targetTeamId === 'ALL' || !targetTeamId)
+    ? teams.filter(t => t.teamName !== 'admin@lostcode')
+    : teams.filter(t => t.id === targetTeamId || t.teamName.toLowerCase() === targetTeamId.toLowerCase());
+
+  if (targetTeams.length === 0) {
+    return res.status(404).json({ error: 'No matching crew found to reset submissions.' });
+  }
+
+  const assignments = getTournamentAssignments();
+  const roundState = getRoundState();
+  const riddleBank = getRiddleBank();
+
+  targetTeams.forEach(team => {
+    if (targetRound && !isNaN(targetRound) && targetRound >= 1 && targetRound <= 4) {
+      const strRound = String(targetRound);
+      if (team.roundSolves && team.roundSolves[strRound]) {
+        const solvedRiddleId = team.roundSolves[strRound].riddleId;
+        if (solvedRiddleId) {
+          team.solvedChallenges = (team.solvedChallenges || []).filter(c => c !== solvedRiddleId);
+        }
+        delete team.roundSolves[strRound];
+      }
+      if (team.roundTimers && team.roundTimers[strRound]) {
+        team.roundTimers[strRound].solved = false;
+        team.roundTimers[strRound].solvedAt = null;
+        team.roundTimers[strRound].finalSolveSeconds = null;
+      }
+      if (assignments && assignments.rounds && assignments.rounds[strRound]) {
+        const rd = assignments.rounds[strRound];
+        if (Array.isArray(rd.slots)) {
+          rd.slots.forEach(s => {
+            if (s.claimedBy === team.id || s.assignedTeamId === team.id) {
+              delete s.claimed; delete s.claimedBy; delete s.claimedAt;
+            }
+          });
+        }
+        if (rd.groups) {
+          Object.keys(rd.groups).forEach(g => {
+            if (Array.isArray(rd.groups[g].slots)) {
+              rd.groups[g].slots.forEach(s => {
+                if (s.claimedBy === team.id) {
+                  delete s.claimed; delete s.claimedBy; delete s.claimedAt;
+                }
+              });
+            }
+          });
+        }
+      }
+      if (roundState[strRound] && Array.isArray(roundState[strRound].qualifiers)) {
+        roundState[strRound].qualifiers = roundState[strRound].qualifiers.filter(id => id !== team.id);
+      }
+      team.currentRound = Math.min(team.currentRound || 1, targetRound);
+      team.unlockedRounds = (team.unlockedRounds || [1]).filter(r => r <= targetRound);
+    } else {
+      team.solvedChallenges = [];
+      team.roundSolves = {};
+      team.score = 0;
+      team.scoreHistory = [];
+      team.hintsUnlocked = {};
+      team.totalHintPenaltyMinutes = 0;
+      team.currentRound = 1;
+      team.unlockedRounds = [1];
+      team.eliminated = false;
+      team.eliminatedRound = null;
+      team.eliminatedReason = null;
+      team.isWinner = false;
+      delete team.wonAt;
+
+      if (team.roundTimers) {
+        Object.keys(team.roundTimers).forEach(r => {
+          team.roundTimers[r].solved = false;
+          team.roundTimers[r].solvedAt = null;
+          team.roundTimers[r].finalSolveSeconds = null;
+          team.roundTimers[r].hintPenaltiesMinutes = 0;
+        });
+      }
+
+      if (assignments && assignments.rounds) {
+        Object.keys(assignments.rounds).forEach(r => {
+          const rd = assignments.rounds[r];
+          if (Array.isArray(rd.slots)) {
+            rd.slots.forEach(s => {
+              if (s.claimedBy === team.id) {
+                delete s.claimed; delete s.claimedBy; delete s.claimedAt;
+              }
+            });
+          }
+          if (rd.groups) {
+            Object.keys(rd.groups).forEach(g => {
+              if (Array.isArray(rd.groups[g].slots)) {
+                rd.groups[g].slots.forEach(s => {
+                  if (s.claimedBy === team.id) {
+                    delete s.claimed; delete s.claimedBy; delete s.claimedAt;
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+
+      Object.keys(roundState).forEach(r => {
+        if (Array.isArray(roundState[r].qualifiers)) {
+          roundState[r].qualifiers = roundState[r].qualifiers.filter(id => id !== team.id);
+        }
+        if (Array.isArray(roundState[r].eliminations)) {
+          roundState[r].eliminations = roundState[r].eliminations.filter(id => id !== team.id);
+        }
+      });
+    }
+
+    const matchedUser = users.find(u => (u.username || '').toLowerCase() === team.teamName.toLowerCase());
+    if (matchedUser) {
+      matchedUser.solvedChallenges = team.solvedChallenges || [];
+    }
+  });
+
+  const allSolvesMap = {};
+  teams.forEach(t => {
+    (t.solvedChallenges || []).forEach(rId => {
+      allSolvesMap[rId] = (allSolvesMap[rId] || 0) + 1;
+    });
+  });
+
+  Object.keys(riddleBank).forEach(rId => {
+    riddleBank[rId].solves = allSolvesMap[rId] || 0;
+  });
+  saveRiddleBank(riddleBank);
+
+  const flagsFilePath = path.join(__dirname, 'private', 'flags.json');
+  if (fs.existsSync(flagsFilePath)) {
+    try {
+      const flagsData = JSON.parse(fs.readFileSync(flagsFilePath, 'utf8'));
+      Object.keys(flagsData).forEach(rId => {
+        flagsData[rId].solves = allSolvesMap[rId] || 0;
+      });
+      atomicWriteJsonSync(flagsFilePath, flagsData);
+    } catch(e) {}
+  }
+
+  saveTournamentAssignments(assignments);
+  saveRoundState(roundState);
+
+  try { fs.writeFileSync(path.join(__dirname, 'teams.json'), JSON.stringify(teams, null, 2)); } catch(e){}
+  try { fs.writeFileSync(path.join(__dirname, 'users.json'), JSON.stringify(users, null, 2)); } catch(e){}
+
+  io.emit('teamsUpdate');
+  io.emit('tournamentUpdate');
+  io.emit('scoreboardUpdate');
+
+  logAuditEvent({
+    action: 'CLEAR_TEST_SUBMISSIONS',
+    admin: req.session.teamName || 'admin',
+    reason: `Cleared submitted answers and solves for ${targetTeamId === 'ALL' ? 'ALL teams' : targetTeamId}.`,
+    details: { targetTeamId, targetRound }
+  });
+
+  const msg = targetTeamId === 'ALL'
+    ? 'All test answers, submitted flags, and claimed slots have been cleared across all teams!'
+    : `Test submissions and solves for crew ${targetTeams[0].teamName} have been cleared back to Round 1!`;
+
+  return res.json({ success: true, message: msg });
+});
+
+
 
 
 // -----------------------
@@ -2071,7 +2243,12 @@ app.post('/api/login', (req, res) => {
     return res.status(400).json({ error: 'Crew / Team name and password required.' });
   }
 
-  let matchedTeam = teams.find(t => t.teamName.trim().toLowerCase() === loginKey.toLowerCase());
+  const normalizedKey = loginKey.includes('@') ? loginKey.split('@')[0].trim().toLowerCase() : loginKey.toLowerCase();
+  let matchedTeam = teams.find(t => {
+    const tName = (t.teamName || '').trim().toLowerCase();
+    const tEmail = (t.email || '').trim().toLowerCase();
+    return tName === loginKey.toLowerCase() || tEmail === loginKey.toLowerCase() || tName === normalizedKey;
+  });
 
   if (!matchedTeam && (
     loginKey.toLowerCase() === 'lostcode' ||

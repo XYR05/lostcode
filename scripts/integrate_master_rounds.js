@@ -52,8 +52,8 @@ masterRiddles.forEach(item => {
 });
 
 // Round 4 Grand Championship Riddle
-riddleBank['riddle_r4_treasurechest'] = {
-  id: 'riddle_r4_treasurechest',
+riddleBank['riddle_r4_final'] = {
+  id: 'riddle_r4_final',
   title: 'The Grand Pirate Coffer',
   text: 'Iron-bound oak locked tight with three heavy brass keys, buried in white sands beneath the skull-shaped palm trees. Filled with rubies, emeralds, gold ingots, and ancient maps untold, I crown the grand champions who conquer the Lost Code. What legendary prize am I?',
   expectedAnswer: 'lostcode{treasure_chest}',
@@ -259,7 +259,7 @@ const tournamentAssignments = {
       slots: [
         {
           slotId: "R4_FINAL_S1",
-          riddleId: "riddle_r4_treasurechest",
+          riddleId: "riddle_r4_final",
           eligibleTeams: []
         }
       ]
@@ -297,16 +297,16 @@ console.log(`[PASS] Wrote ${Object.keys(flagsData).length} flags to flags.json`)
 if (fs.existsSync(teamsPath)) {
   const teams = JSON.parse(fs.readFileSync(teamsPath, 'utf8'));
   const teamAllocations = {
-    "BUCCANEERS": { "1": "riddle_r1_1", "2": "riddle_r2_g1_1", "3": "riddle_r3_g1_1", "4": "riddle_r4_treasurechest" },
-    "CUTTHROATS": { "1": "riddle_r1_2", "2": "riddle_r2_g2_1", "3": "riddle_r3_g2_1", "4": "riddle_r4_treasurechest" },
-    "CORSAIRS": { "1": "riddle_r1_3", "2": "riddle_r2_g1_2", "3": "riddle_r3_g1_1", "4": "riddle_r4_treasurechest" },
-    "KRAKENS": { "1": "riddle_r1_4", "2": "riddle_r2_g2_2", "3": "riddle_r3_g2_1", "4": "riddle_r4_treasurechest" },
-    "SCALLYWAGS": { "1": "riddle_r1_5", "2": "riddle_r2_g1_3", "3": "riddle_r3_g1_1", "4": "riddle_r4_treasurechest" },
-    "PRIVATEERS": { "1": "riddle_r1_6", "2": "riddle_r2_g2_3", "3": "riddle_r3_g2_1", "4": "riddle_r4_treasurechest" },
-    "BLACKFLAGS": { "1": "riddle_r1_7", "2": "riddle_r2_g1_1", "3": "riddle_r3_g1_1", "4": "riddle_r4_treasurechest" },
-    "PLUNDERERS": { "1": "riddle_r1_8", "2": "riddle_r2_g2_1", "3": "riddle_r3_g2_1", "4": "riddle_r4_treasurechest" },
-    "DREADSAILS": { "1": "riddle_r1_9", "2": "riddle_r2_g1_2", "3": "riddle_r3_g1_1", "4": "riddle_r4_treasurechest" },
-    "SEARAVENS": { "1": "riddle_r1_10", "2": "riddle_r2_g2_2", "3": "riddle_r3_g2_1", "4": "riddle_r4_treasurechest" }
+    "BUCCANEERS": { "1": "riddle_r1_1", "2": "riddle_r2_g1_1", "3": "riddle_r3_g1_1", "4": "riddle_r4_final" },
+    "CUTTHROATS": { "1": "riddle_r1_2", "2": "riddle_r2_g2_1", "3": "riddle_r3_g2_1", "4": "riddle_r4_final" },
+    "CORSAIRS": { "1": "riddle_r1_3", "2": "riddle_r2_g1_2", "3": "riddle_r3_g1_1", "4": "riddle_r4_final" },
+    "KRAKENS": { "1": "riddle_r1_4", "2": "riddle_r2_g2_2", "3": "riddle_r3_g2_1", "4": "riddle_r4_final" },
+    "SCALLYWAGS": { "1": "riddle_r1_5", "2": "riddle_r2_g1_3", "3": "riddle_r3_g1_1", "4": "riddle_r4_final" },
+    "PRIVATEERS": { "1": "riddle_r1_6", "2": "riddle_r2_g2_3", "3": "riddle_r3_g2_1", "4": "riddle_r4_final" },
+    "BLACKFLAGS": { "1": "riddle_r1_7", "2": "riddle_r2_g1_1", "3": "riddle_r3_g1_1", "4": "riddle_r4_final" },
+    "PLUNDERERS": { "1": "riddle_r1_8", "2": "riddle_r2_g2_1", "3": "riddle_r3_g2_1", "4": "riddle_r4_final" },
+    "DREADSAILS": { "1": "riddle_r1_9", "2": "riddle_r2_g1_2", "3": "riddle_r3_g1_1", "4": "riddle_r4_final" },
+    "SEARAVENS": { "1": "riddle_r1_10", "2": "riddle_r2_g2_2", "3": "riddle_r3_g2_1", "4": "riddle_r4_final" }
   };
 
   teams.forEach(team => {
