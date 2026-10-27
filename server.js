@@ -3197,11 +3197,21 @@ app.get('/dashboard-styles.css', (req, res) => {
   res.sendFile(path.join(__dirname, 'private', 'styles.css'));
 });
 
+// Explicit root route for index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Admin shortcut redirect
+app.get('/admin', (req, res) => {
+  res.redirect('/dashboard');
+});
+
 app.get('/logout', (req, res) => {
   req.session.destroy(() => { res.redirect('/'); });
 });
 
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const PORT = process.env.PORT || 3000;
 
