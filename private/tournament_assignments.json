@@ -9,55 +9,52 @@
       "slots": [
         {
           "slotId": "R1_S1",
-          "riddleId": "riddle_r1_compass",
+          "riddleId": "riddle_r1_1",
           "assignedTeamId": "crew_1_buccaneers"
         },
         {
           "slotId": "R1_S2",
-          "riddleId": "riddle_r1_anchor",
+          "riddleId": "riddle_r1_2",
           "assignedTeamId": "crew_2_cutthroats"
         },
         {
           "slotId": "R1_S3",
-          "riddleId": "riddle_r1_hourglass",
+          "riddleId": "riddle_r1_3",
           "assignedTeamId": "crew_3_corsairs"
         },
         {
           "slotId": "R1_S4",
-          "riddleId": "riddle_r1_spyglass",
+          "riddleId": "riddle_r1_4",
           "assignedTeamId": "crew_4_krakens"
         },
         {
           "slotId": "R1_S5",
-          "riddleId": "riddle_r1_map",
+          "riddleId": "riddle_r1_5",
           "assignedTeamId": "crew_5_scallywags"
         },
         {
           "slotId": "R1_S6",
-          "riddleId": "riddle_r1_lighthouse",
+          "riddleId": "riddle_r1_6",
           "assignedTeamId": "crew_6_privateers"
         },
         {
           "slotId": "R1_S7",
-          "riddleId": "riddle_r1_doubloon",
-          "assignedTeamId": "crew_7_blackflags",
-          "claimed": true,
-          "claimedBy": "crew_7_blackflags",
-          "claimedAt": "2026-10-26T17:38:32.520Z"
+          "riddleId": "riddle_r1_7",
+          "assignedTeamId": "crew_7_blackflags"
         },
         {
           "slotId": "R1_S8",
-          "riddleId": "riddle_r1_cannon",
+          "riddleId": "riddle_r1_8",
           "assignedTeamId": "crew_8_plunderers"
         },
         {
           "slotId": "R1_S9",
-          "riddleId": "riddle_r1_rudder",
+          "riddleId": "riddle_r1_9",
           "assignedTeamId": "crew_9_dreadsails"
         },
         {
           "slotId": "R1_S10",
-          "riddleId": "riddle_r1_crowsnest",
+          "riddleId": "riddle_r1_10",
           "assignedTeamId": "crew_10_searavens"
         }
       ]
@@ -81,15 +78,18 @@
           "slots": [
             {
               "slotId": "R2_GA_S1",
-              "riddleId": "riddle_r2_ga_s1",
+              "riddleId": "riddle_r2_g1_1",
               "eligibleTeams": [
                 "crew_1_buccaneers",
-                "crew_3_corsairs"
+                "crew_3_corsairs",
+                "crew_5_scallywags",
+                "crew_7_blackflags",
+                "crew_9_dreadsails"
               ]
             },
             {
               "slotId": "R2_GA_S2",
-              "riddleId": "riddle_r2_figurehead",
+              "riddleId": "riddle_r2_g1_2",
               "eligibleTeams": [
                 "crew_1_buccaneers",
                 "crew_3_corsairs",
@@ -100,7 +100,7 @@
             },
             {
               "slotId": "R2_GA_S3",
-              "riddleId": "riddle_r2_capstan",
+              "riddleId": "riddle_r2_g1_3",
               "eligibleTeams": [
                 "crew_1_buccaneers",
                 "crew_3_corsairs",
@@ -123,7 +123,7 @@
           "slots": [
             {
               "slotId": "R2_GB_S1",
-              "riddleId": "riddle_r2_barometer",
+              "riddleId": "riddle_r2_g2_1",
               "eligibleTeams": [
                 "crew_2_cutthroats",
                 "crew_4_krakens",
@@ -134,7 +134,7 @@
             },
             {
               "slotId": "R2_GB_S2",
-              "riddleId": "riddle_r2_sextant",
+              "riddleId": "riddle_r2_g2_2",
               "eligibleTeams": [
                 "crew_2_cutthroats",
                 "crew_4_krakens",
@@ -145,7 +145,7 @@
             },
             {
               "slotId": "R2_GB_S3",
-              "riddleId": "riddle_r2_bilge",
+              "riddleId": "riddle_r2_g2_3",
               "eligibleTeams": [
                 "crew_2_cutthroats",
                 "crew_4_krakens",
@@ -171,7 +171,7 @@
           "slots": [
             {
               "slotId": "R3_GA_S1",
-              "riddleId": "riddle_r3_cutlass",
+              "riddleId": "riddle_r3_g1_1",
               "eligibleTeams": []
             }
           ]
@@ -182,7 +182,7 @@
           "slots": [
             {
               "slotId": "R3_GB_S1",
-              "riddleId": "riddle_r3_jollyroger",
+              "riddleId": "riddle_r3_g2_1",
               "eligibleTeams": []
             }
           ]

@@ -637,7 +637,14 @@ function checkAnswerMatch(submitted, expected, rule) {
     s = s.toLowerCase();
     e = e.toLowerCase();
   }
-  return s === e;
+  if (s === e) return true;
+
+  // Flexible wrapper normalization for lostcode{...} and lost_code{...}
+  const unwrap = (str) => {
+    const m = str.match(/^(?:lostcode|lost_code)\{(.*)\}$/i);
+    return m ? m[1].trim() : str;
+  };
+  return unwrap(s) === unwrap(e);
 }
 
 app.post('/api/team/submit', (req, res) => {

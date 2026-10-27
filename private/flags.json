@@ -1,230 +1,230 @@
 {
-  "riddle_r1_compass": {
+  "riddle_r1_1": {
     "round": 1,
     "roundName": "Round 1: Setting Sail",
     "riddleNumber": 1,
-    "category": "riddle_r1_compass",
-    "subtitle": "The Guiding Needle",
+    "category": "riddle_r1_1",
+    "subtitle": "Captain's Encrypted Transmission & The Silent Guardian",
     "difficulty": "EASY",
     "points": 100,
-    "text": "I have no voice, but I speak of four lands. I have a single trembling finger that points without hands. In iron or bronze I forever dwell; follow my needle and all shall be well. What nautical instrument am I?",
-    "hint": "A brass navigational instrument containing a magnetic needle pointing North.",
-    "hash": "$2b$10$p1rxH8EyxTQbRrtHN3711.tf8A7e1bFJ5PLwJT2f1CF1JZeUxnhrW"
+    "text": "Decode the 4-byte binary signal to identify the sentinel, evaluate the four logic gates, and apply the calculated Caesar shift to reveal the deck coordinates.",
+    "hint": "Arrr! Decode the binary first to name the sentinel, then use the logic gate outputs to calculate the Caesar shift and decrypt the final location clue.",
+    "hash": "$2b$10$v6Z/PjXVv5e1DNVawbaVkuG94GdddcLxGb165.B6zS.FlB2JYanwG"
   },
-  "riddle_r1_anchor": {
+  "riddle_r1_2": {
     "round": 1,
     "roundName": "Round 1: Setting Sail",
     "riddleNumber": 2,
-    "category": "riddle_r1_anchor",
-    "subtitle": "The Iron Sleeper",
+    "category": "riddle_r1_2",
+    "subtitle": "The Forgotten Java Array",
     "difficulty": "EASY",
     "points": 100,
-    "text": "Heavy as lead, forged in dark flame; cast me overboard, I stop the grand game. With flukes to the seabed and shank in the tide, until ye haul wind, right here ye abide. What am I?",
-    "hint": "A heavy iron device dropped from the bow to moor a vessel to the seafloor.",
-    "hash": "$2b$10$SIt/7yVL7f7OdCHyTJ7X8uTSLG.o.qqtNaSzamN1CF7cvZjEOPWRe"
+    "text": "Evaluate the zero-indexed Java array calculation to discover the two laboratory numbers, then find the aerial tower broadcasting unseen signals.",
+    "hint": "Remember that Java arrays use zero-based indexing. Look up between the labs for the tower with no sails that broadcasts unseen waves.",
+    "hash": "$2b$10$p4k8K6SRW8MV1tvkQP7Bfec.GyAY.bJSfDiQIw6bdnvuNk1PqxX8."
   },
-  "riddle_r1_hourglass": {
+  "riddle_r1_3": {
     "round": 1,
     "roundName": "Round 1: Setting Sail",
     "riddleNumber": 3,
-    "category": "riddle_r1_hourglass",
-    "subtitle": "The Sands of Tide",
+    "category": "riddle_r1_3",
+    "subtitle": "The Missing Digital Fragment",
     "difficulty": "EASY",
     "points": 100,
-    "text": "Two glass bells joined at the waist, I swallow fine shore with no sign of haste. Turn me on my head and my journey begins anew; mariners use me to strike the bells true. What timepiece am I?",
-    "hint": "A nautical sand timer with two glass bulbs connected by a narrow neck.",
-    "hash": "$2b$10$oBzducwuPKE2nEETY/sowO1LAM9LfGALVHOhiC5oG172RISABUweG"
+    "text": "Reverse the three-place Caesar shift and decode the ASCII bytes to locate the laboratory zone displaying the chemistry legend.",
+    "hint": "Shift each letter three places backward, then decode the binary using ASCII. Look for the screen with the famous scientist/chemistry legend in the lab.",
+    "hash": "$2b$10$taRE5jGNDoniVLFCc4oWbOrrEgF9.KWJ/DdNCezCss2mx0fV.FB9."
   },
-  "riddle_r1_spyglass": {
+  "riddle_r1_4": {
     "round": 1,
     "roundName": "Round 1: Setting Sail",
     "riddleNumber": 4,
-    "category": "riddle_r1_spyglass",
-    "subtitle": "The Crow's Eye",
+    "category": "riddle_r1_4",
+    "subtitle": "The Hidden Passage",
     "difficulty": "EASY",
     "points": 100,
-    "text": "I stretch out long when brass sleeves slide, pulling far islands right to your side. Closed I am small, open I am tall; through lens of quartz I reveal ships to all. What tool am I?",
-    "hint": "A collapsible handheld refracting telescope used by sailors.",
-    "hash": "$2b$10$y.bcHTeZvw/Ngd/bKB.vHeIDXsIid4oD2dP9cSHJ5YTk4hU7P6iZS"
+    "text": "Translate the 4-byte binary transmission, solve the IPv4 cryptographic lock to determine the Caesar shift, and trace the passage carrying visual signals.",
+    "hint": "Think of the cable that carries video and audio from a computer to a display. Check the corridor outside the lab following seven.",
+    "hash": "$2b$10$jFJWOUI59gNumyMJAwxmW.2v5e/VwgRw6r0Gwa7U19/2z4M095kJ."
   },
-  "riddle_r1_map": {
+  "riddle_r1_5": {
     "round": 1,
     "roundName": "Round 1: Setting Sail",
     "riddleNumber": 5,
-    "category": "riddle_r1_map",
-    "subtitle": "Parchment of the Red X",
+    "category": "riddle_r1_5",
+    "subtitle": "Beneath the Chance",
     "difficulty": "EASY",
     "points": 100,
-    "text": "I have cities without houses, forests without trees, and rivers without water crossing saltless seas. An inked scarlet 'X' marks where riches lay dead; hold me to candlefire to read what was said. What am I?",
-    "hint": "A navigational chart on parchment showing landmarks and secret locations.",
-    "hash": "$2b$10$joNC7ZziGMTZE3e2pLDfK.Ih8fDwNTOh51qAQWBSXTy1JEfthemuO"
+    "text": "Decode the binary machine whisper, calculate the IPv4 Caesar shift, and search beneath the six-faced object where fortune rolls.",
+    "hint": "Decode the binary, calculate the Caesar shift, and connect the clues to a game of chance. Look underneath where fortune rolls!",
+    "hash": "$2b$10$tFAz41CnkgDN3hl/Mb/Y9OVf4Fpv2FhGEiUUjNswjdBxppsABdMM."
   },
-  "riddle_r1_lighthouse": {
+  "riddle_r1_6": {
     "round": 1,
     "roundName": "Round 1: Setting Sail",
     "riddleNumber": 6,
-    "category": "riddle_r1_lighthouse",
-    "subtitle": "The Stone Sentinel",
+    "category": "riddle_r1_6",
+    "subtitle": "The View from A606",
     "difficulty": "EASY",
     "points": 100,
-    "text": "I stand on jagged crags where wild breakers roar. My single eye burns with flame, peering out from the shore. I wear stripes of white and crimson so bold, warning proud captains of reefs deep and cold. What tower am I?",
-    "hint": "A coastal beacon tower emitting light to guide ships and warn of shoals.",
-    "hash": "$2b$10$SXB97zeeK9cUzvefIzzP3ehvvgahZLAwo3aDeJ81daVhFRl5jO6je"
+    "text": "Unlock the 4-byte XOR cipher using the alphabet's 21st letter to find your room, then look beyond the glass to identify the tricolour banner's maker.",
+    "hint": "Arrr, let XOR unlock the door, then let ASCII reveal what you’re searching for. Once you reach your numbered quarters, look beyond the glass—not every treasure lies ashore! Find the tricolour, and seek the name of the mind who gave it its form.",
+    "hash": "$2b$10$xYficZTp91ybBI/MCjwVnuCMK5nXRSrZ3CPbbI/6qEBIyFXw.eAim"
   },
-  "riddle_r1_doubloon": {
+  "riddle_r1_7": {
     "round": 1,
     "roundName": "Round 1: Setting Sail",
     "riddleNumber": 7,
-    "category": "riddle_r1_doubloon",
-    "subtitle": "The Spanish Sun",
+    "category": "riddle_r1_7",
+    "subtitle": "The Protocol of Vision & Mission",
     "difficulty": "EASY",
     "points": 100,
-    "text": "Stamped with royal crests and hauled from sunken hold, I clink in leather pouches, seven grams of solid gold. Pirates spill rum and duel for my shine; pieces of eight are humble cousins of mine. What coin am I?",
-    "hint": "A historic seven-gram Spanish gold coin.",
-    "hash": "$2b$10$RJNiAfB3tOWNCfxwAfv0Re9WuwBWkVwWjym0D8G2nO7UTfO3rOqUa"
+    "text": "Decode the threshold's ASCII bytes to navigate to the chamber, then locate the board that speaks of the voyage ahead and institutional dreams.",
+    "hint": "Arrr, the Captain’s code has already revealed the way! Seek the place where a room’s number guides your feet, then search for a board that speaks not in words alone, but in the dreams and direction of your crew.",
+    "hash": "$2b$10$gkWIon/DH9e8hqaxOtF.3.qyZ9hk/Rd.FBVMNRStmpnfkH3sU7bP2"
   },
-  "riddle_r1_cannon": {
+  "riddle_r1_8": {
     "round": 1,
     "roundName": "Round 1: Setting Sail",
     "riddleNumber": 8,
-    "category": "riddle_r1_cannon",
-    "subtitle": "The Bronze Dragon",
+    "category": "riddle_r1_8",
+    "subtitle": "Mark of Trust",
     "difficulty": "EASY",
     "points": 100,
-    "text": "Feed me black powder and a sphere of cold lead. Pull back my lanyard, and silence is dead. Smoke fills the gun-deck and wooden hulls tear; my roar shakes the ocean and poisons the air. What weapon am I?",
-    "hint": "A heavy muzzle-loading smoothbore artillery piece mounted on a carriage.",
-    "hash": "$2b$10$pv8/QE7MiilT.Lxvlhf.BOfmmAycEXinciU8PxosfhRJAVOtJb..6"
+    "text": "Follow the rhyming clues of six steps and eight points to discover the Indian standards quality seal on the safety guardian.",
+    "hint": "Arrr, mateys! Seek the guardian that stands ready when danger draws near. Look for the seal of Indian standards that marks a product as tested and trusted—but keep your eyes on the sixth deck, and never enter a restricted shaft to claim your prize!",
+    "hash": "$2b$10$C5WfGvp81zFrnuajartpwe.xS9qTsUC7gwx7nSg5/7JASNjSLexKy"
   },
-  "riddle_r1_rudder": {
+  "riddle_r1_9": {
     "round": 1,
     "roundName": "Round 1: Setting Sail",
     "riddleNumber": 9,
-    "category": "riddle_r1_rudder",
-    "subtitle": "The Silent Sternsman",
+    "category": "riddle_r1_9",
+    "subtitle": "The Watcher’s Cipher",
     "difficulty": "EASY",
     "points": 100,
-    "text": "Tucked under the transom beneath ocean swell, I obey the wooden wheel's command very well. Turn me hard port or starboard to steer; without my flat blade no safe port can draw near. What ship's part am I?",
-    "hint": "A flat timber attached vertically to the sternpost used for steering.",
-    "hash": "$2b$10$eVSn45Pt86LPmwX1p45Qf.2VWAyUdO3iX0YosL6OnqTKvFCTtAI9S"
+    "text": "Decode the 5-byte machine name and apply the 4-digit modulo key with a Vigenère cipher to find the silent sentinel above the bustle.",
+    "hint": "Arrr, mateys! Decode the five-byte message to uncover the watcher’s name. Then let the digits of the Captain’s key guide your cipher work. Seek the silent eye that records the world near the hall where knowledge is shared—identify it by its number, but touch not the guardian!",
+    "hash": "$2b$10$B1S5AeacTH8lJnmXzmKlwufmDERNvNMG3DqoMcMSPvhN.5kZv9f36"
   },
-  "riddle_r1_crowsnest": {
+  "riddle_r1_10": {
     "round": 1,
     "roundName": "Round 1: Setting Sail",
     "riddleNumber": 10,
-    "category": "riddle_r1_crowsnest",
-    "subtitle": "The Perch of the Mast",
+    "category": "riddle_r1_10",
+    "subtitle": "The Digital Mosaic",
     "difficulty": "EASY",
     "points": 100,
-    "text": "High above topsails where cold breezes sting, perched on the mainmast like a bird with no wing. From here sounds the cry when a landfall draws near: 'Land ho!' shouts the sailor with eagle eyes clear. What lookout perch am I?",
-    "hint": "A barrel or platform fitted high up on the masthead for the lookout.",
-    "hash": "$2b$10$BwKGXmwHUfKbdfw.01hdEulesVfgypMZnJeiVotaK0zj06OaMseAS"
+    "text": "Solve the alchemist's elemental sequence and the physicist's invariant calculation to reveal where messages share a wall and find the scannable pattern.",
+    "hint": "Arrr, mateys! The elements reveal the first part, while the unchanging property of light unlocks the shift. When science and code have done their work, seek the place where messages hang in plain sight—but one patterned square holds a secret meant for your device!",
+    "hash": "$2b$10$w35Pz2JlRywa5Yoh8pQaLOktszabRGah9zsyRlUu7iNLfIwbTr4zW"
   },
-  "riddle_r2_astrolabe": {
+  "riddle_r2_g1_1": {
     "round": 2,
     "roundName": "Round 2: High Seas",
     "riddleNumber": 1,
-    "category": "riddle_r2_astrolabe",
-    "subtitle": "The Star Reckoner",
+    "category": "riddle_r2_g1_1",
+    "subtitle": "The Heart-Smile Passage",
     "difficulty": "MEDIUM",
-    "points": 200,
-    "text": "Forged in brass with rotating rete and plates, I measure the altitude of stars beyond the sea gates. Navigators hold me by my thumb ring against the twilight sky to reckon latitude where great galleons fly. What ancient celestial instrument am I?",
-    "hint": "An ancient brass astronomical instrument used to calculate celestial positions and time.",
-    "hash": "$2b$10$2c5osO.TZh81CwQGS/Cjh.zt1o0ae1V0RNon2TqTL.qczKTpDVpnW"
+    "points": 100,
+    "text": "Apply Ohm's law to calculate the current, double the result, and search the passage opening beside the heart-smile sign.",
+    "hint": "Arrr, mateys! Let Ohm’s law chart your course: divide the volts by the resistance, then double the current you discover. Follow the number to the place where a heart smiles, and seek the passage nearby—but beware, the secret lies beside the sign, not beyond the door!",
+    "hash": "$2b$10$1s2u8e.32CTD2swfXNiHxuAKweBSi1x3oUUWDleouOwY4U43ChD/O"
   },
-  "riddle_r2_figurehead": {
+  "riddle_r2_g1_2": {
     "round": 2,
     "roundName": "Round 2: High Seas",
     "riddleNumber": 2,
-    "category": "riddle_r2_figurehead",
-    "subtitle": "The Siren of the Bow",
+    "category": "riddle_r2_g1_2",
+    "subtitle": "The Alchemist's Deck",
     "difficulty": "MEDIUM",
-    "points": 200,
-    "text": "Carved from proud oak and bolted beneath the bowsprit line, I taste the salt spray and cut the ocean brine. Sailors swear I guard the hull from sirens and deep storm; a carved wooden spirit in maiden or creature form. What ship carving am I?",
-    "hint": "A carved wooden decorative figure placed on the prow or bow of a ship.",
-    "hash": "$2b$10$7srHrUhzowOud7B34sNwQ.J3DHd1fFAMRXNPIJElCUe16jIh32bPG"
+    "points": 100,
+    "text": "Translate the sea elements' atomic numbers into 8-bit binary and ASCII to discover where knowledge is framed in the classroom corridor.",
+    "hint": "Arrr, mateys! The periodic table holds the numbers, but beware—the elements alone won’t spell out your destination. Think carefully about how atomic numbers become binary, and where students’ knowledge is displayed for all to see. Your next clue hangs where lessons meet the open corridor!",
+    "hash": "$2b$10$wI7IOEIGqpN89EZNywsPN.k.ZtX2AV4w6W11bX7.Xnobjod0ZsI/i"
   },
-  "riddle_r2_capstan": {
+  "riddle_r2_g1_3": {
     "round": 2,
     "roundName": "Round 2: High Seas",
     "riddleNumber": 3,
-    "category": "riddle_r2_capstan",
-    "subtitle": "The Iron Spindle",
+    "category": "riddle_r2_g1_3",
+    "subtitle": "The Garden Contradiction",
     "difficulty": "MEDIUM",
-    "points": 200,
-    "text": "I stand on the main deck, a vertical cylinder of iron and wood. Sailors push against my handspikes where strong men stood. Step by step around I turn to pawl's clicking sound, heaving massive anchor cables up from the seabed ground. What winding machine am I?",
-    "hint": "A revolving cylinder device on a ship's deck used for winding heavy cables or raising anchors.",
-    "hash": "$2b$10$sjYqYTL3CrwpOR9tLIv5ROM9gDot8xwB.pDNkxfReFfr4S8U9rSN6"
+    "points": 100,
+    "text": "Correct the corrupted first byte of the transmission, follow the path of light toward green giants, and discover the vessel cradled in wood.",
+    "hint": "Arrr, mateys! The first byte has betrayed you—trust not the whole message! Decode the remaining letters, then follow the path of light to where green giants take root. Seek the seven proud capitals, and find the vessel that never sails, cradled by a wooden guardian.",
+    "hash": "$2b$10$chhFMU5ORmHcgGlUYTtrle4tlRDsYgkl7hvW5frhnrQT/20KQp.SK"
   },
-  "riddle_r2_barometer": {
+  "riddle_r2_g2_1": {
     "round": 2,
     "roundName": "Round 2: High Seas",
     "riddleNumber": 4,
-    "category": "riddle_r2_barometer",
-    "subtitle": "The Storm Glass",
+    "category": "riddle_r2_g2_1",
+    "subtitle": "The Backside of the Secret Board",
     "difficulty": "MEDIUM",
-    "points": 200,
-    "text": "Inside my tube of glass, quicksilver rises and falls in silent dread. When my mercury sinks low, fierce gales and typhoons lie ahead. Sailors watch my glass before setting reefed sail; I predict the calm sea or the whistling gale. What weather instrument am I?",
-    "hint": "An instrument measuring atmospheric pressure, used especially in forecasting the weather and storms.",
-    "hash": "$2b$10$j7nAYYRkuGLZc3szdsLvO.CDwnQJCrS2qY7AjIEr20PlQBfDzYR4W"
+    "points": 100,
+    "text": "Analyze the 2D even-parity matrix to locate and repair the corrupted bit, restoring the three-letter board acronym.",
+    "hint": "A single bit can betray the entire message. Use even parity to locate the error, correct the binary data, and convert it into ASCII letters to reveal the hidden destination.",
+    "hash": "$2b$10$EfI0cEy8vMpmdSGvTFeAXuPjuTz6anmpm5n8T7Cer.ALXdpFLvSwW"
   },
-  "riddle_r2_sextant": {
+  "riddle_r2_g2_2": {
     "round": 2,
     "roundName": "Round 2: High Seas",
     "riddleNumber": 5,
-    "category": "riddle_r2_sextant",
-    "subtitle": "The Arc of the Sun",
+    "category": "riddle_r2_g2_2",
+    "subtitle": "The Midway Sentinel",
     "difficulty": "MEDIUM",
-    "points": 200,
-    "text": "With an index mirror, horizon glass, and an arc of sixty degrees, I bring the midday sun down to kiss the level seas. Twice an octant's span, I fix the captain's sight, calculating nautical miles by sun or moon's clear light. What navigation tool am I?",
-    "hint": "A doubly reflecting navigation instrument used to measure the angle between an astronomical object and the horizon.",
-    "hash": "$2b$10$LIb4jkwy58x9uS0HxS/bIu6.2snlVlj2YlnFzbLSmRWtXQQyPE.Ke"
+    "points": 100,
+    "text": "Decode the three 8-bit ASCII bytes and locate the silent crimson safety guardian stationed at the confluence of opposing wings.",
+    "hint": "Eight bits make a byte, and ASCII gives each byte a voice. Decode the three groups first, then use the words about opposing wings, the midpoint, and a silent safety guardian to discover your destination.",
+    "hash": "$2b$10$lYnMBhR1ZRo9hcMcEc.8Gul7mYBg0uRc0SAv1OzKZnt780Wbc0Ea2"
   },
-  "riddle_r2_bilge": {
+  "riddle_r2_g2_3": {
     "round": 2,
     "roundName": "Round 2: High Seas",
     "riddleNumber": 6,
-    "category": "riddle_r2_bilge",
-    "subtitle": "The Dark Belly",
+    "category": "riddle_r2_g2_3",
+    "subtitle": "The Cipher of C",
     "difficulty": "MEDIUM",
-    "points": 200,
-    "text": "Deep beneath the lowest decks where no sunlight can ever gleam, foul waters gather in the hull along the keel's curved seam. Pumps must clank both day and night to drain my murky well, or ships grow heavy in the deep and founder where they dwell. What lowest hold of the ship am I?",
-    "hint": "The lowest inner part of a ship's hull where wastewater and seepage collect.",
-    "hash": "$2b$10$cP7OH2i.wQVWopPqovaYme5ZIAimGC.rM.QST7VYD5oAuZytQLMaW"
+    "points": 100,
+    "text": "Calculate the total equivalent resistance of the series-parallel circuit, convert to hexadecimal, and find the giant white landmark on the green.",
+    "hint": "Eight bits speak through ASCII, or ohms speak through hex! Calculate the equivalent resistance to find the single hex digit, which is also the first letter of the university’s name. Search for its prominent display on the green.",
+    "hash": "$2b$10$UrgtZt3t5R9n9QKBf/hmU.b4klBcajbNgvPZyl/0mrSj2/ad1xQfm"
   },
-  "riddle_r3_cutlass": {
+  "riddle_r3_g1_1": {
     "round": 3,
     "roundName": "Round 3: Dead Man's Creek",
-    "riddleNumber": 1,
-    "category": "riddle_r3_cutlass",
-    "subtitle": "The Curved Steel",
+    "riddleNumber": 7,
+    "category": "riddle_r3_g1_1",
+    "subtitle": "The Motherboard's Hidden Code",
     "difficulty": "HARD",
-    "points": 300,
-    "text": "Shorter than a rapier with a single curved razor edge, in boarding smoke and close-quarters I make a deadly pledge. With a solid brass cupped hilt to guard a buccaneer's hand, I slash through rigging and rival crews on deck or sand. What pirate sword am I?",
-    "hint": "A short, heavy sword with a curved blade and cupped basket hilt favored by sailors.",
-    "hash": "$2b$10$0d2d7mKYyYx6OwjZIRFp8.BFwYGZ/glXvexiqq6LN8uTdvnIhTGGe"
+    "points": 100,
+    "text": "Decode the binary log to identify the department guardian, solve the hardware riddle poem, and locate the mounted circuit relic along the first-floor corridor.",
+    "hint": "ASCII reveals the first location. Think of the hardware that connects the processor, memory, and peripherals. Its displayed representation waits along the first-floor laboratory corridor.",
+    "hash": "$2b$10$oMjXhwFJdz/uPQmC/kFdIePYBOsWj/DLCe0MqM.eTVOuMsociE6ki"
   },
-  "riddle_r3_jollyroger": {
+  "riddle_r3_g2_1": {
     "round": 3,
     "roundName": "Round 3: Dead Man's Creek",
-    "riddleNumber": 2,
-    "category": "riddle_r3_jollyroger",
-    "subtitle": "The Skull and Bones",
+    "riddleNumber": 8,
+    "category": "riddle_r3_g2_1",
+    "subtitle": "The Last View",
     "difficulty": "HARD",
-    "points": 300,
-    "text": "Raised to the top of the mainmast on a field of pitch-black cloth, two crossed human bones and a grinning skull of wrath. Merchant vessels strike their colors when my black flag flies high, for mercy is denied to all who hear my battle cry. What infamous pirate banner am I?",
-    "hint": "The traditional pirate flag featuring a white human skull and crossed crossbones on a black field.",
-    "hash": "$2b$10$pMGxlibgsCdVSXxoHQxgaeKJlBU0jxbsF2sApvLXRueAj1mKRXXXK"
+    "points": 100,
+    "text": "Translate the binary level coordinates, compute the glass refraction paradox binary 1s, and apply the combined Caesar shift to decrypt the final storage landmark.",
+    "hint": "ASCII reveals the level. The frequency of light does not change when it enters glass. Convert the calculated percentage to 8-bit binary, count its 1s, and use the combined total to reverse the Caesar cipher. Your final clue concerns a structure near the last laboratory's window.",
+    "hash": "$2b$10$U3nyZXHKz/TuRVXFLEcMgua8TSUeqm9VBKUWQxE5iQ5frkjzmD9BK"
   },
   "riddle_r4_treasurechest": {
     "round": 4,
     "roundName": "Round 4: Treasure Island",
-    "riddleNumber": 1,
+    "riddleNumber": 9,
     "category": "riddle_r4_treasurechest",
     "subtitle": "The Grand Pirate Coffer",
-    "difficulty": "EXPERT",
-    "points": 500,
+    "difficulty": "HARD",
+    "points": 100,
     "text": "Iron-bound oak locked tight with three heavy brass keys, buried in white sands beneath the skull-shaped palm trees. Filled with rubies, emeralds, gold ingots, and ancient maps untold, I crown the grand champions who conquer the Lost Code. What legendary prize am I?",
     "hint": "A reinforced iron-banded wooden coffer containing pirate loot, doubloons, and gems.",
-    "hash": "$2b$10$CdhAVGhFUp1F5X5hfCcveeM3T.N8Jvvpoc5aTP3qriGuRZ4ikzosC"
+    "hash": "$2b$10$sS8pxZbHGKE4Yrb9lTTuveAng1ElWPj1F2eJ8Zzd2LyecLBZI7ft."
   }
 }

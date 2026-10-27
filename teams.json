@@ -32,7 +32,7 @@
     "id": "crew_1_buccaneers",
     "teamName": "BUCCANEERS",
     "tagline": "Ruthless pirate adventurers",
-    "password": "$2b$10$kOCA98Rc3gMqy0xFUZwvre3j/mUlRtPjfXz0Pk7BceJLx48cHG0qe",
+    "password": "$2b$10$.MXBXRiYECkFBBfhpZ4xXOesG8OS9ZFAucFz.RuJ8tH3zqTVRCX4i",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -42,9 +42,9 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "riddle_r1_compass",
-      "2": "riddle_r2_astrolabe",
-      "3": "riddle_r3_cutlass",
+      "1": "riddle_r1_1",
+      "2": "riddle_r2_g1_1",
+      "3": "riddle_r3_g1_1",
       "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "A",
@@ -56,7 +56,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793036312501,
+        "startedAt": 1793131622496,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -73,7 +73,7 @@
     "id": "crew_2_cutthroats",
     "teamName": "CUTTHROATS",
     "tagline": "Fearless and dangerous",
-    "password": "$2b$10$hDc.0pi23LVgVhd74zP9wOGvzukRMJq6hGf87jftr9ZldLnfYVQC2",
+    "password": "$2b$10$mOyP25O.mCD5j9j8Rk3UOeEVbd3Vmn8e.yMeWSefHJjj/nqHI9sfS",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -83,9 +83,9 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "riddle_r1_anchor",
-      "2": "riddle_r2_figurehead",
-      "3": "riddle_r3_jollyroger",
+      "1": "riddle_r1_2",
+      "2": "riddle_r2_g2_1",
+      "3": "riddle_r3_g2_1",
       "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "B",
@@ -97,7 +97,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793036312501,
+        "startedAt": 1793131622496,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -114,7 +114,7 @@
     "id": "crew_3_corsairs",
     "teamName": "CORSAIRS",
     "tagline": "Elite sea raiders",
-    "password": "$2b$10$cwAT53S9QMOSE3K4vwL8VODAVHWQb0LvM3lxWvEHrkojE3PcN2LAS",
+    "password": "$2b$10$MeaTzjNJYDv7cgxuZOJQ3uhe2gz2sEY4/jbWNlKTHh4l8TGjBJO1.",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -124,9 +124,9 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "riddle_r1_hourglass",
-      "2": "riddle_r2_capstan",
-      "3": "riddle_r3_cutlass",
+      "1": "riddle_r1_3",
+      "2": "riddle_r2_g1_2",
+      "3": "riddle_r3_g1_1",
       "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "A",
@@ -138,7 +138,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793036312501,
+        "startedAt": 1793131622496,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -155,7 +155,7 @@
     "id": "crew_4_krakens",
     "teamName": "KRAKENS",
     "tagline": "Mythical forces of the deep",
-    "password": "$2b$10$HnxxsZMtby2h8uCONK8BtOZfcAuwwQhQ1gJs0IzFbrj8Cbt8mMk1.",
+    "password": "$2b$10$rp6A5jSm58Hai5PPHx0KR.N.SzrorXrdFNtjqPol6xDA2ThxYsHPa",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -165,9 +165,9 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "riddle_r1_spyglass",
-      "2": "riddle_r2_barometer",
-      "3": "riddle_r3_jollyroger",
+      "1": "riddle_r1_4",
+      "2": "riddle_r2_g2_2",
+      "3": "riddle_r3_g2_1",
       "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "B",
@@ -179,7 +179,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793036312501,
+        "startedAt": 1793131622496,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -196,7 +196,7 @@
     "id": "crew_5_scallywags",
     "teamName": "SCALLYWAGS",
     "tagline": "Mischievous pirates",
-    "password": "$2b$10$cOvyfd8RaIXoZtO5qfpIkuonJxTMdTh5icJqnbjfBiBPEAo/dVOKC",
+    "password": "$2b$10$021I8l8RY9wWqJDarDG9quxGfA.aj7dr.Ah7D9yEpZQBPNMxdNK02",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -206,9 +206,9 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "riddle_r1_map",
-      "2": "riddle_r2_sextant",
-      "3": "riddle_r3_cutlass",
+      "1": "riddle_r1_5",
+      "2": "riddle_r2_g1_3",
+      "3": "riddle_r3_g1_1",
       "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "A",
@@ -220,7 +220,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793036312501,
+        "startedAt": 1793131622496,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -237,7 +237,7 @@
     "id": "crew_6_privateers",
     "teamName": "PRIVATEERS",
     "tagline": "Strategic naval raiders",
-    "password": "$2b$10$x8kDkSUJ6FGR4NC8IHKMieLCm3XNIqGwM8rWYZMN85XoaufkbLu9m",
+    "password": "$2b$10$Grl.YTpuWV1rh9XkcUJtneNwdyRFpTTWiX4MLlm0VRLKlR7KeCEjy",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -247,9 +247,9 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "riddle_r1_lighthouse",
-      "2": "riddle_r2_bilge",
-      "3": "riddle_r3_jollyroger",
+      "1": "riddle_r1_6",
+      "2": "riddle_r2_g2_3",
+      "3": "riddle_r3_g2_1",
       "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "B",
@@ -261,7 +261,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793036312501,
+        "startedAt": 1793131622496,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -278,21 +278,21 @@
     "id": "crew_7_blackflags",
     "teamName": "BLACKFLAGS",
     "tagline": "Rogue pirates of the seas",
-    "password": "$2b$10$zdWq90T73RfTTCcXpGu./.o3m5IGL3Aj8UqHWkXEiNVSza.kLRFxq",
+    "password": "$2b$10$Oa2GH0Yp87ELIShGOQW7FeFGDIwQ9fnjA/SUCKE71Z3dI8QWtakjG",
     "score": 100,
     "solvedChallenges": [
-      "riddle_r1_doubloon"
+      "riddle_r1_7"
     ],
     "hintsUnlocked": {
-      "riddle_r1_doubloon": {
+      "riddle_r1_7": {
         "penaltyMinutes": 5,
-        "unlockedAt": 1793036312509
+        "unlockedAt": 1793131622503
       }
     },
     "scoreHistory": [
       {
-        "timestamp": 1793036312521,
-        "time": "11:08:32 PM",
+        "timestamp": 1793131622515,
+        "time": "1:37:02 AM",
         "score": 100,
         "roundsCompleted": 1
       }
@@ -303,9 +303,9 @@
       2
     ],
     "allocatedRiddles": {
-      "1": "riddle_r1_doubloon",
-      "2": "riddle_r2_ga_s1",
-      "3": "riddle_r3_cutlass",
+      "1": "riddle_r1_7",
+      "2": "riddle_r2_g1_1",
+      "3": "riddle_r3_g1_1",
       "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "A",
@@ -317,21 +317,21 @@
     "roundSolves": {
       "1": {
         "slotId": "R1_S7",
-        "riddleId": "riddle_r1_doubloon",
-        "answer": "doubloon",
-        "solvedAt": "2026-10-26T17:38:32.520Z",
+        "riddleId": "riddle_r1_7",
+        "answer": "lost_code{white board}",
+        "solvedAt": "2026-10-27T20:07:02.514Z",
         "completed": true,
         "solveTimeSeconds": 300
       }
     },
     "roundTimers": {
       "1": {
-        "startedAt": 1793036312553,
+        "startedAt": 1793131622546,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
         "solved": true,
-        "solvedAt": 1793036312520,
+        "solvedAt": 1793131622514,
         "finalSolveSeconds": 300
       },
       "2": {
@@ -354,7 +354,7 @@
     "id": "crew_8_plunderers",
     "teamName": "PLUNDERERS",
     "tagline": "Seekers of hidden treasure",
-    "password": "$2b$10$j2inucDucY31RKNYj7.dZu48d0/RQ5e/xvf4KuIOX31zFyMdaiC6i",
+    "password": "$2b$10$23jT5VUTTP2EDIR3WwrFueCJHyzqlDwYYTZQJ8a19S2HPRXPLS.lq",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -364,9 +364,9 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "riddle_r1_cannon",
-      "2": "riddle_r2_astrolabe",
-      "3": "riddle_r3_jollyroger",
+      "1": "riddle_r1_8",
+      "2": "riddle_r2_g2_1",
+      "3": "riddle_r3_g2_1",
       "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "B",
@@ -378,7 +378,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793036312501,
+        "startedAt": 1793131622496,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -395,7 +395,7 @@
     "id": "crew_9_dreadsails",
     "teamName": "DREADSAILS",
     "tagline": "Ghostly ships of the ocean",
-    "password": "$2b$10$FDY/K9uP178h0Gz070OZo..ZyUwrZWIPfY3uWIa20jNAftEOlCPui",
+    "password": "$2b$10$4gVNH2c7E6LiCaceGKv6NOAPZWlw2KyoRrZIkMfFAv6HHyhA.Hw5i",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -405,9 +405,9 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "riddle_r1_rudder",
-      "2": "riddle_r2_figurehead",
-      "3": "riddle_r3_cutlass",
+      "1": "riddle_r1_9",
+      "2": "riddle_r2_g1_2",
+      "3": "riddle_r3_g1_1",
       "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "A",
@@ -419,7 +419,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793036312501,
+        "startedAt": 1793131622496,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -436,7 +436,7 @@
     "id": "crew_10_searavens",
     "teamName": "SEARAVENS",
     "tagline": "Dark and cunning voyagers",
-    "password": "$2b$10$g7xIUJLhERnj2LlwcqLVUOlSf6Q9cajN8I2u/4c7spAqwFa/5xXn2",
+    "password": "$2b$10$qZnHg/vABmdtor0K/RP.veHgelra0GkgRzjm5ngzxa1NNnbC4.00q",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -446,9 +446,9 @@
       1
     ],
     "allocatedRiddles": {
-      "1": "riddle_r1_crowsnest",
-      "2": "riddle_r2_capstan",
-      "3": "riddle_r3_jollyroger",
+      "1": "riddle_r1_10",
+      "2": "riddle_r2_g2_2",
+      "3": "riddle_r3_g2_1",
       "4": "riddle_r4_treasurechest"
     },
     "groupRound2": "B",
@@ -460,7 +460,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793036312501,
+        "startedAt": 1793131622496,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
