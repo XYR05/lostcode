@@ -554,6 +554,9 @@
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
           <div onclick="event.stopPropagation()" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <button type="button" onclick="restoreDefaultCredentialsConfirm()" class="btn-admin-primary" style="padding: 0.45rem 0.85rem; font-size: 0.8rem;">
+              Restore Default Passwords
+            </button>
             <button type="button" onclick="downloadCredentialsTxt()" class="btn-admin-secondary" style="padding: 0.45rem 0.85rem; font-size: 0.8rem;">
               Export credentials.txt
             </button>
@@ -2973,6 +2976,26 @@
             showCustomConfirm("Reset Failed", data.error, true, null);
           } else {
             showToast(`New password generated for ${displayName}!`);
+            fetchAdminCredentials();
+          }
+        })
+        .catch(err => showCustomConfirm("Error", err.message, true, null));
+      });
+    }
+
+    function restoreDefaultCredentialsConfirm() {
+      showCustomConfirm("Restore Default Passwords?", "This will reset all 10 crew passwords and the Admiralty admin password to the official tournament master defaults.", false, (confirmed) => {
+        if (!confirmed) return;
+        fetch('/api/admin/credentials/restore-default', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.error) {
+            showCustomConfirm("Restore Failed", data.error, true, null);
+          } else {
+            showToast("Default tournament credentials restored!");
             fetchAdminCredentials();
           }
         })

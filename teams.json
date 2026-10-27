@@ -2,7 +2,7 @@
   {
     "id": "team_admin_1",
     "teamName": "admin@lostcode",
-    "password": "$2b$10$qkxEp3X/NGM49oOeK.Z/5u5nrH1CPkQP9dYuoaYc1jdIDVRDPpFXG",
+    "password": "$2b$10$CBKu/M4nrSn289fmaG7QTuTntEyoZM315leZWMFbd9yEh9pvo0SRG",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -32,7 +32,7 @@
     "id": "crew_1_buccaneers",
     "teamName": "BUCCANEERS",
     "tagline": "Ruthless pirate adventurers",
-    "password": "$2b$10$DtdyGz2VKtnZfQjcBbYs6u2.ZbatWzz/nTraoff7cvZ7iuYzTPyBS",
+    "password": "$2b$10$1qXSUI.GNfinaRrFV.nvQeq6EaFG7VCGOgFGk0bvPHXNbSVLNxEeW",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -56,7 +56,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793132280341,
+        "startedAt": 1793133199633,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -73,7 +73,7 @@
     "id": "crew_2_cutthroats",
     "teamName": "CUTTHROATS",
     "tagline": "Fearless and dangerous",
-    "password": "$2b$10$vy3DesP8D83DHT8NiQucTuhgdavLQFHCD0/fxD6JC03OZVgdGJ75K",
+    "password": "$2b$10$g3uUoicN.BCwR1/0vFPwtuvPSASSYFcaummN89811dUf.akOMTCqO",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -97,7 +97,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793132280341,
+        "startedAt": 1793133199633,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -114,7 +114,7 @@
     "id": "crew_3_corsairs",
     "teamName": "CORSAIRS",
     "tagline": "Elite sea raiders",
-    "password": "$2b$10$JbIr/fQOpjaXcQLCcw.IKOFE.YeDtt4On4WRkUxzzGSYEdUlR0key",
+    "password": "$2b$10$qyD2F7Kznqi/Gfjz.HeAIOGtndq1wWy3cjCpzBT2AlpokAcXl9U6i",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -138,7 +138,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793132280341,
+        "startedAt": 1793133199633,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -155,7 +155,7 @@
     "id": "crew_4_krakens",
     "teamName": "KRAKENS",
     "tagline": "Mythical forces of the deep",
-    "password": "$2b$10$s1AIWctDEsLw7z2MdYGVaODQPOiaV9.bDCZmTIGnrdH89aZ.fAtn6",
+    "password": "$2b$10$2iAInZ9m/Rt50y0deChtd.D81/jHzVlwlCpSooTu4v4sfWEQ/qGE6",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -179,7 +179,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793132280341,
+        "startedAt": 1793133199633,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -196,7 +196,7 @@
     "id": "crew_5_scallywags",
     "teamName": "SCALLYWAGS",
     "tagline": "Mischievous pirates",
-    "password": "$2b$10$pM778L7VkDkcysNygeK.Xe5QGb0Crc/GLqVgB/IkeJD8P9FU12XLq",
+    "password": "$2b$10$//Ajek6RkggSd.n/lAwEZueMA6A.6ZUJh1d8eowAji4N7jneWKtLm",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -220,7 +220,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793132280341,
+        "startedAt": 1793133199633,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -237,7 +237,7 @@
     "id": "crew_6_privateers",
     "teamName": "PRIVATEERS",
     "tagline": "Strategic naval raiders",
-    "password": "$2b$10$Mi/NeT8sV4Ak.CjPzelFUev6cGLYK6kth9mLwj4xcwcEyr/ce84ya",
+    "password": "$2b$10$TiTY/0mrtKM0Qgl5.4PZ2OAYQI8txVgYXJWUfunSZPVDmYyh8P.2S",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -261,7 +261,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793132280341,
+        "startedAt": 1793133199633,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -278,7 +278,7 @@
     "id": "crew_7_blackflags",
     "teamName": "BLACKFLAGS",
     "tagline": "Rogue pirates of the seas",
-    "password": "$2b$10$xInbiH7KQ3y5pgBijlqVmu61PfNw1eeU3qGhPaIrbXHJoJNAv7s6q",
+    "password": "$2b$10$x6B5hzzL.bb6f9thLPsx.e34lduqri/EEe6THVIGSnxTScyEM3jeO",
     "score": 100,
     "solvedChallenges": [
       "riddle_r1_7"
@@ -286,13 +286,13 @@
     "hintsUnlocked": {
       "riddle_r1_7": {
         "penaltyMinutes": 5,
-        "unlockedAt": 1793132280349
+        "unlockedAt": 1793133199641
       }
     },
     "scoreHistory": [
       {
-        "timestamp": 1793132280361,
-        "time": "1:48:00 AM",
+        "timestamp": 1793133199653,
+        "time": "2:03:19 AM",
         "score": 100,
         "roundsCompleted": 1
       }
@@ -319,19 +319,19 @@
         "slotId": "R1_S7",
         "riddleId": "riddle_r1_7",
         "answer": "lost_code{white board}",
-        "solvedAt": "2026-10-27T20:18:00.361Z",
+        "solvedAt": "2026-10-27T20:33:19.652Z",
         "completed": true,
         "solveTimeSeconds": 300
       }
     },
     "roundTimers": {
       "1": {
-        "startedAt": 1793132280394,
+        "startedAt": 1793133199685,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
         "solved": true,
-        "solvedAt": 1793132280361,
+        "solvedAt": 1793133199652,
         "finalSolveSeconds": 300
       },
       "2": {
@@ -354,7 +354,7 @@
     "id": "crew_8_plunderers",
     "teamName": "PLUNDERERS",
     "tagline": "Seekers of hidden treasure",
-    "password": "$2b$10$5Y1q0KaEE9U7rfu.zVOtMemV..2ntA5AYqF8XmgWMrgPbJSSCccge",
+    "password": "$2b$10$KMYUKcOQRRIFfIguUNqrZObaHUf5V6yMk6RuvgL.U1XUUiqRRlxky",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -378,7 +378,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793132280341,
+        "startedAt": 1793133199633,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -395,7 +395,7 @@
     "id": "crew_9_dreadsails",
     "teamName": "DREADSAILS",
     "tagline": "Ghostly ships of the ocean",
-    "password": "$2b$10$ge/g.nralGaOLivHi0lVlOtIJ6bkg0zwDw5qNDQ.WXEDzT2nVpgRi",
+    "password": "$2b$10$nxTGtCCBl8AoEAyLpteBl.PvnK3MdhggWwgiS4BWyQzweCu5HnBzi",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -419,7 +419,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793132280341,
+        "startedAt": 1793133199633,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,
@@ -436,7 +436,7 @@
     "id": "crew_10_searavens",
     "teamName": "SEARAVENS",
     "tagline": "Dark and cunning voyagers",
-    "password": "$2b$10$LspVLmwP4NDfHUm90oaij.GAK7TrtoCGw8qdF6LwKOUlK4f6usklO",
+    "password": "$2b$10$.IkIyqhxjPeIWwSUpumUA.OhyKTaCarvKmNNHy/G8FbCuDKMZ2eHG",
     "score": 0,
     "solvedChallenges": [],
     "hintsUnlocked": {},
@@ -460,7 +460,7 @@
     "roundSolves": {},
     "roundTimers": {
       "1": {
-        "startedAt": 1793132280341,
+        "startedAt": 1793133199633,
         "durationMinutes": 40,
         "hintPenaltiesMinutes": 0,
         "bonusMinutes": 0,

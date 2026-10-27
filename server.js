@@ -76,6 +76,64 @@ function generateRandomPassword(length = 8, prefix = '') {
   return res;
 }
 
+const DEFAULT_TOURNAMENT_CREDENTIALS = {
+  admin: {
+    username: 'admin@lostcode',
+    password: 'adm_xxcfyXMs'
+  },
+  teams: {
+    BUCCANEERS: 'buccaneers_YkBk8b',
+    CUTTHROATS: 'cutthroats_yZzjNq',
+    CORSAIRS: 'corsairs_29kN79',
+    KRAKENS: 'krakens_t5m6Ss',
+    SCALLYWAGS: 'scallywags_mt6mvg',
+    PRIVATEERS: 'privateers_JQcpxD',
+    BLACKFLAGS: 'blackflags_QYsYa8',
+    PLUNDERERS: 'plunderers_bddktL',
+    DREADSAILS: 'dreadsails_QD5UDh',
+    SEARAVENS: 'searavens_JusYnr'
+  }
+};
+
+function restoreDefaultTournamentCredentials() {
+  const creds = {
+    generatedAt: new Date().toISOString(),
+    admin: {
+      username: DEFAULT_TOURNAMENT_CREDENTIALS.admin.username,
+      password: DEFAULT_TOURNAMENT_CREDENTIALS.admin.password
+    },
+    teams: { ...DEFAULT_TOURNAMENT_CREDENTIALS.teams }
+  };
+  saveCredentials(creds);
+
+  // Update teams in-memory and on disk
+  teams.forEach(t => {
+    if (isAdminTeam(t)) {
+      t.password = bcrypt.hashSync(creds.admin.password, 10);
+    } else {
+      const pw = creds.teams[(t.teamName || '').toUpperCase()];
+      if (pw) t.password = bcrypt.hashSync(pw, 10);
+    }
+  });
+
+  // Update users in-memory and on disk
+  users.forEach(u => {
+    if (u.id === 'user_admin_1' || (u.username && u.username.toLowerCase() === 'admin@lostcode')) {
+      u.password = bcrypt.hashSync(creds.admin.password, 10);
+    } else {
+      const pw = creds.teams[(u.username || '').toUpperCase()];
+      if (pw) u.password = bcrypt.hashSync(pw, 10);
+    }
+  });
+
+  try {
+    fs.writeFileSync(teamsFilePath, JSON.stringify(teams, null, 2));
+    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+  } catch (e) {}
+
+  return creds;
+}
+
 function generateTournamentCredentials(existingCreds = null) {
   const crewNames = [
     "BUCCANEERS",
@@ -214,7 +272,11 @@ function findTeamSlotInRound(assignments, roundNum, teamId) {
     const groups = roundData.groups || {};
     for (const gKey of ['A', 'B']) {
       const group = groups[gKey];
-      if (group && Array.isArray(group.teams) && group.teams.includes(teamId)) {
+      if (!group) continue;
+      const teamObj = teams.find(t => t.id === teamId);
+      const teamGroup = teamObj ? (teamObj.groupRound3 || teamObj.groupRound2) : null;
+      const isTeamInGroup = (Array.isArray(group.teams) && group.teams.includes(teamId)) || (teamGroup === gKey);
+      if (isTeamInGroup) {
         const slots = group.slots || [];
         // 1. Explicit team assignment
         let slot = slots.find(s => s.assignedTeamId === teamId);
@@ -1152,9 +1214,19 @@ function validateRoundConfiguration(roundNum) {
         errors.push(`Group ${g} definition is missing in Round 3.`);
         continue;
       }
-      const teams = grp.teams || [];
-      if (teams.length !== 3) {
-        errors.push(`Round 3 Group ${g} must contain exactly 3 crews (currently ${teams.length}).`);
+      let teamsInGrp = grp.teams || [];
+      const r2QualifiersInGroup = teams.filter(t => !isAdminTeam(t) && t.groupRound2 === g && t.roundSolves && t.roundSolves[2]);
+      if (teamsInGrp.length === 0 && r2QualifiersInGroup.length > 0) {
+        teamsInGrp = r2QualifiersInGroup.map(t => t.id).slice(0, 3);
+        grp.teams = teamsInGrp;
+      }
+
+      if (teamsInGrp.length !== 3) {
+        if (r2QualifiersInGroup.length < 3 && teamsInGrp.length === 0) {
+          warnings.push(`Round 3 Group ${g} awaiting Round 2 qualifiers (will auto-populate from top 3).`);
+        } else {
+          errors.push(`Round 3 Group ${g} must contain exactly 3 crews (currently ${teamsInGrp.length}).`);
+        }
       }
       const slots = grp.slots || [];
       if (slots.length !== 1) {
@@ -2702,6 +2774,28 @@ app.post('/api/challenge/flag', (req, res) => {
         team.groupRound3 = group;
         advanceMessage = `Bounty Claimed! Crew finished #${groupRank} in Group ${group}! Dead Man's Creek (Round 3) unlocked!`;
 
+        // Dynamically sync qualifier into Round 3 assignments
+        try {
+          const currentAssigns = getTournamentAssignments();
+          if (currentAssigns.rounds && currentAssigns.rounds['3'] && currentAssigns.rounds['3'].groups && currentAssigns.rounds['3'].groups[group]) {
+            const r3Grp = currentAssigns.rounds['3'].groups[group];
+            if (groupRank === 1) {
+              r3Grp.teams = [team.id];
+            } else if (!r3Grp.teams.includes(team.id)) {
+              r3Grp.teams.push(team.id);
+            }
+            if (r3Grp.slots && r3Grp.slots[0]) {
+              if (!Array.isArray(r3Grp.slots[0].eligibleTeams)) r3Grp.slots[0].eligibleTeams = [];
+              if (!r3Grp.slots[0].eligibleTeams.includes(team.id)) {
+                r3Grp.slots[0].eligibleTeams.push(team.id);
+              }
+            }
+            saveTournamentAssignments(currentAssigns);
+          }
+        } catch (e) {
+          console.error("Error syncing Round 3 assignments:", e);
+        }
+
         // If this was the 3rd team in the group to solve Round 2:
         // Automatically eliminate the remaining 2 teams in this group who haven't solved Round 2!
         if (groupRank === 3) {
@@ -2735,6 +2829,24 @@ app.post('/api/challenge/flag', (req, res) => {
           team.unlockedRounds.sort((a, b) => a - b);
         }
         advanceMessage = `Bounty Claimed! Finalist berth secured for Group ${group}! Treasure Island (Round 4) unlocked for the 1v1 Final Showdown!`;
+
+        // Dynamically sync finalist into Round 4 assignments
+        try {
+          const currentAssigns = getTournamentAssignments();
+          if (currentAssigns.rounds && currentAssigns.rounds['4']) {
+            if (!Array.isArray(currentAssigns.rounds['4'].teams)) currentAssigns.rounds['4'].teams = [];
+            if (!currentAssigns.rounds['4'].teams.includes(team.id)) currentAssigns.rounds['4'].teams.push(team.id);
+            if (currentAssigns.rounds['4'].slots && currentAssigns.rounds['4'].slots[0]) {
+              if (!Array.isArray(currentAssigns.rounds['4'].slots[0].eligibleTeams)) currentAssigns.rounds['4'].slots[0].eligibleTeams = [];
+              if (!currentAssigns.rounds['4'].slots[0].eligibleTeams.includes(team.id)) {
+                currentAssigns.rounds['4'].slots[0].eligibleTeams.push(team.id);
+              }
+            }
+            saveTournamentAssignments(currentAssigns);
+          }
+        } catch (e) {
+          console.error("Error syncing Round 4 assignments:", e);
+        }
 
         // Automatically eliminate the other 2 teams in this group
         teams.forEach(t => {
@@ -3182,6 +3294,24 @@ app.post('/api/admin/credentials/reset', isAdmin, (req, res) => {
   }
 });
 
+// Admin Route: Restore Canonical Default Tournament Credentials
+app.post('/api/admin/credentials/restore-default', isAdmin, (req, res) => {
+  const restoredCreds = restoreDefaultTournamentCredentials();
+  logAuditEvent({
+    action: 'RESTORE_DEFAULT_CREDENTIALS',
+    admin: req.session.teamName || 'admin',
+    reason: 'Restored canonical tournament credentials for all teams and administrator',
+    details: { admin: restoredCreds.admin.username }
+  });
+  return res.json({
+    success: true,
+    message: 'Default tournament credentials restored successfully!',
+    credentials: restoredCreds,
+    admin: restoredCreds.admin,
+    generatedAt: restoredCreds.generatedAt
+  });
+});
+
 app.get('/dashboard', (req, res) => {
   const team = getCurrentTeam(req);
   if (!team) return res.redirect('/');
@@ -3251,6 +3381,8 @@ module.exports = {
   saveCredentials,
   generateRandomPassword,
   generateTournamentCredentials,
+  DEFAULT_TOURNAMENT_CREDENTIALS,
+  restoreDefaultTournamentCredentials,
   logAuditEvent,
   checkTeamExpiryAndDisqualify,
   startTournamentHeartbeatService,

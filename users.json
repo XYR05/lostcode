@@ -3,7 +3,7 @@
     "id": "user_admin_1",
     "username": "admin@lostcode",
     "email": "admin@lostcode",
-    "password": "$2b$10$8VgDhKx0rFpjMtdTJ2XB5OZUAI4AmAu.3IEMPEN927AqQQO4EYNcS",
+    "password": "$2b$10$5JkLawEDTLXE0fPXTiFt/uVXYvnePWLujjdZ4I5Qrbl9sYNUc1F0K",
     "teamId": "team_admin_1",
     "solvedChallenges": []
   },
@@ -11,7 +11,7 @@
     "id": "crew_1_buccaneers",
     "username": "BUCCANEERS",
     "email": "buccaneers@lostcode",
-    "password": "$2b$10$mS8bwkPed9gtsrXtAGoZbuGhczDha65D3LN3Lh7f9/LNYBVFQCiFq",
+    "password": "$2b$10$eYD4rTyQPo0fNMc3mQauTOriWuTZnFiKo3aaZxXod5XxED1eXN.ky",
     "teamId": "crew_1_buccaneers",
     "solvedChallenges": []
   },
@@ -19,7 +19,7 @@
     "id": "crew_2_cutthroats",
     "username": "CUTTHROATS",
     "email": "cutthroats@lostcode",
-    "password": "$2b$10$wvxmdDaMtihsMqjNy7qDg.qseyuT7dlayx43ABdhwUKZB9ddBE6wa",
+    "password": "$2b$10$J8BJnyiqh..Rawd0Igtxzu1YNAWKz0yHgecAPMzgKPafiwcMkgtCS",
     "teamId": "crew_2_cutthroats",
     "solvedChallenges": []
   },
@@ -27,7 +27,7 @@
     "id": "crew_3_corsairs",
     "username": "CORSAIRS",
     "email": "corsairs@lostcode",
-    "password": "$2b$10$zMF3Hyo.vXup7DdiXR5Wt.a/HIHPnTNMNdIYaSqUWMMMh6GD9s4c2",
+    "password": "$2b$10$tkE.twAgQGkfZHRoin7s1OeuQIdmA1veFOBh8UzIn8YZfAiZdW.5e",
     "teamId": "crew_3_corsairs",
     "solvedChallenges": []
   },
@@ -35,7 +35,7 @@
     "id": "crew_4_krakens",
     "username": "KRAKENS",
     "email": "krakens@lostcode",
-    "password": "$2b$10$mLxWSTyetvTHXm3vhedXbeq7I5hyikIIA1GFKLyNssZ2BhZ5iXmFu",
+    "password": "$2b$10$34lyA.UyHYhi.nZCN.rKSu15TrXVzR9N75HziW49if4FoM.RAeETy",
     "teamId": "crew_4_krakens",
     "solvedChallenges": []
   },
@@ -43,7 +43,7 @@
     "id": "crew_5_scallywags",
     "username": "SCALLYWAGS",
     "email": "scallywags@lostcode",
-    "password": "$2b$10$LzE5itgS9T1x5Cb9WfCXte5GrqrjztDKE6RrRamqRgchE8eA7A5WG",
+    "password": "$2b$10$0l2afGtgzkefvENS6neRqe95lThR3pTOL9lWdn7kw7sj8pXv7yxe2",
     "teamId": "crew_5_scallywags",
     "solvedChallenges": []
   },
@@ -51,7 +51,7 @@
     "id": "crew_6_privateers",
     "username": "PRIVATEERS",
     "email": "privateers@lostcode",
-    "password": "$2b$10$v35iLSXzPC3d2Df8My7INum9F34jn1eykevFOsIshDEtAs4mGSKhu",
+    "password": "$2b$10$bevea3Vr1EsBAbgGB2nAPOww./EndsmNkt69MNjWf9Z3MPWwJhZqO",
     "teamId": "crew_6_privateers",
     "solvedChallenges": []
   },
@@ -59,7 +59,7 @@
     "id": "crew_7_blackflags",
     "username": "BLACKFLAGS",
     "email": "blackflags@lostcode",
-    "password": "$2b$10$LQhYnGJ6FP1BT5Jg38syku4nR3w5fRimNADOOYLicLE3ms8tv3dMK",
+    "password": "$2b$10$mSj1rU.wFQVaactQuD4MVeA9iJ6Bx2Ctr/aBCN.EjWCNxaka7CdxG",
     "teamId": "crew_7_blackflags",
     "solvedChallenges": []
   },
@@ -67,7 +67,7 @@
     "id": "crew_8_plunderers",
     "username": "PLUNDERERS",
     "email": "plunderers@lostcode",
-    "password": "$2b$10$GsK7fXmtccSK1vQ3emcFceEnyRq9yEIC6VlwP68irG4ismpnxca/.",
+    "password": "$2b$10$uuD5DyFfor.E4BDhJSokgOEdw9bhHdmmAfGNYyutQNxsaNkCe2ryO",
     "teamId": "crew_8_plunderers",
     "solvedChallenges": []
   },
@@ -75,7 +75,7 @@
     "id": "crew_9_dreadsails",
     "username": "DREADSAILS",
     "email": "dreadsails@lostcode",
-    "password": "$2b$10$k4e0AYfa3XOghK8SQ8amlOw5OI1oGxMRfZSoSUREviEVZxo7u5Fbq",
+    "password": "$2b$10$6JzrgQ3PL2XHUoUIUW5lveVjTYVw3EOz0RmpL6vA7ZRrJ0zf9tdOG",
     "teamId": "crew_9_dreadsails",
     "solvedChallenges": []
   },
@@ -83,7 +83,7 @@
     "id": "crew_10_searavens",
     "username": "SEARAVENS",
     "email": "searavens@lostcode",
-    "password": "$2b$10$9Bo1vgk8bf2BNSB.kjgB1.yTv3bh1pow1OUGeUIpYN.6f6dF2gm6K",
+    "password": "$2b$10$pjSvA8Bsk/fRWLngLxXft.NhjRpqnSwaARE85f2ufFzyV1lpX3K9m",
     "teamId": "crew_10_searavens",
     "solvedChallenges": []
   }

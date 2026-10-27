@@ -167,23 +167,43 @@
       "groups": {
         "A": {
           "groupName": "Group A",
-          "teams": [],
+          "teams": [
+            "crew_1_buccaneers",
+            "crew_3_corsairs",
+            "crew_5_scallywags"
+          ],
           "slots": [
             {
               "slotId": "R3_GA_S1",
               "riddleId": "riddle_r3_g1_1",
-              "eligibleTeams": []
+              "eligibleTeams": [
+                "crew_1_buccaneers",
+                "crew_3_corsairs",
+                "crew_5_scallywags",
+                "crew_7_blackflags",
+                "crew_9_dreadsails"
+              ]
             }
           ]
         },
         "B": {
           "groupName": "Group B",
-          "teams": [],
+          "teams": [
+            "crew_2_cutthroats",
+            "crew_4_krakens",
+            "crew_6_privateers"
+          ],
           "slots": [
             {
               "slotId": "R3_GB_S1",
               "riddleId": "riddle_r3_g2_1",
-              "eligibleTeams": []
+              "eligibleTeams": [
+                "crew_2_cutthroats",
+                "crew_4_krakens",
+                "crew_6_privateers",
+                "crew_8_plunderers",
+                "crew_10_searavens"
+              ]
             }
           ]
         }

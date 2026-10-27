@@ -207,23 +207,43 @@ const tournamentAssignments = {
       groups: {
         A: {
           groupName: "Group A",
-          teams: [],
+          teams: [
+            "crew_1_buccaneers",
+            "crew_3_corsairs",
+            "crew_5_scallywags"
+          ],
           slots: [
             {
               slotId: "R3_GA_S1",
               riddleId: "riddle_r3_g1_1",
-              eligibleTeams: []
+              eligibleTeams: [
+                "crew_1_buccaneers",
+                "crew_3_corsairs",
+                "crew_5_scallywags",
+                "crew_7_blackflags",
+                "crew_9_dreadsails"
+              ]
             }
           ]
         },
         B: {
           groupName: "Group B",
-          teams: [],
+          teams: [
+            "crew_2_cutthroats",
+            "crew_4_krakens",
+            "crew_6_privateers"
+          ],
           slots: [
             {
               slotId: "R3_GB_S1",
               riddleId: "riddle_r3_g2_1",
-              eligibleTeams: []
+              eligibleTeams: [
+                "crew_2_cutthroats",
+                "crew_4_krakens",
+                "crew_6_privateers",
+                "crew_8_plunderers",
+                "crew_10_searavens"
+              ]
             }
           ]
         }
@@ -299,6 +319,61 @@ if (fs.existsSync(teamsPath)) {
 
   fs.writeFileSync(teamsPath, JSON.stringify(teams, null, 2), 'utf8');
   console.log('[PASS] Updated teams.json with allocated riddles');
+}
+
+// 5. Update Canonical Default Credentials
+const credentialsPath = path.join(projectDir, 'private', 'credentials.json');
+const usersPath = path.join(projectDir, 'users.json');
+
+const DEFAULT_TOURNAMENT_CREDENTIALS = {
+  generatedAt: new Date().toISOString(),
+  admin: {
+    username: 'admin@lostcode',
+    password: 'adm_xxcfyXMs'
+  },
+  teams: {
+    BUCCANEERS: 'buccaneers_YkBk8b',
+    CUTTHROATS: 'cutthroats_yZzjNq',
+    CORSAIRS: 'corsairs_29kN79',
+    KRAKENS: 'krakens_t5m6Ss',
+    SCALLYWAGS: 'scallywags_mt6mvg',
+    PRIVATEERS: 'privateers_JQcpxD',
+    BLACKFLAGS: 'blackflags_QYsYa8',
+    PLUNDERERS: 'plunderers_bddktL',
+    DREADSAILS: 'dreadsails_QD5UDh',
+    SEARAVENS: 'searavens_JusYnr'
+  }
+};
+
+fs.writeFileSync(credentialsPath, JSON.stringify(DEFAULT_TOURNAMENT_CREDENTIALS, null, 2), 'utf8');
+console.log('[PASS] Wrote default credentials to credentials.json');
+
+if (fs.existsSync(teamsPath)) {
+  const teams = JSON.parse(fs.readFileSync(teamsPath, 'utf8'));
+  teams.forEach(t => {
+    if (t.id === 'team_admin_1' || t.teamName === 'admin@lostcode') {
+      t.password = bcrypt.hashSync(DEFAULT_TOURNAMENT_CREDENTIALS.admin.password, 10);
+    } else {
+      const pw = DEFAULT_TOURNAMENT_CREDENTIALS.teams[(t.teamName || '').toUpperCase()];
+      if (pw) t.password = bcrypt.hashSync(pw, 10);
+    }
+  });
+  fs.writeFileSync(teamsPath, JSON.stringify(teams, null, 2), 'utf8');
+  console.log('[PASS] Updated teams.json with default password hashes');
+}
+
+if (fs.existsSync(usersPath)) {
+  const users = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
+  users.forEach(u => {
+    if (u.id === 'user_admin_1' || (u.username && u.username.toLowerCase() === 'admin@lostcode')) {
+      u.password = bcrypt.hashSync(DEFAULT_TOURNAMENT_CREDENTIALS.admin.password, 10);
+    } else {
+      const pw = DEFAULT_TOURNAMENT_CREDENTIALS.teams[(u.username || '').toUpperCase()];
+      if (pw) u.password = bcrypt.hashSync(pw, 10);
+    }
+  });
+  fs.writeFileSync(usersPath, JSON.stringify(users, null, 2), 'utf8');
+  console.log('[PASS] Updated users.json with default password hashes');
 }
 
 console.log('\n🎉 ALL MASTER ROUNDS AND RIDDLES INTEGRATED SUCCESSFULLY!');
